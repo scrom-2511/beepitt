@@ -19,29 +19,49 @@ import type { DashboardState } from "@/pages/Dashboard";
 import React from "react";
 import ButtonComp from "../ButtonComp";
 
-const items = [
+const errorItems = [
   {
-    title: "Unseen Incidents",
+    title: "Unseen Errors",
     url: "#",
     icon: EyeOffIcon,
   },
   {
-    title: "Open Incidents",
+    title: "Open Errors",
     url: "#",
     icon: CircleXIcon,
   },
   {
-    title: "Closed Incidents",
+    title: "Closed Errors",
     url: "#",
     icon: CircleCheckBigIcon,
   },
 ];
+
+const incidentItems = [
+  {
+    title: "Unseen Incidents",
+    url: "#",
+    icon: CircleXIcon,
+  },
+  {
+    title: "Seen Incidents",
+    url: "#",
+    icon: CircleCheckBigIcon,
+  },
+];
+
 
 const items_footer = [
   { title: "Settings", url: "", icon: Settings },
   { title: "Billing", url: "", icon: DollarSign },
   { title: "Log Out", url: "", icon: LogOut },
 ];
+
+const SidebarSectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <div className="px-2 pt-4 pb-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+    {children}
+  </div>
+);
 
 export function AppSidebar({
   selected,
@@ -54,15 +74,37 @@ export function AppSidebar({
     <Sidebar variant="inset" className="p-5">
       <SidebarContent className="overflow-hidden">
         <SidebarHeader className="mb-4">logo aayega</SidebarHeader>
+
+        {/*  Errors Section  */}
+        <SidebarSectionLabel>Errors</SidebarSectionLabel>
         <SidebarMenu className="gap-2.5">
-          {items.map((item) => (
+          {incidentItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <ButtonComp
                 variant={selected === item.title ? "default" : "ghost"}
-                className="flex flex-row w-full justify-start gap-5 text-md cursor-pointer"
-                onClick={() => {
-                  setSelected(item.title as DashboardState);
-                }}
+                className="flex w-full justify-start gap-5 text-md"
+                onClick={() =>
+                  setSelected(item.title as DashboardState)
+                }
+              >
+                <item.icon className="size-4.5" />
+                {item.title}
+              </ButtonComp>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+
+        {/*  Errors Section  */}
+        <SidebarSectionLabel>Errors</SidebarSectionLabel>
+        <SidebarMenu className="gap-2.5">
+          {errorItems.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              <ButtonComp
+                variant={selected === item.title ? "default" : "ghost"}
+                className="flex w-full justify-start gap-5 text-md"
+                onClick={() =>
+                  setSelected(item.title as DashboardState)
+                }
               >
                 <item.icon className="size-4.5" />
                 {item.title}
@@ -71,10 +113,12 @@ export function AppSidebar({
           ))}
         </SidebarMenu>
       </SidebarContent>
+
       <SideBarFooterComp selected={selected} setSelected={setSelected} />
     </Sidebar>
   );
 }
+
 
 const SideBarFooterComp = ({
   selected,

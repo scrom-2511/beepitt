@@ -4,9 +4,9 @@ import { googleAuthController } from '../controllers/auth/googleAuth.controller'
 import { otpValidateController } from '../controllers/auth/otpValidator.controller';
 import { signinController } from '../controllers/auth/Signin.Controller';
 import { signupController } from '../controllers/auth/Signup.Controller';
-import { getAllClosedIncidentsByUserId } from '../controllers/incidents/getIncidents/getAllClosedIncidentsByUserId.controller';
-import { getAllOpenIncidentsByUserId } from '../controllers/incidents/getIncidents/getAllOpenIncidentsByUserId.controller';
-import { getAllUnseenErrorsByUserId } from '../controllers/incidents/getIncidents/getAllUnseenErrorsByUserId.controller';
+import { getAllClosedIssuesByUserId } from '../controllers/issues/getIssues/getAllClosedIssuesByUserId.controller';
+import { getAllOpenIssuesByUserId } from '../controllers/issues/getIssues/getAllOpenIssuesByUserId.controller';
+import { getAllUnseenErrorsByUserId } from '../controllers/issues/getIssues/getAllUnseenErrorsByUserId.controller';
 import { razorpayCreateOrderController } from '../controllers/payment/razorpayCreateOrder.controller';
 import { getProfileDetailsAndPreferncesController } from '../controllers/profile/getProfileDetailsAndPrefernces.controller';
 import { updateProfileController } from '../controllers/profile/updateProfileController';
@@ -47,12 +47,12 @@ userRouter.post(
   razorpayCreateOrderController,
 );
 
-userRouter.get('/getUnseenIncidents', isLoggedIn, getAllUnseenErrorsByUserId);
-userRouter.get('/getOpenIncidents', isLoggedIn, getAllOpenIncidentsByUserId);
+userRouter.get('/getUnseenIssues', isLoggedIn, getAllUnseenErrorsByUserId);
+userRouter.get('/getOpenIssues', isLoggedIn, getAllOpenIssuesByUserId);
 userRouter.get(
-  '/getClosedIncidents',
+  '/getClosedIssues',
   isLoggedIn,
-  getAllClosedIncidentsByUserId,
+  getAllClosedIssuesByUserId,
 );
 
 userRouter.get('/getmyip', (req, res) => {

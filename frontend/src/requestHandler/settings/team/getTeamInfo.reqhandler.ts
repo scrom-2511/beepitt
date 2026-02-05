@@ -19,7 +19,7 @@ export const getTeamInfoHandler =
         return res.data.data as TeamInfoResponse;
       }
 
-      throw new Error(res.data.error?.message || "Failed to fetch incidents");
+      throw new Error(res.data.error?.message || "Failed to fetch issues");
     } catch (err: any) {
       console.log(err);
       if (axios.isAxiosError(err)) {

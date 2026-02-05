@@ -1,18 +1,18 @@
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  getUnseenIncidentsHandler,
-  type Incident,
-} from "@/requestHandler/incidents/getIncidents/getUnseenIncidents.reqhandler";
+    getUnseenIssuesHandler,
+    type Issue,
+} from "@/requestHandler/issues/getIssues/getUnseenIssues.reqhandler";
 import {
-  updateIncidentPriorityHandler,
-  type UpdateIncidentPriorityEnum,
-} from "@/requestHandler/incidents/updateIncidents/updateIncidentPriority.reqhandler";
+    updateIssuePriorityHandler,
+    type UpdateIssuePriorityEnum,
+} from "@/requestHandler/issues/updateIssues/updateIssuePriority.reqhandler";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { CircleAlert, PartyPopper } from "lucide-react";
@@ -22,62 +22,62 @@ import ButtonComp from "../ButtonComp";
 import { Loading } from "../Loading";
 import { Button } from "../ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "../ui/card";
 import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
 } from "../ui/empty";
 
-export const UnseenIncidents = () => {
+export const UnseenIssues = () => {
   return (
     <>
-      <IncidentCardsSection />
+      <IssueCardsSection />
     </>
   );
 };
 
-const IncidentCardsSection = () => {
+const IssueCardsSection = () => {
   const [priorities, setPriorities] = useState<
-    Record<string, UpdateIncidentPriorityEnum>
+    Record<string, UpdateIssuePriorityEnum>
   >({});
 
   const {
-    data: incident_card_items,
+    data: issue_card_items,
     isLoading,
     isError,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["unseenIncidents"],
-    queryFn: getUnseenIncidentsHandler,
+    queryKey: ["unseenIssues"],
+    queryFn: getUnseenIssuesHandler,
   });
 
   const queryClient = useQueryClient();
 
-  const { mutate: updateIncidentPriority } = useMutation({
-    mutationFn: updateIncidentPriorityHandler,
+  const { mutate: updateIssuePriority } = useMutation({
+    mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(["unseenIncidents"], (oldData: Incident[]) => {
+      queryClient.setQueryData(["unseenIssues"], (oldData: Issue[]) => {
         return oldData.filter(
-          (incident) => incident.id !== variables.incidentId,
+          (issue) => issue.id !== variables.issueId,
         );
       });
     },
   });
 
-  const onSumitSetPriority = (incidentId: number) => {
-    const priority = priorities[incidentId];
+  const onSumitSetPriority = (issueId: number) => {
+    const priority = priorities[issueId];
     if (!priority) return;
-    updateIncidentPriority({ newPriority: priority, incidentId });
+    updateIssuePriority({ newPriority: priority, issueId });
   };
 
   if (isError) {
@@ -101,7 +101,7 @@ const IncidentCardsSection = () => {
     );
   }
 
-  if (incident_card_items?.length === 0) {
+  if (issue_card_items?.length === 0) {
     return (
       <Empty className="h-full">
         <EmptyHeader className="flex flex-row items-center justify-center">
@@ -109,7 +109,7 @@ const IncidentCardsSection = () => {
             <PartyPopper className="text-muted-foreground" />
           </EmptyMedia>
           <EmptyTitle className="text-muted-foreground">
-            Woohoo, zero unseen incidents!
+            Woohoo, zero unseen issues!
           </EmptyTitle>
         </EmptyHeader>
       </Empty>
@@ -119,13 +119,13 @@ const IncidentCardsSection = () => {
   if (isLoading)
     return (
       <div className="text-white flex justify-center h-full w-full">
-        <Loading title="Unseen Incidents" />
+        <Loading title="Unseen Issues" />
       </div>
     );
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
-      {incident_card_items?.map((item, i) => (
+      {issue_card_items?.map((item, i) => (
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -135,10 +135,10 @@ const IncidentCardsSection = () => {
           <Card className="bg-card p-5 sm:p-10">
             <CardHeader className="p-0">
               <CardTitle className="line-clamp-2">
-                {item.incidentName}
+                {item.issueName}
               </CardTitle>
               <CardDescription className="line-clamp-2">
-                {item.incidentDesc}
+                {item.issueDesc}
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
@@ -155,7 +155,7 @@ const IncidentCardsSection = () => {
                 onValueChange={(value) =>
                   setPriorities((prev) => ({
                     ...prev,
-                    [item.id]: value as UpdateIncidentPriorityEnum,
+                    [item.id]: value as UpdateIssuePriorityEnum,
                   }))
                 }
               >

@@ -49,7 +49,7 @@ export const RazorPayCreateOrderType = z.object({
   id: z.string(),
 });
 
-export const UpdateIncidentPriorityType = z.object({
-  incidentId: z.number(),
-  incidentPriority: z.enum(['Unseen', 'Critical', 'High', 'Low', 'Closed']),
+export const UpdateIssuePriorityType = z.object({
+  issueId: z.number(),
+  issuePriority: z.enum(['Unseen', 'Critical', 'High', 'Low', 'Closed']),
 });

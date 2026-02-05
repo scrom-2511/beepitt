@@ -5,7 +5,7 @@ import HowItWorks from "./HowItWorks";
 import Navbar from "./Navbar";
 
 const HomeMain = () => {
-  const words = ["Incident", "Error"];
+  const words = ["Issue", "Error"];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const HomeMain = () => {
                 Get instant notifications whenever an,
               </h1>
               <h1 className="text-muted-foreground text-xl">
-                incident is detected or an error is caught!
+                issue is detected or an error is caught!
               </h1>
             </div> */}
             <h1 className="text-7xl font-light mb-5">

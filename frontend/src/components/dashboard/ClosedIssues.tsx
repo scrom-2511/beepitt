@@ -1,4 +1,4 @@
-import { getClosedIncidentsHandler } from "@/requestHandler/incidents/getIncidents/getClosedIncidents.reqhandler";
+import { getClosedIssuesHandler } from "@/requestHandler/issues/getIssues/getClosedIssues.reqhandler";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { CircleAlert, PartyPopper } from "lucide-react";
@@ -7,36 +7,36 @@ import ButtonComp from "../ButtonComp";
 import { Loading } from "../Loading";
 import { Button } from "../ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "../ui/card";
 import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
+    Empty,
+    EmptyContent,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
 } from "../ui/empty";
-const ClosedIncidents = () => {
+const ClosedIssues = () => {
   return <ErrorCardsSection />;
 };
 
-export default ClosedIncidents;
+export default ClosedIssues;
 
 const ErrorCardsSection = () => {
   const {
-    data: incident_card_items,
+    data: issue_card_items,
     isLoading,
     isError,
     error,
     refetch,
   } = useQuery({
-    queryKey: ["closedIncidents"],
-    queryFn: getClosedIncidentsHandler,
+    queryKey: ["closedIssues"],
+    queryFn: getClosedIssuesHandler,
   });
 
   if (isError) {
@@ -60,7 +60,7 @@ const ErrorCardsSection = () => {
     );
   }
 
-  if (incident_card_items?.length === 0) {
+  if (issue_card_items?.length === 0) {
     return (
       <Empty className="h-full">
         <EmptyHeader className="flex flex-row items-center justify-center">
@@ -68,7 +68,7 @@ const ErrorCardsSection = () => {
             <PartyPopper className="text-muted-foreground" />
           </EmptyMedia>
           <EmptyTitle className="text-muted-foreground">
-            Woohoo, zero closed incidents!
+            Woohoo, zero closed issues!
           </EmptyTitle>
         </EmptyHeader>
       </Empty>
@@ -78,13 +78,13 @@ const ErrorCardsSection = () => {
   if (isLoading)
     return (
       <div className="text-white flex justify-center h-full w-full">
-        <Loading title="Closed Incidents" />
+        <Loading title="Closed Issues" />
       </div>
     );
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
-      {incident_card_items?.map((item) => (
+      {issue_card_items?.map((item) => (
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -94,10 +94,10 @@ const ErrorCardsSection = () => {
           <Card className="bg-card p-10">
             <CardHeader className="p-0 mb-6">
               <CardTitle className="line-clamp-2">
-                {item.incidentName}
+                {item.issueName}
               </CardTitle>
               <CardDescription className="line-clamp-2">
-                {item.incidentDesc}
+                {item.issueDesc}
               </CardDescription>
             </CardHeader>
             <div>

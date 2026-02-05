@@ -40,7 +40,7 @@ model User {
   updatedAt         DateTime         @updatedAt
 
   authAccounts   AuthAccount[]
-  incidents      Incident[]
+  issues      Issue[]
   contactDetails ContactDetails?
   orders         Orders[]
 }
@@ -54,7 +54,7 @@ model AuthAccount {
   user User @relation(fields: [userId], references: [id])
 }
 
-enum IncidentPriority {
+enum IssuePriority {
   Unseen
   Critical
   High
@@ -62,13 +62,13 @@ enum IncidentPriority {
   Closed
 }
 
-model Incident {
+model Issue {
   id                         Int               @id @default(autoincrement())
-  incidentName               String
-  incidentDesc               String
-  incidentPriority           IncidentPriority?
-  incidentDateAndTime        DateTime          @default(now())
-  incidentResolveDateAndTime DateTime?
+  issueName               String
+  issueDesc               String
+  issuePriority           IssuePriority?
+  issueDateAndTime        DateTime          @default(now())
+  issueResolveDateAndTime DateTime?
   userId                     Int
   user                       User              @relation(fields: [userId], references: [id])
 }

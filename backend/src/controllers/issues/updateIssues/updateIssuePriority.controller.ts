@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
-import { UpdateIncidentPriorityType } from '../../../types/dataTypes';
+import { UpdateIssuePriorityType } from '../../../types/dataTypes';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const updateIncidentPriority = async (req: Request, res: Response) => {
+export const updateIssuePriority = async (req: Request, res: Response) => {
   try {
-    const validateData = UpdateIncidentPriorityType.safeParse(req.body);
+    const validateData = UpdateIssuePriorityType.safeParse(req.body);
     if (!validateData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
@@ -18,13 +18,13 @@ export const updateIncidentPriority = async (req: Request, res: Response) => {
       return;
     }
 
-    const isIncidentClosed = validateData.data.incidentPriority === 'Closed';
+    const isIssueClosed = validateData.data.issuePriority === 'Closed';
 
-    await prisma.incident.update({
-      where: { id: validateData.data.incidentId },
+    await prisma.issue.update({
+      where: { id: validateData.data.issueId },
       data: {
-        incidentPriority: validateData.data.incidentPriority,
-        incidentResolveDateAndTime: isIncidentClosed ? new Date() : null,
+        issuePriority: validateData.data.issuePriority,
+        issueResolveDateAndTime: isIssueClosed ? new Date() : null,
       },
     });
 
