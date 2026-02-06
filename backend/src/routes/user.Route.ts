@@ -4,9 +4,13 @@ import { googleAuthController } from '../controllers/auth/googleAuth.controller'
 import { otpValidateController } from '../controllers/auth/otpValidator.controller';
 import { signinController } from '../controllers/auth/Signin.Controller';
 import { signupController } from '../controllers/auth/Signup.Controller';
-import { getAllClosedIssuesByUserId } from '../controllers/issues/getIssues/getAllClosedIssuesByUserId.controller';
-import { getAllOpenIssuesByUserId } from '../controllers/issues/getIssues/getAllOpenIssuesByUserId.controller';
-import { getAllUnseenErrorsByUserId } from '../controllers/issues/getIssues/getAllUnseenErrorsByUserId.controller';
+import { getAllSeenIncidentsController } from '../controllers/incidents/getIncidents/getAllSeenIncidents.controller';
+import { getAllUnseenIncidentsController } from '../controllers/incidents/getIncidents/getAllUnseenIncidents.controller';
+import { updateIncidentSeenController } from '../controllers/incidents/updateIncidents/updateIncidentSeen.controller';
+import { getAllClosedIssuesController } from '../controllers/issues/getIssues/getAllClosedIssues.controller';
+import { getAllOpenIssuesController } from '../controllers/issues/getIssues/getAllOpenIssues.controller';
+import { getAllUnseenIssuesController } from '../controllers/issues/getIssues/getAllUnseenIssues.controller';
+import { updateIssuePriorityController } from '../controllers/issues/updateIssues/updateIssuePriority.controller';
 import { razorpayCreateOrderController } from '../controllers/payment/razorpayCreateOrder.controller';
 import { getProfileDetailsAndPreferncesController } from '../controllers/profile/getProfileDetailsAndPrefernces.controller';
 import { updateProfileController } from '../controllers/profile/updateProfileController';
@@ -47,12 +51,25 @@ userRouter.post(
   razorpayCreateOrderController,
 );
 
-userRouter.get('/getUnseenIssues', isLoggedIn, getAllUnseenErrorsByUserId);
-userRouter.get('/getOpenIssues', isLoggedIn, getAllOpenIssuesByUserId);
-userRouter.get(
-  '/getClosedIssues',
+userRouter.get('/getUnseenIssues', isLoggedIn, getAllUnseenIssuesController);
+userRouter.get('/getOpenIssues', isLoggedIn, getAllOpenIssuesController);
+userRouter.get('/getClosedIssues', isLoggedIn, getAllClosedIssuesController);
+userRouter.post(
+  '/updateIssuePriority',
   isLoggedIn,
-  getAllClosedIssuesByUserId,
+  updateIssuePriorityController,
+);
+
+userRouter.get(
+  '/getUnseenIncidents',
+  isLoggedIn,
+  getAllUnseenIncidentsController,
+);
+userRouter.get('/getSeenIncidents', isLoggedIn, getAllSeenIncidentsController);
+userRouter.post(
+  '/updateIncidentSeen',
+  isLoggedIn,
+  updateIncidentSeenController,
 );
 
 userRouter.get('/getmyip', (req, res) => {

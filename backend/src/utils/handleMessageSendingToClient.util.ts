@@ -2,12 +2,14 @@ import { produceMessageForMessageSender } from "../services/kafka/beepSender/pro
 import { ProducerMessage } from "../types/dataTypes";
 
 interface InputData {
-  errorName: string;
-  errorDesc: string;
+  name: string;
+  desc: string;
   userId: number;
+  type: "issue" | "incident";
 }
 
 export const handleMessageSendingToClient = async(data: InputData) => {
+
   const dataToSend: ProducerMessage = {
     key: data.userId.toString(),
     value: JSON.stringify(data),

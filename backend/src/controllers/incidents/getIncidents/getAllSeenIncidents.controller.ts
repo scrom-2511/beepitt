@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const getAllOpenIssuesByUserId = async (
+export const getAllSeenIncidentsController = async (
   req: Request,
   res: Response,
 ) => {
@@ -20,18 +20,16 @@ export const getAllOpenIssuesByUserId = async (
       return;
     }
 
-    const allErrors = await prisma.issue.findMany({
+    const allIncidents = await prisma.incident.findMany({
       where: {
         userId,
-        issuePriority: {
-          notIn: ['Unseen', 'Closed'],
-        },
+        incidentSeen: true,
       },
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: allErrors,
+      data: allIncidents,
     });
     return;
   } catch (error) {

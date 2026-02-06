@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
-import { UpdateIssuePriorityType } from '../../../types/dataTypes';
+import { UpdateIncidentPriorityType } from '../../../types/dataTypes';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const updateIssuePriorityController = async (req: Request, res: Response) => {
+export const updateIncidentSeenController = async (req: Request, res: Response) => {
   try {
-    const validateData = UpdateIssuePriorityType.safeParse(req.body);
+    const validateData = UpdateIncidentPriorityType.safeParse(req.body);
     if (!validateData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
@@ -18,13 +18,10 @@ export const updateIssuePriorityController = async (req: Request, res: Response)
       return;
     }
 
-    const isIssueClosed = validateData.data.issuePriority === 'Closed';
-
-    await prisma.issue.update({
-      where: { id: validateData.data.issueId },
+    await prisma.incident.update({
+      where: { id: validateData.data.incidentId },
       data: {
-        issuePriority: validateData.data.issuePriority,
-        issueResolveDateAndTime: isIssueClosed ? new Date() : null,
+        incidentSeen: true,
       },
     });
 

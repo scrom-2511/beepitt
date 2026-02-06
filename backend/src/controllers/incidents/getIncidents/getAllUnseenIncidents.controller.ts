@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const getAllUnseenErrorsByUserId = async (
+export const getAllUnseenIncidentsController = async (
   req: Request,
   res: Response,
 ) => {
@@ -20,14 +20,14 @@ export const getAllUnseenErrorsByUserId = async (
       return;
     }
 
-    const allErrors = await prisma.issue.findMany({
-      where: { userId, issuePriority: 'Unseen' },
-      orderBy: { issueDateAndTime: 'desc' },
+    const allIncidents = await prisma.incident.findMany({
+      where: { userId, incidentSeen: false },
+      orderBy: { incidentDateAndTime: 'desc' },
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: allErrors,
+      data: allIncidents,
     });
     return;
   } catch (error) {

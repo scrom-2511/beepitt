@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const getAllClosedIssuesByUserId = async (
+export const getAllOpenIssuesController = async (
   req: Request,
   res: Response,
 ) => {
@@ -24,7 +24,7 @@ export const getAllClosedIssuesByUserId = async (
       where: {
         userId,
         issuePriority: {
-          in: ['Closed'],
+          notIn: ['Unseen', 'Closed'],
         },
       },
     });

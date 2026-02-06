@@ -40,9 +40,10 @@ model User {
   updatedAt         DateTime         @updatedAt
 
   authAccounts   AuthAccount[]
-  issues      Issue[]
+  issues         Issue[]
   contactDetails ContactDetails?
   orders         Orders[]
+  incidents      Incident[]
 }
 
 model AuthAccount {
@@ -63,14 +64,24 @@ enum IssuePriority {
 }
 
 model Issue {
-  id                         Int               @id @default(autoincrement())
+  id                      Int            @id @default(autoincrement())
   issueName               String
   issueDesc               String
   issuePriority           IssuePriority?
-  issueDateAndTime        DateTime          @default(now())
+  issueDateAndTime        DateTime       @default(now())
   issueResolveDateAndTime DateTime?
+  userId                  Int
+  user                    User           @relation(fields: [userId], references: [id])
+}
+
+model Incident {
+  id                         Int       @id @default(autoincrement())
+  incidentName               String
+  incidentDesc               String
+  incidentSeen               Boolean   @default(false)
+  incidentDateAndTime        DateTime  @default(now())
   userId                     Int
-  user                       User              @relation(fields: [userId], references: [id])
+  user                       User      @relation(fields: [userId], references: [id])
 }
 
 model ContactDetails {

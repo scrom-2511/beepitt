@@ -12,10 +12,11 @@ export const SignupType = z.object({
   timezone: z.string(),
 });
 
-export const onErrorFromClientType = z.object({
+export const onCallFromClientType = z.object({
   userId: z.number(),
-  errorName: z.string(),
-  errorDesc: z.string(),
+  type: z.enum(['issue', 'incident']),
+  name: z.string(),
+  desc: z.string(),
   jwtToken: z.string(),
 });
 
@@ -52,4 +53,8 @@ export const RazorPayCreateOrderType = z.object({
 export const UpdateIssuePriorityType = z.object({
   issueId: z.number(),
   issuePriority: z.enum(['Unseen', 'Critical', 'High', 'Low', 'Closed']),
+});
+
+export const UpdateIncidentPriorityType = z.object({
+  incidentId: z.number(),
 });
