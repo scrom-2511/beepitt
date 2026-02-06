@@ -3,27 +3,13 @@ import { getOpenIssuesHandler } from "@/requestHandler/issues/getIssues/getOpenI
 import { updateIssuePriorityHandler } from "@/requestHandler/issues/updateIssues/updateIssuePriority.reqhandler";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { CircleAlert, CircleX, PartyPopper } from "lucide-react";
+import { CircleX } from "lucide-react";
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
-import ButtonComp from "../ButtonComp";
-import { Loading } from "../Loading";
-import { Button } from "../ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "../ui/card";
-import {
-    Empty,
-    EmptyContent,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "../ui/empty";
+import ButtonComp from "../../ButtonComp";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardFooter } from "../../ui/card";
+import CardHeaderComp from "../CardHeader";
+import Fallback from "../Fallback";
 
 export const OpenIssues = () => {
   return (
@@ -86,17 +72,11 @@ const IssueCardsSection = () => {
   });
   const queryClient = useQueryClient();
 
-  const {
-    mutate: updateIssuePriority,
-    isPending,
-    data,
-  } = useMutation({
+  const { mutate: updateIssuePriority } = useMutation({
     mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
       queryClient.setQueryData(["openIssues"], (oldData: Issue[]) => {
-        return oldData.filter(
-          (issue) => issue.id !== variables.issueId,
-        );
+        return oldData.filter((issue) => issue.id !== variables.issueId);
       });
     },
   });
@@ -108,48 +88,17 @@ const IssueCardsSection = () => {
     [updateIssuePriority],
   );
 
-  if (isError) {
-    toast.error(error.message);
+  if (isError || isLoading || issue_card_items?.length === 0) {
     return (
-      <Empty className="h-full">
-        <EmptyHeader className="flex flex-row items-center justify-center">
-          <EmptyMedia variant="icon" className="m-0">
-            <CircleAlert color="red" />
-          </EmptyMedia>
-          <EmptyTitle className="text-foreground ">
-            Error fetching data
-          </EmptyTitle>
-        </EmptyHeader>
-        <EmptyContent>
-          <ButtonComp className="w-50 font-bold" onClick={() => refetch()}>
-            Refetch
-          </ButtonComp>
-        </EmptyContent>
-      </Empty>
+      <Fallback
+        data={issue_card_items}
+        error={error}
+        isError={isError}
+        isLoading={isLoading}
+        refetch={refetch}
+      />
     );
   }
-
-  if (issue_card_items?.length === 0) {
-    return (
-      <Empty className="h-full">
-        <EmptyHeader className="flex flex-row items-center justify-center">
-          <EmptyMedia variant="icon" className="m-0">
-            <PartyPopper className="text-muted-foreground" />
-          </EmptyMedia>
-          <EmptyTitle className="text-muted-foreground">
-            Woohoo, zero open issues!
-          </EmptyTitle>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
-
-  if (isLoading)
-    return (
-      <div className="text-white flex justify-center h-full w-full">
-        <Loading title="Open Issues" />
-      </div>
-    );
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
@@ -162,14 +111,7 @@ const IssueCardsSection = () => {
           key={item.id}
         >
           <Card key={item.id} className="bg-card p-10">
-            <CardHeader className="p-0">
-              <CardTitle className="line-clamp-2">
-                {item.issueName}
-              </CardTitle>
-              <CardDescription className="line-clamp-2">
-                {item.issueDesc}
-              </CardDescription>
-            </CardHeader>
+            <CardHeaderComp title={item.issueName} desc={item.issueDesc} />
             <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
               <Button variant={"outline"} className="flex-1">
                 {item.issueDateAndTime.toString()}

@@ -1,26 +1,11 @@
 import { getClosedIssuesHandler } from "@/requestHandler/issues/getIssues/getClosedIssues.reqhandler";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { CircleAlert, PartyPopper } from "lucide-react";
-import { toast } from "sonner";
-import ButtonComp from "../ButtonComp";
-import { Loading } from "../Loading";
-import { Button } from "../ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "../ui/card";
-import {
-    Empty,
-    EmptyContent,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "../ui/empty";
+import ButtonComp from "../../ButtonComp";
+import { Button } from "../../ui/button";
+import { Card, CardContent, CardDescription, CardFooter } from "../../ui/card";
+import CardHeaderComp from "../CardHeader";
+import Fallback from "../Fallback";
 const ClosedIssues = () => {
   return <ErrorCardsSection />;
 };
@@ -39,48 +24,17 @@ const ErrorCardsSection = () => {
     queryFn: getClosedIssuesHandler,
   });
 
-  if (isError) {
-    toast.error(error.message);
+  if (isError || isLoading || issue_card_items?.length === 0) {
     return (
-      <Empty className="h-full">
-        <EmptyHeader className="flex flex-row items-center justify-center">
-          <EmptyMedia variant="icon" className="m-0">
-            <CircleAlert color="red" />
-          </EmptyMedia>
-          <EmptyTitle className="text-foreground ">
-            Error fetching data
-          </EmptyTitle>
-        </EmptyHeader>
-        <EmptyContent>
-          <ButtonComp className="w-50 font-bold" onClick={() => refetch()}>
-            Refetch
-          </ButtonComp>
-        </EmptyContent>
-      </Empty>
+      <Fallback
+        data={issue_card_items}
+        error={error}
+        isError={isError}
+        isLoading={isLoading}
+        refetch={refetch}
+      />
     );
   }
-
-  if (issue_card_items?.length === 0) {
-    return (
-      <Empty className="h-full">
-        <EmptyHeader className="flex flex-row items-center justify-center">
-          <EmptyMedia variant="icon" className="m-0">
-            <PartyPopper className="text-muted-foreground" />
-          </EmptyMedia>
-          <EmptyTitle className="text-muted-foreground">
-            Woohoo, zero closed issues!
-          </EmptyTitle>
-        </EmptyHeader>
-      </Empty>
-    );
-  }
-
-  if (isLoading)
-    return (
-      <div className="text-white flex justify-center h-full w-full">
-        <Loading title="Closed Issues" />
-      </div>
-    );
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
@@ -92,14 +46,7 @@ const ErrorCardsSection = () => {
           className="cursor-pointer"
         >
           <Card className="bg-card p-10">
-            <CardHeader className="p-0 mb-6">
-              <CardTitle className="line-clamp-2">
-                {item.issueName}
-              </CardTitle>
-              <CardDescription className="line-clamp-2">
-                {item.issueDesc}
-              </CardDescription>
-            </CardHeader>
+            <CardHeaderComp title={item.issueName} desc={item.issueDesc} />
             <div>
               <CardDescription className="text-foreground p-0 m-0">
                 Error Occured At:{" "}

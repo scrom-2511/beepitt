@@ -19,19 +19,19 @@ import type { DashboardState } from "@/pages/Dashboard";
 import React from "react";
 import ButtonComp from "../ButtonComp";
 
-const errorItems = [
+const issuesItems = [
   {
-    title: "Unseen Errors",
+    title: "Unseen Issues",
     url: "#",
     icon: EyeOffIcon,
   },
   {
-    title: "Open Errors",
+    title: "Open Issues",
     url: "#",
     icon: CircleXIcon,
   },
   {
-    title: "Closed Errors",
+    title: "Closed Issues",
     url: "#",
     icon: CircleCheckBigIcon,
   },
@@ -75,8 +75,8 @@ export function AppSidebar({
       <SidebarContent className="overflow-hidden">
         <SidebarHeader className="mb-4">logo aayega</SidebarHeader>
 
-        {/*  Errors Section  */}
-        <SidebarSectionLabel>Errors</SidebarSectionLabel>
+        {/*  Incidents Section  */}
+        <SidebarSectionLabel>Incidents</SidebarSectionLabel>
         <SidebarMenu className="gap-2.5">
           {incidentItems.map((item) => (
             <SidebarMenuItem key={item.title}>
@@ -94,10 +94,10 @@ export function AppSidebar({
           ))}
         </SidebarMenu>
 
-        {/*  Errors Section  */}
-        <SidebarSectionLabel>Errors</SidebarSectionLabel>
+        {/*  Issues Section  */}
+        <SidebarSectionLabel>Issues</SidebarSectionLabel>
         <SidebarMenu className="gap-2.5">
-          {errorItems.map((item) => (
+          {issuesItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               <ButtonComp
                 variant={selected === item.title ? "default" : "ghost"}
