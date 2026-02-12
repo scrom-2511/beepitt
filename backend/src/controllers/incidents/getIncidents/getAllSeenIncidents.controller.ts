@@ -8,6 +8,7 @@ export const getAllSeenIncidentsController = async (
 ) => {
   try {
     const userId = req.userId;
+    
     if (!userId) {
       res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
@@ -19,17 +20,26 @@ export const getAllSeenIncidentsController = async (
       });
       return;
     }
+    
+    const PAGE_SIZE = 10;
+    const lastId = req.query.lastId ? Number(req.query.lastId) : undefined;
 
-    const allIncidents = await prisma.incident.findMany({
+    const incidents = await prisma.incident.findMany({
       where: {
         userId,
         incidentSeen: true,
       },
+      orderBy: [{ incidentSeenDateAndTime: 'desc' }, { id: 'desc' }],
+      take: PAGE_SIZE,
+      ...(lastId && {
+        cursor: { id: lastId },
+        skip: 1,
+      }),
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: allIncidents,
+      data: incidents,
     });
     return;
   } catch (error) {

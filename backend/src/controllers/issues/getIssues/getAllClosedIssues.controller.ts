@@ -20,19 +20,29 @@ export const getAllClosedIssuesController = async (
       return;
     }
 
-    const allErrors = await prisma.issue.findMany({
+    const PAGE_SIZE = 10;
+    const lastId = req.query.lastId ? Number(req.query.lastId) : undefined;
+
+    const issues = await prisma.issue.findMany({
       where: {
         userId,
         issuePriority: {
           in: ['Closed'],
         },
       },
+      orderBy: [{ issueResolveDateAndTime: 'desc' }, { id: 'desc' }],
+      take: PAGE_SIZE,
+      ...(lastId && {
+        cursor: { id: lastId },
+        skip: 1,
+      }),
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: allErrors,
+      data: issues,
     });
+
     return;
   } catch (error) {
     console.error(error);

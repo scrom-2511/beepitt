@@ -20,14 +20,25 @@ export const getAllUnseenIssuesController = async (
       return;
     }
 
-    const allIncidents = await prisma.issue.findMany({
-      where: { userId, issuePriority: 'Unseen' },
-      orderBy: { issueDateAndTime: 'desc' },
+    const PAGE_SIZE = 10;
+    const lastId = req.query.lastId ? Number(req.query.lastId) : undefined;
+
+    const issues = await prisma.issue.findMany({
+      where: {
+        userId,
+        issuePriority: 'Unseen',
+      },
+      orderBy: [{ issueDateAndTime: 'desc' }, { id: 'desc' }],
+      take: PAGE_SIZE,
+      ...(lastId && {
+        cursor: { id: lastId },
+        skip: 1,
+      }),
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: allIncidents,
+      data: issues,
     });
     return;
   } catch (error) {
