@@ -1,33 +1,17 @@
+import type { RazorPayCreateOrderType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
-interface razorPayRequest {
-  id: string;
+export interface RazorPayCreateOrderResponse {
+  orderId: string;
+  currency: string;
+  amount: string;
+  dbOrderId: string;
 }
 
-type razorPayResponse =
-  | {
-      success: true;
-      data: {
-        orderId: string;
-        currency: string;
-        amount: string;
-        dbOrderId: string;
-      };
-    }
-  | {
-      success: false;
-      data: {
-        error: {
-          id: number;
-          code: string;
-          message: string;
-        };
-      };
-    };
-
 export const razorPayCreateOrderHandler = async (
-  data: razorPayRequest,
-): Promise<razorPayResponse> => {
+  data: z.infer<typeof RazorPayCreateOrderType>,
+): Promise<RazorPayCreateOrderResponse> => {
   try {
     const res = await axios.post(
       "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/razorPayCreateOrder",
@@ -38,32 +22,17 @@ export const razorPayCreateOrderHandler = async (
     );
 
     if (res.data.success) {
-      return { success: true, data: res.data.data };
+      return res.data.data as RazorPayCreateOrderResponse;
     }
 
-    return {
-      success: false,
-      data: {
-        error: res.data.error,
-      },
-    };
+    throw new Error(res.data.error?.message);
   } catch (err) {
+    console.error(err);
+
     if (axios.isAxiosError(err)) {
-      const data = err.response?.data;
-      if (data && !data.success) {
-        return { success: false, data };
-      }
+      throw new Error(err.response?.data?.error?.message || err.message);
     }
 
-    return {
-      success: false,
-      data: {
-        error: {
-          id: 0,
-          code: "UNKNOWN",
-          message: "There was an error, please try again.",
-        },
-      },
-    };
+    throw new Error("There was an unknown error, please try again.");
   }
 };

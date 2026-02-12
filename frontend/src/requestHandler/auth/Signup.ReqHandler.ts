@@ -1,12 +1,16 @@
+import { SignupType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
 export interface SignupRequest {
   email: string;
   username: string;
   password: string;
-  timezone: string
+  timezone: string;
 }
-export const signupHandler = async (data: SignupRequest): Promise<void> => {
+export const signupHandler = async (
+  data: z.infer<typeof SignupType>,
+): Promise<void> => {
   try {
     const res = await axios.post(
       "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/signup",

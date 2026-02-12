@@ -1,11 +1,9 @@
+import type { UpdateIncidentSeenType } from "@/types/dataTypes";
 import axios from "axios";
-
-export interface UpdateIncidentSeenType {
-  incidentId: number;
-}
+import type z from "zod";
 
 export const updateIncidentSeenHandler = async (
-  data: UpdateIncidentSeenType,
+  data: z.infer<typeof UpdateIncidentSeenType>,
 ): Promise<void> => {
   try {
     const res = await axios.post(

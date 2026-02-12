@@ -1,14 +1,16 @@
+import type { UpdateIssuePriorityType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
 export type UpdateIssuePriorityEnum = "Low" | "Critical" | "High" | "Closed";
 
 export interface UpdateIssuePriorityBody {
-  issueId: number
+  issueId: number;
   newPriority: UpdateIssuePriorityEnum;
 }
 
 export const updateIssuePriorityHandler = async (
-  data: UpdateIssuePriorityBody,
+  data: z.infer<typeof UpdateIssuePriorityType>,
 ): Promise<void> => {
   try {
     const res = await axios.post(

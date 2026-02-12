@@ -1,4 +1,6 @@
+import type { TimeZoneAndPreferencesUpdateType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
 export interface UpdatePreferencesAndCityBody {
   city: string;
@@ -6,7 +8,7 @@ export interface UpdatePreferencesAndCityBody {
 }
 
 export const updateTimeZoneAndPreferencesHandler = async (
-  data: UpdatePreferencesAndCityBody,
+  data: z.infer<typeof TimeZoneAndPreferencesUpdateType>,
 ): Promise<void> => {
   try {
     const res = await axios.post(

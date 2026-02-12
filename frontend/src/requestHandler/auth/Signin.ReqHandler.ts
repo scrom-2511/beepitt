@@ -1,20 +1,28 @@
+import { LoginType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
 export interface SigninRequest {
   email: string;
   password: string;
 }
 
-export const signinHandler = async (data: SigninRequest): Promise<void> => {
+interface SigninResponse {
+  timeZone: string;
+}
+
+export const signinHandler = async (
+  data: z.infer<typeof LoginType>,
+): Promise<SigninResponse> => {
   try {
     const res = await axios.post(
       "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/signin",
       data,
-      {withCredentials: true}
+      { withCredentials: true },
     );
 
     if (res.data.success) {
-      return;
+      return res.data.data as SigninResponse;
     }
 
     throw new Error(res.data.error?.message);

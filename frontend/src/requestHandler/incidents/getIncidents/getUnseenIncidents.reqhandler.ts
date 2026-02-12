@@ -5,7 +5,7 @@ export interface Incident {
   incidentName: string;
   incidentDesc: string;
   incidentSeen: boolean;
-  incidentDateAndTime: Date;
+  incidentDateAndTime: string;
 }
 
 export const getUnseenIncidentsHandler = async (): Promise<Incident[]> => {

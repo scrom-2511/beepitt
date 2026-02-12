@@ -1,11 +1,13 @@
+import { OtpValidateType } from "@/types/dataTypes";
 import axios from "axios";
+import type z from "zod";
 
 export interface OtpValidatorRequest {
   otp: string;
 }
 
 export const otpValidatorHandler = async (
-  data: OtpValidatorRequest,
+  data: z.infer<typeof OtpValidateType>,
 ): Promise<void> => {
   try {
     const res = await axios.post(

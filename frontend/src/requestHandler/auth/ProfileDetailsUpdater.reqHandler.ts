@@ -1,12 +1,9 @@
+import { ProfileUpdateType } from "@/types/dataTypes";
 import axios from "axios";
-
-export interface profileDetailsUpdateRequest {
-  firstName: string;
-  lastName: string;
-}
+import type z from "zod";
 
 export const profileDetailsUpdateHandler = async (
-  data: profileDetailsUpdateRequest,
+  data: z.infer<typeof ProfileUpdateType>,
 ): Promise<void> => {
   try {
     const res = await axios.post(
