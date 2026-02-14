@@ -8,35 +8,30 @@ export const getAllUnseenIncidentsController = async (
 ) => {
   try {
     const userId = req.userId;
-    if (!userId) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.UNAUTHORIZED.id,
-          code: ERROR_CODES.UNAUTHORIZED.code,
-          message: ERROR_CODES.UNAUTHORIZED.message,
-        },
-      });
-      return;
-    }
 
     const PAGE_SIZE = 10;
-    const lastId = req.query.lastId ? Number(req.query.lastId) : undefined;
+    const lastId = Number(req.query.lastId);
 
     const incidents = await prisma.incident.findMany({
       where: { userId, incidentSeen: false },
-      orderBy: [{ incidentSeenDateAndTime: 'desc' }, { id: 'desc' }],
-      take: PAGE_SIZE,
+      orderBy: { id: 'desc' },
       ...(lastId && {
         cursor: { id: lastId },
         skip: 1,
       }),
+      take: PAGE_SIZE,
     });
+
+    const nextCursor =
+      incidents.length === PAGE_SIZE
+        ? incidents[incidents.length - 1].id
+        : null;
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: incidents,
+      data: { incidents, nextCursor },
     });
+
     return;
   } catch (error) {
     console.error(error);
