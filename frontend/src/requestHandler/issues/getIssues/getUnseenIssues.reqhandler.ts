@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export type IssuePriority = "Undefined";
+
 export interface Issue {
   id: number;
   issueName: string;
@@ -9,15 +10,22 @@ export interface Issue {
   issueDateAndTime: Date;
 }
 
-export const getUnseenIssuesHandler = async (): Promise<Issue[]> => {
+export interface IssuesResponse {
+  issues: Issue[];
+  nextCursor: number | null;
+}
+
+export const getUnseenIssuesHandler = async (
+  lastId: number,
+): Promise<IssuesResponse> => {
   try {
     const res = await axios.get(
       "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/getUnseenIssues",
-      { withCredentials: true },
+      { withCredentials: true, params: { lastId } },
     );
 
     if (res.data.success) {
-      return res.data.data as Issue[];
+      return res.data.data as IssuesResponse;
     }
 
     throw new Error(res.data.error?.message || "Failed to fetch issues");
