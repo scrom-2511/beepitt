@@ -1,10 +1,20 @@
+import { Loading } from "@/components/Loading";
 import {
   getUnseenIncidentsHandler,
   type Incident,
 } from "@/requestHandler/incidents/getIncidents/getUnseenIncidents.reqhandler";
 import { updateIncidentSeenHandler } from "@/requestHandler/incidents/updateIncidents/updateIncidentSeen.reqhandler";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import {
+  converUtcToLocaleDate,
+  converUtcToLocalTime,
+} from "@/utils/UtcToLocale";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import ButtonComp from "../../ButtonComp";
 import { Button } from "../../ui/button";
@@ -23,15 +33,48 @@ export const UnseenIncidents = () => {
 const IncidentCardsSection = () => {
   const queryClient = useQueryClient();
   const {
-    data: incident_card_items,
-    isLoading,
-    isError,
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
     error,
+    isError,
+    isLoading,
     refetch,
-  } = useQuery({
+  } = useInfiniteQuery({
     queryKey: ["unseenIncidents"],
-    queryFn: getUnseenIncidentsHandler,
+    queryFn: ({ pageParam }) => getUnseenIncidentsHandler(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => lastPage.nextCursor,
   });
+
+  const incident_card_items =
+    data?.pages.flatMap((page) => page.incidents) ?? [];
+
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasNextPage]);
+
+  console.log(incident_card_items);
 
   const { mutate: updateIncidentSeen } = useMutation({
     mutationFn: updateIncidentSeenHandler,
@@ -58,43 +101,67 @@ const IncidentCardsSection = () => {
         isError={isError}
         isLoading={isLoading}
         refetch={refetch}
+        emptyTitle="Unseen Incidents"
       />
     );
   }
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
-      {incident_card_items?.map((item, i) => (
-        <motion.div
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 * i, ease: "easeIn" }}
-          className="cursor-pointer"
-        >
-          <Card className="bg-card p-5 sm:p-10">
-            <CardHeaderComp
-              title={item.incidentName}
-              desc={item.incidentDesc}
-            />
-            <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
-              <Button variant={"outline"} className="flex-1">
-                Date
-              </Button>
-              <Button variant={"outline"} className="flex-1">
-                Time
-              </Button>
-            </CardContent>
-            <CardFooter className="p-0 flex flex-col items-start gap-5">
-              <ButtonComp
-                className="h-10 w-full font-semibold cursor-pointer"
-                onClick={() => onSubmit(item.id)}
-              >
-                Set Priority
-              </ButtonComp>
-            </CardFooter>
-          </Card>
-        </motion.div>
-      ))}
+      <AnimatePresence mode="popLayout">
+        {incident_card_items?.map((item, i) => (
+          <motion.div
+            key={item.id}
+            layout
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            transition={{ delay: 0.05 * i, ease: "easeIn" }}
+            className="cursor-pointer"
+          >
+            <Card className="bg-card p-5 sm:p-10">
+              <CardHeaderComp
+                title={item.incidentName}
+                desc={item.incidentDesc}
+              />
+
+              <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
+                <Button variant="outline" className="flex-1">
+                  {converUtcToLocaleDate(
+                    item.incidentDateAndTime,
+                    localStorage.getItem("timeZone")!,
+                  )}
+                </Button>
+
+                <Button variant="outline" className="flex-1">
+                  {converUtcToLocalTime(
+                    item.incidentDateAndTime,
+                    localStorage.getItem("timeZone")!,
+                  )}
+                </Button>
+              </CardContent>
+
+              <CardFooter className="p-0 flex flex-col items-start gap-5">
+                <ButtonComp
+                  className="h-10 w-full font-semibold cursor-pointer"
+                  onClick={() => onSubmit(item.id)}
+                >
+                  Set as seen
+                </ButtonComp>
+              </CardFooter>
+            </Card>
+          </motion.div>
+        ))}
+        {hasNextPage && (
+          <div ref={loadMoreRef} className="col-span-full text-center py-5">
+            {isFetchingNextPage ? (
+              <Loading title="Loading" />
+            ) : (
+              "Scroll to load more"
+            )}
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };
