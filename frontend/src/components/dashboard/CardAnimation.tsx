@@ -16,7 +16,9 @@ const CardAnimation = ({
       exit={{ y: -50, opacity: 0 }}
       transition={{ delay: 0.05 * i, ease: "easeIn" }}
       className="cursor-pointer"
-    ></motion.div>
+    >
+      {children}
+    </motion.div>
   );
 };
 
