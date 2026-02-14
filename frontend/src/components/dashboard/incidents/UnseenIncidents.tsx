@@ -13,12 +13,13 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import ButtonComp from "../../ButtonComp";
 import { Button } from "../../ui/button";
 import { Card, CardContent, CardFooter } from "../../ui/card";
+import CardAnimation from "../CardAnimation";
 import CardHeaderComp from "../CardHeader";
 import Fallback from "../Fallback";
 
@@ -110,15 +111,7 @@ const IncidentCardsSection = () => {
     <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
       <AnimatePresence mode="popLayout">
         {incident_card_items?.map((item, i) => (
-          <motion.div
-            key={item.id}
-            layout
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -50, opacity: 0 }}
-            transition={{ delay: 0.05 * i, ease: "easeIn" }}
-            className="cursor-pointer"
-          >
+          <CardAnimation i={i} key={item.id}>
             <Card className="bg-card p-5 sm:p-10">
               <CardHeaderComp
                 title={item.incidentName}
@@ -150,7 +143,7 @@ const IncidentCardsSection = () => {
                 </ButtonComp>
               </CardFooter>
             </Card>
-          </motion.div>
+          </CardAnimation>
         ))}
         {hasNextPage && (
           <div ref={loadMoreRef} className="col-span-full text-center py-5">
