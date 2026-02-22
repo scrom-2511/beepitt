@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", "generated/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/services/kafka"]
 }

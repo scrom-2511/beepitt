@@ -12,7 +12,7 @@ interface RetryQueueMessage {
   retryNumber: number;
 }
 
-const consumerBeepMessageSenderRetry = async () => {
+export const consumerBeepMessageSenderRetry = async () => {
   consumer.run({
     autoCommit: false,
     eachMessage: async ({ topic, partition, message, heartbeat }) => {

@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgres"
 }
 
 enum SubscriptionTier {
@@ -25,24 +25,40 @@ enum AuthProvider {
 }
 
 model User {
-  id                Int              @id @default(autoincrement())
-  otpVerified       Boolean          @default(false)
-  identifierKey     String           @unique
-  username          String           @unique
-  firstName         String?
-  lastName          String?
-  email             String           @unique
-  password          String
-  city              String?
-  timezone          String?
-  subscription_tier SubscriptionTier
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id            Int      @id @default(autoincrement())
+  emailVerified Boolean  @default(false)
+  identifierKey String   @unique
+  username      String   @unique
+  firstName     String?
+  lastName      String?
+  email         String   @unique
+  password      String
+  city          String?
+  timezone      String?
+  projects      String[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   authAccounts   AuthAccount[]
-  incidents      Incident[]
+  issues         Issue[]
   contactDetails ContactDetails?
   orders         Orders[]
+  incidents      Incident[]
+  billing        Billing?
+}
+
+enum CurrentStatus {
+  Active
+  Inactive
+}
+
+model Billing {
+  id                Int              @id @default(autoincrement())
+  subscription_tier SubscriptionTier
+  currentStatus     CurrentStatus
+  validTill         DateTime
+  userId            Int              @unique
+  user              User             @relation(fields: [userId], references: [id])
 }
 
 model AuthAccount {
@@ -50,11 +66,13 @@ model AuthAccount {
   provider   AuthProvider
   providerId String       @unique
   userId     Int
+  user       User         @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [id])
+  @@unique([provider, providerId])
+  @@index([userId])
 }
 
-enum IncidentPriority {
+enum IssuePriority {
   Unseen
   Critical
   High
@@ -62,15 +80,35 @@ enum IncidentPriority {
   Closed
 }
 
+model Issue {
+  id                      Int           @id @default(autoincrement())
+  issueName               String
+  issueDesc               String
+  issuePriority           IssuePriority
+  issueDateAndTime        DateTime      @default(now())
+  issueResolveDateAndTime DateTime?
+  filePath                String?
+  userId                  Int
+  user                    User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, issuePriority])
+}
+
 model Incident {
-  id                         Int               @id @default(autoincrement())
-  incidentName               String
-  incidentDesc               String
-  incidentPriority           IncidentPriority?
-  incidentDateAndTime        DateTime          @default(now())
-  incidentResolveDateAndTime DateTime?
-  userId                     Int
-  user                       User              @relation(fields: [userId], references: [id])
+  id                      Int       @id @default(autoincrement())
+  projectName             String    @default("Untitled Project")
+  incidentName            String
+  incidentDesc            String
+  incidentSeen            Boolean   @default(false)
+  incidentDateAndTime     DateTime  @default(now())
+  incidentSeenDateAndTime DateTime?
+  filePath                String?
+  userId                  Int
+  user                    User      @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([userId, incidentSeen])
 }
 
 model ContactDetails {
@@ -82,9 +120,7 @@ model ContactDetails {
 }
 
 enum OrderStatus {
-  Started
   Pending
-  Frontend_Success
   Successful
   Failed
 }
@@ -100,4 +136,6 @@ model Orders {
   user              User        @relation(fields: [userId], references: [id])
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @default(now()) @updatedAt
+
+  @@index([userId])
 }

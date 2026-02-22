@@ -2,12 +2,13 @@ import { Request, Response } from 'express';
 import { prisma } from '../database/prismaClient';
 import { enqueueDiscordNotifications } from '../services/bullmq/producers/discordNotifications.producer';
 import { enqueueTelegramNotifications } from '../services/bullmq/producers/telegramNotifications.producer';
-import { NotificationType, onClientIssueType } from '../types/dataTypes';
+import { NotificationType, onClientIncidentType } from '../types/dataTypes';
 import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
 
-export const onClientIssueWebhook = async (req: Request, res: Response) => {
+export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
-    const validateData = onClientIssueType.safeParse(req.body);
+    const validateData = onClientIncidentType.safeParse(req.body);
+    console.log(req.body);
 
     if (!validateData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
@@ -87,7 +88,7 @@ export const onClientIssueWebhook = async (req: Request, res: Response) => {
       await enqueueDiscordNotifications({
         userId: req.userId!,
         data: contactDetails.discordChatIds,
-        type: NotificationType.Issue,
+        type: NotificationType.Incident,
       });
     }
 
@@ -99,12 +100,12 @@ export const onClientIssueWebhook = async (req: Request, res: Response) => {
       await enqueueTelegramNotifications({
         userId: req.userId!,
         data: contactDetails.telegramChatIds,
-        type: NotificationType.Issue,
+        type: NotificationType.Incident,
       });
     }
 
-    await prisma.issue.create({
-      data: { ...validateData.data, userId, issuePriority: 'Unseen' },
+    await prisma.incident.create({
+      data: { ...validateData.data, userId },
     });
 
     if (!discordChatIdsPresent) {

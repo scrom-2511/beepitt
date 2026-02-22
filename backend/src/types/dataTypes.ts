@@ -12,17 +12,29 @@ export const SignupType = z.object({
   timezone: z.string(),
 });
 
-export const onCallFromClientType = z.object({
-  userId: z.number(),
-  type: z.enum(['issue', 'incident']),
-  name: z.string(),
-  desc: z.string(),
-  jwtToken: z.string(),
+export const onClientIncidentType = z.object({
+  projectName: z.string(),
+  incidentName: z.string(),
+  incidentDesc: z.string(),
+  filePath: z.string().optional(),
 });
 
-export interface ProducerMessage {
-  key: string;
-  value: string;
+export const onClientIssueType = z.object({
+  projectName: z.string(),
+  issueName: z.string(),
+  issueDesc: z.string(),
+  filePath: z.string(),
+});
+
+export enum NotificationType {
+  'Incident',
+  'Issue',
+}
+
+export interface NotificationJob {
+  userId: number;
+  type: NotificationType;
+  data: string[];
 }
 
 export const ProfileUpdateType = z.object({
@@ -55,6 +67,6 @@ export const UpdateIssuePriorityType = z.object({
   issuePriority: z.enum(['Unseen', 'Critical', 'High', 'Low', 'Closed']),
 });
 
-export const UpdateIncidentPriorityType = z.object({
+export const UpdateIncidentSeenType = z.object({
   incidentId: z.number(),
 });

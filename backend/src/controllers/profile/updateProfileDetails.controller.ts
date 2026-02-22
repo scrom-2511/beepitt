@@ -1,9 +1,12 @@
-import { Request, Response } from "express";
-import { prisma } from "../../database/prismaClient";
-import { ProfileUpdateType } from "../../types/dataTypes";
-import { ERROR_CODES, HttpStatus } from "../../types/errorCodes";
+import { Request, Response } from 'express';
+import { prisma } from '../../database/prismaClient';
+import { ProfileUpdateType } from '../../types/dataTypes';
+import { ERROR_CODES, HttpStatus } from '../../types/errorCodes';
 
-export const updateProfileController = async (req: Request, res: Response) => {
+export const updateProfileDetailsController = async (
+  req: Request,
+  res: Response,
+) => {
   try {
     const validateData = ProfileUpdateType.safeParse(req.body);
     if (!validateData.success) {
@@ -16,9 +19,6 @@ export const updateProfileController = async (req: Request, res: Response) => {
       });
       return;
     }
-
-    console.log(validateData.data)
-    console.log(req.userId)
 
     const user = await prisma.user.update({
       where: { id: req.userId },

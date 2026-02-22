@@ -106,6 +106,18 @@ export const ERROR_CODES = {
     code: 'INVALID_OTP',
     message: 'Entered otp is invalid.',
   },
+
+  PROJECT_LIMIT_REACHED_FREE: {
+    id: 1602,
+    code: 'PROJECT_LIMIT_REACHED_FREE',
+    message: 'Free plan allows upto 1 project only.',
+  },
+
+  PROJECT_LIMIT_REACHED_PREMIUM: {
+    id: 1603,
+    code: 'PROJECT_LIMIT_REACHED_PREMIUM',
+    message: 'Premium plan allows upto 4 project only.',
+  },
 } as const;
 
 export enum HttpStatus {

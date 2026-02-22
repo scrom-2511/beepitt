@@ -5,7 +5,6 @@ interface InputData {
   name: string;
   desc: string;
   userId: number;
-  type: "issue" | "incident";
 }
 
 export const handleMessageSendingToClient = async(data: InputData) => {

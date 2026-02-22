@@ -2,7 +2,10 @@ import { Request, Response } from 'express';
 import { prisma } from '../../database/prismaClient';
 import { ERROR_CODES, HttpStatus } from '../../types/errorCodes';
 
-export const getTeamInfoController = async (req: Request, res: Response) => {
+export const getBillingDetailsController = async (
+  req: Request,
+  res: Response,
+) => {
   try {
     const userId = req.userId;
     if (!userId) {
@@ -17,21 +20,15 @@ export const getTeamInfoController = async (req: Request, res: Response) => {
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    const chatIds = await prisma.contactDetails.findUnique({
-      where: { userId },
+    const billingDetails = await prisma.billing.findUnique({
+      where: {
+        userId,
+      },
     });
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: {
-        identifierKey: user?.identifierKey,
-        telegramChatIds: chatIds?.telegramChatIds,
-        discordChatIds: chatIds?.discordChatIds,
-      },
+      data: billingDetails,
     });
     return;
   } catch (error) {

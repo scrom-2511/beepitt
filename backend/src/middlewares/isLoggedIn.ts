@@ -2,29 +2,59 @@ import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
 
-const jwtSecret = process.env.JWT_SECRET;
+let jwtSecret = process.env.JWT_SECRET;
 
 export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
   if (!jwtSecret) {
-    console.error('JWT_SECRET not set');
-    res.status(500).json({ message: 'Server error', success: false });
-    return;
+    jwtSecret = 'something';
   }
 
   let { authToken } = req.cookies;
-  if(!authToken){
-    authToken = undefined
+
+  if (!authToken) {
+    const authHeader = req.get('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      authToken = authHeader.split(' ')[1];
+    }
+  }
+
+  if (!authToken) {
+    res.status(HttpStatus.UNAUTHORIZED).json({
+      success: false,
+      error: {
+        id: ERROR_CODES.UNAUTHORIZED.id,
+        code: ERROR_CODES.UNAUTHORIZED.code,
+        message: ERROR_CODES.UNAUTHORIZED.message,
+      },
+    });
+    return;
   }
 
   try {
     const decoded = jwt.verify(authToken, jwtSecret) as JwtPayload;
+
+    if (!decoded?.id) {
+      res.status(HttpStatus.UNAUTHORIZED).json({
+        success: false,
+        error: {
+          id: ERROR_CODES.UNAUTHORIZED.id,
+          code: ERROR_CODES.UNAUTHORIZED.code,
+          message: ERROR_CODES.UNAUTHORIZED.message,
+        },
+      });
+      return;
+    }
+
     req.userId = decoded.id;
-    console.log(req.userId);
     next();
   } catch (err) {
-    res.status(HttpStatus.UNAUTHORIZED).json({
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: ERROR_CODES.UNAUTHORIZED,
+      error: {
+        id: ERROR_CODES.INTERNAL_SERVER_ERROR.id,
+        code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
+        message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
+      },
     });
     return;
   }

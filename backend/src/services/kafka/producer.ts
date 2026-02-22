@@ -10,4 +10,6 @@ export const connectProducer = async () => {
   }
 };
 
+await connectProducer();
+
 export { producer };

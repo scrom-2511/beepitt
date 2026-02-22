@@ -4,6 +4,7 @@ import { googleAuthController } from '../controllers/auth/googleAuth.controller'
 import { otpValidateController } from '../controllers/auth/otpValidator.controller';
 import { signinController } from '../controllers/auth/Signin.Controller';
 import { signupController } from '../controllers/auth/Signup.Controller';
+import { getBillingDetailsController } from '../controllers/billing/getBillingDetails.controller';
 import { getAllSeenIncidentsController } from '../controllers/incidents/getIncidents/getAllSeenIncidents.controller';
 import { getAllUnseenIncidentsController } from '../controllers/incidents/getIncidents/getAllUnseenIncidents.controller';
 import { updateIncidentSeenController } from '../controllers/incidents/updateIncidents/updateIncidentSeen.controller';
@@ -13,20 +14,25 @@ import { getAllUnseenIssuesController } from '../controllers/issues/getIssues/ge
 import { updateIssuePriorityController } from '../controllers/issues/updateIssues/updateIssuePriority.controller';
 import { razorpayCreateOrderController } from '../controllers/payment/razorpayCreateOrder.controller';
 import { getProfileDetailsAndPreferncesController } from '../controllers/profile/getProfileDetailsAndPrefernces.controller';
-import { updateProfileController } from '../controllers/profile/updateProfileController';
+import { updateProfileDetailsController } from '../controllers/profile/updateProfileDetails.controller';
 import { updateTimeZoneAndPreferencesController } from '../controllers/profile/updateTimeZoneAndPreferences.controller';
 import { getTeamInfoController } from '../controllers/team/getTeamInfo.controller';
+import { checkLastId } from '../middlewares/checkLastId';
 import { isLoggedIn } from '../middlewares/isLoggedIn';
 
 export const userRouter = Router();
 
-userRouter.get('/isLoggedIn', isLoggedIn, checkLoggedIn);
+userRouter.get('/checkLoggedIn', isLoggedIn, checkLoggedIn);
 userRouter.post('/signup', signupController);
 userRouter.post('/signin', signinController);
 userRouter.post('/otpValidator', isLoggedIn, otpValidateController);
 userRouter.post('/googleAuth', googleAuthController);
 
-userRouter.post('/updateProfileDetails', isLoggedIn, updateProfileController);
+userRouter.post(
+  '/updateProfileDetails',
+  isLoggedIn,
+  updateProfileDetailsController,
+);
 userRouter.post(
   '/updateTimeZoneAndPreferences',
   isLoggedIn,
@@ -45,15 +51,32 @@ userRouter.post(
 
 userRouter.get('/getTeamInfo', isLoggedIn, getTeamInfoController);
 
+userRouter.get('/getBillingDetails', isLoggedIn, getBillingDetailsController);
+
 userRouter.post(
   '/razorPayCreateOrder',
   isLoggedIn,
   razorpayCreateOrderController,
 );
 
-userRouter.get('/getUnseenIssues', isLoggedIn, getAllUnseenIssuesController);
-userRouter.get('/getOpenIssues', isLoggedIn, getAllOpenIssuesController);
-userRouter.get('/getClosedIssues', isLoggedIn, getAllClosedIssuesController);
+userRouter.get(
+  '/getUnseenIssues',
+  isLoggedIn,
+  checkLastId,
+  getAllUnseenIssuesController,
+);
+userRouter.get(
+  '/getOpenIssues',
+  isLoggedIn,
+  checkLastId,
+  getAllOpenIssuesController,
+);
+userRouter.get(
+  '/getClosedIssues',
+  isLoggedIn,
+  checkLastId,
+  getAllClosedIssuesController,
+);
 userRouter.post(
   '/updateIssuePriority',
   isLoggedIn,
@@ -63,9 +86,10 @@ userRouter.post(
 userRouter.get(
   '/getUnseenIncidents',
   isLoggedIn,
+  checkLastId,
   getAllUnseenIncidentsController,
 );
-userRouter.get('/getSeenIncidents', isLoggedIn, getAllSeenIncidentsController);
+userRouter.get('/getSeenIncidents', isLoggedIn, checkLastId, getAllSeenIncidentsController);
 userRouter.post(
   '/updateIncidentSeen',
   isLoggedIn,

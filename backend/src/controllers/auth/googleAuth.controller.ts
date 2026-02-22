@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../../database/prismaClient';
 import { HttpStatus } from '../../types/errorCodes';
 import { verifyGoogleToken } from '../../utils/verifyGoogleToken.util';
@@ -41,18 +42,25 @@ export const googleAuthController = async (req: Request, res: Response) => {
       data: {
         email: googleUser.email,
         username: googleUser.name,
-        avatar: googleUser.avatar,
         authAccounts: {
           create: {
             provider: 'GOOGLE',
             providerId: googleUser.googleId,
           },
         },
+        identifierKey: uuidv4(),
+        billing: {
+          create: {
+            currentStatus: 'Active',
+            subscription_tier: 'Free',
+            validTill: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+          },
+        },
+        password: '',
+        emailVerified: true
       },
     });
   }
-
-  console.log(user.id);
 
   const jwtPayload = { id: user.id };
   const jwtSecret = process.env.JWT_SECRET;

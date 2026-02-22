@@ -14,8 +14,8 @@ export const telegramNotificationsWorker = new Worker<NotificationJob>(
     connection: redis,
     concurrency: 5,
     limiter: {
-      max: 2,
-      duration: 10000,
+      max: 25,
+      duration: 1000,
     },
   },
 );

@@ -1,6 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
 import { validate as isUUID } from 'uuid';
 import { prisma } from '../database/prismaClient';
+import { NotificationType } from '../types/dataTypes';
 
 // Create a new Discord client with required intents
 export const discordClient = new Client({
@@ -52,6 +53,7 @@ discordClient.on('messageCreate', async (msg) => {
       // Find the user linked to the identifier key
       const user = await prisma.user.findUnique({
         where: { identifierKey },
+        include: { billing: true },
       });
 
       // If no user is found, return
@@ -89,12 +91,12 @@ discordClient.on('messageCreate', async (msg) => {
         const count = contact.discordChatIds.length;
 
         // Enforce limit for Free users
-        if (user.subscription_tier === 'Free' && count >= 1) {
+        if (user.billing?.subscription_tier === 'Free' && count >= 1) {
           throw new Error('FREE_LIMIT');
         }
 
         // Enforce limit for Premium users
-        if (user.subscription_tier === 'Premium' && count >= 4) {
+        if (user.billing?.subscription_tier === 'Premium' && count >= 4) {
           throw new Error('PREMIUM_LIMIT');
         }
 
@@ -132,12 +134,19 @@ discordClient.on('messageCreate', async (msg) => {
   }
 });
 
-export const discordBeep = async (discordChatIds: string[]) => {
+export const discordBeep = async (
+  discordChatIds: string[],
+  type: NotificationType,
+) => {
   try {
     await Promise.allSettled(
       discordChatIds.map(async (chatId) => {
         const user = await discordClient.users.fetch(chatId);
-        await user.send('Your backend fked up man!');
+        await user.send(
+          type === NotificationType.Incident
+            ? 'There was an incident!'
+            : 'There was an issue!',
+        );
       }),
     );
   } catch (error) {

@@ -1,11 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
-import { UpdateIncidentPriorityType } from '../../../types/dataTypes';
+import { UpdateIncidentSeenType } from '../../../types/dataTypes';
 import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
 
-export const updateIncidentSeenController = async (req: Request, res: Response) => {
+export const updateIncidentSeenController = async (
+  req: Request,
+  res: Response,
+) => {
   try {
-    const validateData = UpdateIncidentPriorityType.safeParse(req.body);
+    const validateData = UpdateIncidentSeenType.safeParse(req.body);
     if (!validateData.success) {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
@@ -22,6 +25,7 @@ export const updateIncidentSeenController = async (req: Request, res: Response) 
       where: { id: validateData.data.incidentId },
       data: {
         incidentSeen: true,
+        incidentSeenDateAndTime: new Date(),
       },
     });
 

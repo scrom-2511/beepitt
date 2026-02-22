@@ -75,12 +75,12 @@ export const signinController = async (req: Request, res: Response) => {
     res
       .cookie('authToken', authToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: true, // REQUIRED
+        sameSite: 'none', // REQUIRED for cross-site
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(HttpStatus.CREATED)
-      .json({ success: true });
+      .json({ success: true, data: { timeZone: data.timezone } });
 
     return;
   } catch (error) {

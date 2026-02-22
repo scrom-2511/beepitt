@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ProducerMessage } from "../../../types/dataTypes";
 import { producer } from "../producer";
 

@@ -8,20 +8,9 @@ export const getAllOpenIssuesController = async (
 ) => {
   try {
     const userId = req.userId;
-    if (!userId) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.UNAUTHORIZED.id,
-          code: ERROR_CODES.UNAUTHORIZED.code,
-          message: ERROR_CODES.UNAUTHORIZED.message,
-        },
-      });
-      return;
-    }
 
     const PAGE_SIZE = 10;
-    const lastId = req.query.lastId ? Number(req.query.lastId) : undefined;
+    const lastId = Number(req.query.lastId);
 
     const issues = await prisma.issue.findMany({
       where: {
@@ -30,20 +19,20 @@ export const getAllOpenIssuesController = async (
           notIn: ['Unseen', 'Closed'],
         },
       },
-      orderBy: [
-        { issueDateAndTime: 'desc' },
-        { id: 'desc' },
-      ],
-      take: PAGE_SIZE,
+      orderBy: [{ id: 'desc' }],
       ...(lastId && {
         cursor: { id: lastId },
         skip: 1,
       }),
+      take: PAGE_SIZE,
     });
+
+    const nextCursor =
+      issues.length === PAGE_SIZE ? issues[issues.length - 1].id : null;
 
     res.status(HttpStatus.OK).json({
       success: true,
-      data: issues,
+      data: { issues, nextCursor },
     });
     return;
   } catch (error) {

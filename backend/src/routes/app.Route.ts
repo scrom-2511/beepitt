@@ -1,6 +1,5 @@
-import { Router } from "express";
-import { onErrorFromClientController } from "../webhooks/onErrorFromClient.webhook";
+// import { Router } from "express";
 
-export const appRouter = Router();
+// export const appRouter = Router();
 
-appRouter.post("/err", onErrorFromClientController);
+// appRouter.post("/err", onErrorFromClientController);

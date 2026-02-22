@@ -12,7 +12,8 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
       .digest('hex');
 
     if (signature !== expectedSignature) {
-      return res.status(400).json({ success: false });
+      res.status(400).json({ success: false });
+      return;
     }
 
     const entity = req.body.payload.payment.entity;
@@ -30,7 +31,7 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
       res.json({ success: false });
     }
 
-    if (req.body.event === 'payment.captured') {
+    if (req.body.event === 'order.paid') {
       await prisma.orders.update({
         where: {
           razorPayOrderId: entity.order_id,
@@ -40,11 +41,40 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
           razorPayPaymentId: entity.id,
         },
       });
+
+      const userData = await prisma.user.findUnique({
+        where: { id: Number(entity.notes.userId) },
+        include: { billing: true },
+      });
+
+      const now = new Date();
+      const baseDate =
+        userData?.billing?.validTill! > now
+          ? userData?.billing?.validTill!
+          : now;
+
+      const updatedValidTill = new Date(baseDate);
+      updatedValidTill.setDate(updatedValidTill.getDate() + 30);
+
+      await prisma.user.update({
+        where: { id: Number(entity.notes.userId) },
+        data: {
+          billing: {
+            update: {
+              subscription_tier: 'Premium',
+              currentStatus: 'Active',
+              validTill: updatedValidTill,
+            },
+          },
+        },
+      });
       res.json({ success: true });
+      return;
     }
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false });
+    return;
   }
 };
 

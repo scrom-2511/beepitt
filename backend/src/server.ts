@@ -1,9 +1,10 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Express } from 'express';
-import { appRouter } from './routes/app.Route';
 import { appWebhook } from './routes/app.webhooks';
 import { userRouter } from './routes/user.Route';
+// import './services/bullmq/workers/discordNotifications.worker';
+// import './services/bullmq/workers/telegramNotifications.worker';
 import { discordClient } from './utils/discordBeep.util';
 const app: Express = express();
 
@@ -18,25 +19,18 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: [
-      "https://filtering-designed-jun-mayor.trycloudflare.com",
-    ],
+    origin: ['https://soundtrack-found-aimed-appreciate.trycloudflare.com'],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
 );
-
-app.get('/user/__debug', (req, res) => {
-  res.send('THIS IS MY SERVER');
-});
 
 discordClient.once('clientReady', () => {
   console.log(`Discord bot logged in as ${discordClient.user?.tag}`);
 });
 
 app.use('/user', userRouter);
-app.use('/app', appRouter);
 app.use('/app/webhook', appWebhook);
 
 app.listen(3000, '0.0.0.0', () => {

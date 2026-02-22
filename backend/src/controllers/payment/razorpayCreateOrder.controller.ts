@@ -28,7 +28,6 @@ export const razorpayCreateOrderController = async (
 
     const variant = validateData.data.id === Tier.free ? 0 : 5;
 
-    console.log('hi there i reached this part of the code');
     const order = await razorpay.orders.create({
       amount: 90 * variant * 100,
       currency: 'INR',
@@ -67,5 +66,6 @@ export const razorpayCreateOrderController = async (
         message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
       },
     });
+    return;
   }
 };

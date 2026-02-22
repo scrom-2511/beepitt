@@ -6,12 +6,12 @@ const consumer = kafka.consumer({
   groupId: `message-sender-consumer-${process.pid}`,
 });
 
-const consumerConnect = async () => {
+export const consumerConnect = async () => {
   await consumer.connect();
   await consumer.subscribe({ topic: "message-sender" });
 };
 
-const consumeMessageForMessageSender = async () => {
+export const consumeMessageForMessageSender = async () => {
   await consumer.run({
     autoCommit: false,
     eachMessage: async ({ message, heartbeat, topic, partition }) => {
