@@ -2,21 +2,15 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../database/prismaClient';
+import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
 import { LoginType } from '../../types/dataTypes';
-import { ERROR_CODES, HttpStatus } from '../../types/errorCodes';
+import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
 export const signinController = async (req: Request, res: Response) => {
   try {
     const validateData = LoginType.safeParse(req.body);
     if (!validateData.success) {
-      res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.INVALID_INPUT.code,
-          code: ERROR_CODES.INVALID_INPUT.code,
-          message: ERROR_CODES.INVALID_INPUT.message,
-        },
-      });
+      errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
       return;
     }
 
@@ -25,14 +19,7 @@ export const signinController = async (req: Request, res: Response) => {
     });
 
     if (!data) {
-      res.status(HttpStatus.NOT_FOUND).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.USER_NOT_FOUND.id,
-          code: ERROR_CODES.USER_NOT_FOUND.code,
-          message: ERROR_CODES.USER_NOT_FOUND.message,
-        },
-      });
+      errorReturnCall(res, HttpStatus.NOT_FOUND, ErrorCode.USER_NOT_FOUND);
       return;
     }
 
@@ -54,14 +41,7 @@ export const signinController = async (req: Request, res: Response) => {
     );
 
     if (!isPasswordValid) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.INCORRECT_PASSWORD.id,
-          code: ERROR_CODES.INCORRECT_PASSWORD.code,
-          message: ERROR_CODES.INCORRECT_PASSWORD.message,
-        },
-      });
+      errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
       return;
     }
 
@@ -69,8 +49,6 @@ export const signinController = async (req: Request, res: Response) => {
     const jwtSecret = process.env.JWT_SECRET;
 
     const authToken = jwt.sign(jwtPayload, jwtSecret!, { expiresIn: '30d' });
-
-    console.log('reached here');
 
     res
       .cookie('authToken', authToken, {
@@ -84,15 +62,11 @@ export const signinController = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
-    console.error(error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: {
-        id: ERROR_CODES.INTERNAL_SERVER_ERROR.id,
-        code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
-        message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
-      },
-    });
+    errorReturnCall(
+      res,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+    );
     return;
   }
 };

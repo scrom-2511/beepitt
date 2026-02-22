@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../database/prismaClient';
-import { ERROR_CODES, HttpStatus } from '../../types/errorCodes';
+import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
+import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
+import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
 export const getProfileDetailsAndPreferncesController = async (
   req: Request,
@@ -8,17 +10,6 @@ export const getProfileDetailsAndPreferncesController = async (
 ) => {
   try {
     const userId = req.userId;
-    if (!userId) {
-      res.status(HttpStatus.UNAUTHORIZED).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.UNAUTHORIZED.id,
-          code: ERROR_CODES.UNAUTHORIZED.code,
-          message: ERROR_CODES.UNAUTHORIZED.message,
-        },
-      });
-      return;
-    }
 
     const profileDetailsAndPrefernces = await prisma.user.findUnique({
       where: { id: userId },
@@ -31,23 +22,15 @@ export const getProfileDetailsAndPreferncesController = async (
       },
     });
 
-    console.log(profileDetailsAndPrefernces)
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      data: profileDetailsAndPrefernces,
-    });
+    successReturnCall(res, HttpStatus.OK, profileDetailsAndPrefernces);
     return;
   } catch (error) {
     console.error(error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: {
-        id: ERROR_CODES.INTERNAL_SERVER_ERROR.id,
-        code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
-        message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
-      },
-    });
+    errorReturnCall(
+      res,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+    );
     return;
   }
 };

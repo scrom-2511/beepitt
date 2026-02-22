@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../../database/prismaClient';
-import { ERROR_CODES, HttpStatus } from '../../../types/errorCodes';
+import { errorReturnCall } from '../../../helpers/returnCall/error.returnCall';
+import { successReturnCall } from '../../../helpers/returnCall/success.returnCall';
+import { ErrorCode, HttpStatus } from '../../../types/errorCodes';
 
 export const getAllSeenIncidentsController = async (
   req: Request,
@@ -27,22 +29,15 @@ export const getAllSeenIncidentsController = async (
         ? incidents[incidents.length - 1].id
         : null;
 
-    res.status(HttpStatus.OK).json({
-      success: true,
-      data: { incidents, nextCursor },
-    });
-
+    successReturnCall(res, HttpStatus.OK, { incidents, nextCursor });
     return;
   } catch (error) {
     console.error(error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: {
-        id: ERROR_CODES.INTERNAL_SERVER_ERROR.id,
-        code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
-        message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
-      },
-    });
+    errorReturnCall(
+      res,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+    );
     return;
   }
 };

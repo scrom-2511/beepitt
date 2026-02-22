@@ -1,12 +1,14 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../database/prismaClient';
+import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
+import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { razorpay } from '../../services/razorpay/razorpayInstance';
 import { RazorPayCreateOrderType } from '../../types/dataTypes';
-import { ERROR_CODES, HttpStatus } from '../../types/errorCodes';
+import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
 enum Tier {
   free = 'free',
-  premium = 'premium',
+  starter = 'starter',
 }
 
 export const razorpayCreateOrderController = async (
@@ -17,13 +19,8 @@ export const razorpayCreateOrderController = async (
     console.log(req.userId);
     const validateData = RazorPayCreateOrderType.safeParse(req.body);
     if (!validateData.success) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        error: {
-          code: ERROR_CODES.INVALID_INPUT.code,
-          message: ERROR_CODES.INVALID_INPUT.message,
-        },
-      });
+      errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
+      return;
     }
 
     const variant = validateData.data.id === Tier.free ? 0 : 5;
@@ -47,25 +44,22 @@ export const razorpayCreateOrderController = async (
       },
     });
 
-    res.json({
-      success: true,
-      data: {
-        orderId: order.id,
-        currency: order.currency,
-        amount: order.amount,
-        dbOrderId: newOrder.id,
-      },
-    });
+    const dataToReturn = {
+      orderId: order.id,
+      currency: order.currency,
+      amount: order.amount,
+      dbOrderId: newOrder.id,
+    };
+
+    successReturnCall(res, HttpStatus.OK, dataToReturn);
     return;
   } catch (error) {
     console.error(error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      error: {
-        code: ERROR_CODES.INTERNAL_SERVER_ERROR.code,
-        message: ERROR_CODES.INTERNAL_SERVER_ERROR.message,
-      },
-    });
+    errorReturnCall(
+      res,
+      HttpStatus.INTERNAL_SERVER_ERROR,
+      ErrorCode.INTERNAL_SERVER_ERROR,
+    );
     return;
   }
 };
