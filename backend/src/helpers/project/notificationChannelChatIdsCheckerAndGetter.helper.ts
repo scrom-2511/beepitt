@@ -1,4 +1,5 @@
 import { Prisma } from '../../../generated/prisma/client';
+import { getProjectByProjectName } from './getProjectByProjectName.helper.';
 
 type UserWithOtherDetails = Prisma.UserGetPayload<{
   include: {
@@ -18,12 +19,12 @@ type ChatIdsResult = {
   telegramChatIds: string[];
 };
 
-export const notificationChannelChatIdsCheckerAndGetter = async (
+export const notificationChannelChatIdsCheckerAndGetter = (
   projectName: string,
   user: UserWithOtherDetails,
-): Promise<ChatIdsResult> => {
+): ChatIdsResult => {
   // Find project linked to the user by project name
-  const project = user.project.find((p) => p.projectName === projectName.toLowerCase());
+  const project = getProjectByProjectName(projectName, user);
 
   // If project does not exists return
   if (!project) {
@@ -33,9 +34,11 @@ export const notificationChannelChatIdsCheckerAndGetter = async (
   // Get the contact details of the project
   const contactDetails = project.contactDetails;
 
+  // Get the chat ids of each channel
   const discordChatIds = contactDetails?.discordChatIds ?? [];
   const telegramChatIds = contactDetails?.telegramChatIds ?? [];
 
+  // Set the values of each according to the chat ids
   const discordChatIdsPresent = discordChatIds.length > 0;
   const telegramChatIdsPresent = telegramChatIds.length > 0;
 

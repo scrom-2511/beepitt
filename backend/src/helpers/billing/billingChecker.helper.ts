@@ -4,10 +4,12 @@ import { getUserBillingInfo, setUserBillingInfo } from '../../services/redis/bil
 export const billingChecker = async (userId: number) => {
   // Check users subscription tier from redis
   const billingInfo = await getUserBillingInfo(userId);
+
   // If it exists in redis db, return
   if (billingInfo) {
     return;
   }
+  
   await prisma.$transaction(async (tx) => {
     // Get the user
     const user = await tx.user.findUnique({
@@ -23,11 +25,8 @@ export const billingChecker = async (userId: number) => {
     // If no billing exists, create Free billing
     if (!user.billing) {
       // Get current date
-      const now = new Date();
-
-      // Set nextMonth as current date + 1 month
-      const nextMonth = new Date();
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      const validTill = new Date();
+      validTill.setUTCDate(validTill.getUTCDate() + 30);
 
       // Create the billing row
       await tx.billing.create({
@@ -35,7 +34,7 @@ export const billingChecker = async (userId: number) => {
           userId: user.id,
           subscription_tier: 'Free',
           currentStatus: 'Active',
-          validTill: nextMonth,
+          validTill: validTill,
         },
       });
 
@@ -47,8 +46,8 @@ export const billingChecker = async (userId: number) => {
 
     // If current date >= user's valid till date, update user to Free mode
     if (now >= user.billing.validTill) {
-      const nextMonth = new Date();
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      const validTill = new Date();
+      validTill.setUTCDate(validTill.getUTCDate() + 30);
 
       await tx.user.update({
         where: { id: user.id },
@@ -57,7 +56,7 @@ export const billingChecker = async (userId: number) => {
           billing: {
             update: {
               subscription_tier: 'Free',
-              validTill: nextMonth,
+              validTill: validTill,
             },
           },
         },
