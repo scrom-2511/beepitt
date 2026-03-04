@@ -28,9 +28,6 @@ export const createProjectController = async (req: Request, res: Response) => {
       return;
     }
 
-    // Generate an identifier key
-    const identifierKey = uuidv4();
-
     // Get user along with billing and project with contact details for each project
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -64,12 +61,15 @@ export const createProjectController = async (req: Request, res: Response) => {
       return;
     }
 
+    // Generate an identifier key
+    const identifierKey = uuidv4();
+
     // Else create a project for the user
     await prisma.project.create({
       data: { identifierKey, projectName: validateData.data.projectName, userId },
     });
 
-    successReturnCall(res, HttpStatus.OK, { message: 'Project created successfully!', identifierKey });
+    successReturnCall(res, HttpStatus.OK, { identifierKey });
     return;
   } catch (error) {
     console.error(error);
@@ -77,5 +77,3 @@ export const createProjectController = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// validate data -> check projects length -> check project exists -> create project
