@@ -25,36 +25,44 @@ enum AuthProvider {
   DISCORD
 }
 
-model User {
-  id            Int      @id @default(autoincrement())
-  emailVerified Boolean  @default(false)
-  identifierKey String   @unique
-  username      String   @unique
-  firstName     String?
-  lastName      String?
-  email         String   @unique
-  password      String
-  city          String?
-  timezone      String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  projectDetails ProjectDetails?
-  authAccounts   AuthAccount[]
-  issues         Issue[]
-  contactDetails ContactDetails?
-  orders         Orders[]
-  incidents      Incident[]
-  billing        Billing?
+enum NotificationChannels {
+  Telegram
+  Discord
+  Slack
+  Email
 }
 
-model ProjectDetails {
-  id             Int      @id @default(autoincrement())
-  issueEvents    Int
-  incidentEvents Int
-  projects       String[]
-  userId         Int      @unique
-  user           User     @relation(fields: [userId], references: [id])
+model User {
+  id                   Int                    @id @default(autoincrement())
+  emailVerified        Boolean                @default(false)
+  username             String                 @unique
+  firstName            String?
+  lastName             String?
+  email                String                 @unique
+  password             String
+  city                 String?
+  timezone             String?
+  eventsUsed           Int
+  notificationChannels NotificationChannels[] @default([])
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  authAccounts AuthAccount[]
+  issues       Issue[]
+  orders       Orders[]
+  incidents    Incident[]
+  billing      Billing?
+  project      Project[]
+}
+
+model Project {
+  id             Int             @id @default(autoincrement())
+  identifierKey  String          @unique
+  projectName    String
+  userId         Int
+  contactDetails ContactDetails?
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum CurrentStatus {
@@ -125,8 +133,9 @@ model ContactDetails {
   id              Int      @id @default(autoincrement())
   telegramChatIds String[]
   discordChatIds  String[]
-  userId          Int      @unique
-  user            User     @relation(fields: [userId], references: [id])
+  projectId       Int      @unique
+
+  project Project @relation(fields: [projectId], references: [id])
 }
 
 enum OrderStatus {
