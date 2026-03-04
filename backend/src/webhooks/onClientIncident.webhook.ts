@@ -77,6 +77,9 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
       data: { ...validateData.data, userId },
     });
 
+    // Increase events used of user by 1
+    await prisma.user.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
+
     // If no notification channel is linked, return
     if (!discordChatIdsPresent && !telegramChatIdsPresent) {
       errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.NO_NOTIFICATION_CHANNEL_LINKED);
@@ -91,5 +94,3 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// event comes -> token check-> validation check -> project exists check -> billing check -> events count check -> ids present check -> enqueue
