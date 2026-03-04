@@ -1,15 +1,10 @@
-import { prisma } from '../../database/prismaClient';
+import { Prisma } from '../../../generated/prisma/client';
 
-export const projectExistsChecker = async (projectName: string, userId: number): Promise<boolean> => {
-  const project = await prisma.project.findFirst({
-    where: {
-      userId,
-      projectName: {
-        equals: projectName,
-        mode: 'insensitive',
-      },
-    },
-  });
+type UserWithOtherDetails = Prisma.UserGetPayload<{
+  include: { billing: true; project: true };
+}>;
 
-  return !!project;
+export const projectExistsChecker = (projectName: string, user: UserWithOtherDetails): boolean => {
+  const projectExists = user.project.find((project) => project.projectName === projectName.toLowerCase());
+  return projectExists ? true : false;
 };
