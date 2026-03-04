@@ -1,133 +1,95 @@
 import { Request, Response } from 'express';
 import { prisma } from '../database/prismaClient';
+import { billingChecker } from '../helpers/billing/billingChecker.helper';
+import { eventCountChecker } from '../helpers/onClientCall/eventCountChecker.helper';
+import { notificationChannelChatIdsCheckerAndGetter } from '../helpers/onClientCall/notificationChannelChatIdsCheckerAndGetter.helper';
+import { projectExistsChecker } from '../helpers/onClientCall/projectExistsChecker.helper';
+import { errorReturnCall } from '../helpers/returnCall/error.returnCall';
+import { successReturnCall } from '../helpers/returnCall/success.returnCall';
 import { enqueueDiscordNotifications } from '../services/bullmq/producers/discordNotifications.producer';
 import { enqueueTelegramNotifications } from '../services/bullmq/producers/telegramNotifications.producer';
 import { NotificationType, onClientIncidentType } from '../types/dataTypes';
-import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
+import { ErrorCode, HttpStatus } from '../types/errorCodes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
     const validateData = onClientIncidentType.safeParse(req.body);
-    console.log(req.body);
 
+    // Validate the req body
     if (!validateData.success) {
-      res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.INVALID_INPUT.code,
-          code: ERROR_CODES.INVALID_INPUT.code,
-          message: ERROR_CODES.INVALID_INPUT.message,
-        },
-      });
+      errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
       return;
     }
 
+    // Get user's id
     const userId = req.userId!;
-    let telegramChatIdsPresent = false;
-    let discordChatIdsPresent = false;
 
+    // Get project name from the req body
+    const projectName = validateData.data.projectName;
+
+    // Check if the project with project name exists or not
+    const projectExists = await projectExistsChecker(projectName, userId);
+
+    // If project does not exist, return
+    if (!projectExists) {
+      errorReturnCall(res, HttpStatus.NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND);
+      return;
+    }
+
+    // Check the billing of user, basically it checks whether users paid plan has expired or not
+    await billingChecker(userId);
+
+    // Get the user along with billing, project and contactDetails
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { contactDetails: true, billing: true },
+      include: { billing: true, project: { include: { contactDetails: true } } },
     });
 
-    if (user?.billing?.subscription_tier === 'Free') {
-      const projectName = validateData.data.projectName.toLowerCase();
-
-      if (user.projects.length === 0) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            projects: [projectName],
-          },
-        });
-      } else if (user.projects[0] !== projectName) {
-        res.status(HttpStatus.FORBIDDEN).json({
-          success: false,
-          error: {
-            code: ERROR_CODES.PROJECT_LIMIT_REACHED_FREE.code,
-            message: ERROR_CODES.PROJECT_LIMIT_REACHED_FREE.message,
-          },
-        });
-        return;
-      }
-    } else if (user?.billing?.subscription_tier === 'Premium') {
-      const projectName = validateData.data.projectName.toLowerCase();
-      const projects = user.projects ?? [];
-
-      if (projects.includes(projectName)) {
-        return;
-      }
-
-      if (projects.length < 4) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            projects: [...projects, projectName],
-          },
-        });
-      } else {
-        res.status(HttpStatus.FORBIDDEN).json({
-          success: false,
-          error: {
-            code: ERROR_CODES.PROJECT_LIMIT_REACHED_PREMIUM.code,
-            message: ERROR_CODES.PROJECT_LIMIT_REACHED_PREMIUM.message,
-          },
-        });
-        return;
-      }
+    // If user does not exist return
+    if (!user) {
+      return errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
     }
 
-    const contactDetails = user?.contactDetails;
+    // Check if the user exceeds his user count limit
+    const eventCountExceeds = eventCountChecker(user);
 
-    if (
-      contactDetails?.discordChatIds.length &&
-      contactDetails.discordChatIds.length > 0
-    ) {
-      discordChatIdsPresent = true;
-      await enqueueDiscordNotifications({
-        userId: req.userId!,
-        data: contactDetails.discordChatIds,
-        type: NotificationType.Incident,
-      });
+    // If he exceeds, return
+    if (eventCountExceeds) {
+      return errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.EVENTS_LIMIT_REACHED);
     }
 
-    if (
-      contactDetails?.telegramChatIds.length &&
-      contactDetails.telegramChatIds.length > 0
-    ) {
-      telegramChatIdsPresent = true;
-      await enqueueTelegramNotifications({
-        userId: req.userId!,
-        data: contactDetails.telegramChatIds,
-        type: NotificationType.Incident,
-      });
+    // Check and get the notification channel's chat ids
+    const { discordChatIdsPresent, telegramChatIdsPresent, discordChatIds, telegramChatIds } =
+      await notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user);
+
+    // If discord chat ids are present, enqueue the discord notification
+    if (discordChatIdsPresent) {
+      await enqueueDiscordNotifications({ userId, data: discordChatIds, type: NotificationType.Incident });
     }
 
+    // If telegram chat ids are present, enqueue the telegram notification
+    if (telegramChatIdsPresent) {
+      await enqueueTelegramNotifications({ userId, data: telegramChatIds, type: NotificationType.Incident });
+    }
+
+    // Create an incident in the db
     await prisma.incident.create({
       data: { ...validateData.data, userId },
     });
 
-    if (!discordChatIdsPresent) {
-      res.status(HttpStatus.CONFLICT).json({
-        success: false,
-        error: {
-          message: 'No discord accounts linked!',
-        },
-      });
-    } else if (!telegramChatIdsPresent) {
-      res.status(HttpStatus.CONFLICT).json({
-        success: false,
-        error: {
-          message: 'No telegram accounts linked!',
-        },
-      });
+    // If no notification channel is linked, return
+    if (!discordChatIdsPresent && !telegramChatIdsPresent) {
+      errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.NO_NOTIFICATION_CHANNEL_LINKED);
     } else {
-      res.status(HttpStatus.OK).json({
-        success: true,
-      });
+      // Else return success
+      successReturnCall(res, HttpStatus.OK, null);
     }
 
     return;
-  } catch (error) {}
+  } catch (error) {
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
+    return;
+  }
 };
+
+// event comes -> token check-> validation check -> project exists check -> billing check -> events count check -> ids present check -> enqueue
