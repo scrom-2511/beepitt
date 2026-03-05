@@ -12,9 +12,6 @@ export const getSelectedNotificationChannelsOfUser = (user: UserWithOtherDetails
   // Get max notification channels limit acc to users subscription tier
   const maxNotificationChannels = SUBSCRIPTION_LIMITS[tier].maxNotificationChannels;
 
-  // Get notification channels according to users subscription limit
-  const notificationChannels = selectedNotificationChannels.slice(0, maxNotificationChannels);
-
-  // Return notification channels
-  return notificationChannels;
+  // Get and return notification channels according to users subscription limit
+  return selectedNotificationChannels.slice(0, maxNotificationChannels);;
 };
