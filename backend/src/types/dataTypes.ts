@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { IssuePriority, NotificationChannels } from '../../generated/prisma/enums';
 
 export const LoginType = z.object({
   email: z.string().email(),
@@ -27,14 +28,8 @@ export const onClientIssueType = z.object({
 });
 
 export enum NotificationType {
-  'Incident',
-  'Issue',
-}
-
-export interface NotificationJob {
-  userId: number;
-  type: NotificationType;
-  data: string[];
+  'incident',
+  'issue',
 }
 
 export const ProfileUpdateType = z.object({
@@ -64,9 +59,17 @@ export const RazorPayCreateOrderType = z.object({
 
 export const UpdateIssuePriorityType = z.object({
   issueId: z.number(),
-  issuePriority: z.enum(['Unseen', 'Critical', 'High', 'Low', 'Closed']),
+  issuePriority: z.enum(IssuePriority),
 });
 
 export const UpdateIncidentSeenType = z.object({
   incidentId: z.number(),
+});
+
+export const CreateProjectType = z.object({
+  projectName: z.string(),
+});
+
+export const AddNotificationChannel = z.object({
+  channels: z.array(z.enum(NotificationChannels)).min(1),
 });
