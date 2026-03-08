@@ -14,45 +14,53 @@ datasource db {
 }
 
 enum SubscriptionTier {
-  Free
-  Starter
-  Pro
+  free
+  starter
+  pro
 }
 
 enum AuthProvider {
-  LOCAL
-  GOOGLE
-  DISCORD
+  local
+  google
+  discord
 }
 
 enum NotificationChannels {
-  Telegram
-  Discord
-  Slack
-  Email
+  telegram
+  discord
+  slack
+  email
 }
 
 model User {
+  id            Int      @id @default(autoincrement())
+  emailVerified Boolean  @default(false)
+  username      String   @unique
+  firstName     String?
+  lastName      String?
+  email         String   @unique
+  password      String
+  city          String?
+  timezone      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  authAccounts    AuthAccount[]
+  events          Event[]
+  orders          Orders[]
+  billing         Billing?
+  project         Project[]
+  projectSettings ProjectSettings?
+}
+
+model ProjectSettings {
   id                   Int                    @id @default(autoincrement())
-  emailVerified        Boolean                @default(false)
-  username             String                 @unique
-  firstName            String?
-  lastName             String?
-  email                String                 @unique
-  password             String
-  city                 String?
-  timezone             String?
+  throttlingTime       Int?
   eventsUsed           Int
   notificationChannels NotificationChannels[] @default([])
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
+  userId               Int                    @unique
 
-  authAccounts AuthAccount[]
-  issues       Issue[]
-  orders       Orders[]
-  incidents    Incident[]
-  billing      Billing?
-  project      Project[]
+  user User @relation(fields: [userId], references: [id])
 }
 
 model Project {
@@ -66,8 +74,8 @@ model Project {
 }
 
 enum CurrentStatus {
-  Active
-  Inactive
+  active
+  inactive
 }
 
 model Billing {
@@ -91,42 +99,84 @@ model AuthAccount {
 }
 
 enum IssuePriority {
-  Unseen
-  Critical
-  High
-  Low
-  Closed
+  unseen
+  critical
+  high
+  low
+  closed
 }
 
-model Issue {
-  id                      Int           @id @default(autoincrement())
-  issueName               String
-  issueDesc               String
-  issuePriority           IssuePriority
-  issueDateAndTime        DateTime      @default(now())
-  issueResolveDateAndTime DateTime?
-  filePath                String?
-  userId                  Int
-  user                    User          @relation(fields: [userId], references: [id])
+// model Issue {
+//   id                      Int           @id @default(autoincrement())
+//   projectName             String
+//   issueName               String
+//   issueDesc               String
+//   issuePriority           IssuePriority
+//   issueDateAndTime        DateTime      @default(now())
+//   issueResolveDateAndTime DateTime?
+//   filePath                String?
+//   frequency               Int
+//   lineNumber              Int
+//   columnNumber            Int
+//   lastNotificationSent    DateTime
+//   userId                  Int
+//   user                    User          @relation(fields: [userId], references: [id])
+
+//   @@index([userId])
+//   @@index([userId, issuePriority])
+// }
+
+// model Incident {
+//   id                      Int       @id @default(autoincrement())
+//   projectName             String    @default("Untitled Project")
+//   incidentName            String
+//   incidentDesc            String
+//   incidentSeen            Boolean   @default(false)
+//   incidentDateAndTime     DateTime  @default(now())
+//   incidentSeenDateAndTime DateTime?
+//   filePath                String?
+//   frequency               Int
+//   lineNumber              Int
+//   columnNumber            Int
+//   lastNotificationSent    DateTime
+//   userId                  Int
+//   user                    User      @relation(fields: [userId], references: [id])
+
+//   @@index([userId])
+//   @@index([userId, incidentSeen])
+// }
+
+model Event {
+  id          Int            @id @default(autoincrement())
+  type        EventType
+  projectName String
+  name        String
+  description String
+  priority    IssuePriority?
+
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  seenAt     DateTime?
+
+  filePath             String?
+  occurrences          Int      @default(1)
+  lineNumber           Int
+  columnNumber         Int
+  lastNotificationSent DateTime
+
+  eventHashKey String
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   @@index([userId])
-  @@index([userId, issuePriority])
+  @@index([userId, type])
+  @@index([userId, priority])
 }
 
-model Incident {
-  id                      Int       @id @default(autoincrement())
-  projectName             String    @default("Untitled Project")
-  incidentName            String
-  incidentDesc            String
-  incidentSeen            Boolean   @default(false)
-  incidentDateAndTime     DateTime  @default(now())
-  incidentSeenDateAndTime DateTime?
-  filePath                String?
-  userId                  Int
-  user                    User      @relation(fields: [userId], references: [id])
-
-  @@index([userId])
-  @@index([userId, incidentSeen])
+enum EventType {
+  issue
+  incident
 }
 
 model ContactDetails {
@@ -139,9 +189,9 @@ model ContactDetails {
 }
 
 enum OrderStatus {
-  Pending
-  Successful
-  Failed
+  pending
+  successful
+  failed
 }
 
 model Orders {
