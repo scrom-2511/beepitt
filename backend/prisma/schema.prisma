@@ -146,6 +146,15 @@ enum IssuePriority {
 //   @@index([userId, incidentSeen])
 // }
 
+enum Environment {
+  production
+  staging
+  development
+  qa
+  uat
+  sandbox
+}
+
 model Event {
   id          Int            @id @default(autoincrement())
   type        EventType
@@ -153,6 +162,8 @@ model Event {
   name        String
   description String
   priority    IssuePriority?
+
+  environment Environment @default(production)
 
   createdAt  DateTime  @default(now())
   resolvedAt DateTime?
