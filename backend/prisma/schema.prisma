@@ -187,6 +187,8 @@ model Event {
 
   eventHashKey String
 
+  group String?
+
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
