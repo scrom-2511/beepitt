@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { IssuePriority, NotificationChannels } from '../../generated/prisma/enums';
+import { Environment, EventType, IssuePriority, NotificationChannels } from '../../generated/prisma/enums';
 
 export const LoginType = z.object({
   email: z.string().email(),
@@ -13,24 +13,17 @@ export const SignupType = z.object({
   timezone: z.string(),
 });
 
-export const onClientIncidentType = z.object({
+export const ClientCallType = z.object({
+  type: z.enum(EventType),
   projectName: z.string(),
-  incidentName: z.string(),
-  incidentDesc: z.string(),
-  filePath: z.string().optional(),
+  name: z.string(),
+  description: z.string(),
+  filePath: z.string().nullable(),
+  lineNumber: z.number().nullable(),
+  columnNumber: z.number().nullable(),
+  environment: z.enum(Environment),
+  group: z.string().nullable(),
 });
-
-export const onClientIssueType = z.object({
-  projectName: z.string(),
-  issueName: z.string(),
-  issueDesc: z.string(),
-  filePath: z.string(),
-});
-
-export enum NotificationType {
-  'incident',
-  'issue',
-}
 
 export const ProfileUpdateType = z.object({
   firstName: z.string(),
