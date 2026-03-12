@@ -59,8 +59,13 @@ export const UpdateIncidentSeenType = z.object({
   incidentId: z.number(),
 });
 
-export const CreateProjectType = z.object({
+export const ProjectNameType = z.object({
   projectName: z.string(),
+});
+
+export const ExportLogsType = z.object({
+  projectName: z.string(),
+  exportType: z.enum(['csv', 'json']),
 });
 
 export const AddNotificationChannel = z.object({
