@@ -2,18 +2,20 @@ import { Request, Response } from 'express';
 import { prisma } from '../database/prismaClient';
 import { billingChecker } from '../helpers/billing/billingChecker.helper';
 import { enqueueNotificationsOnClientCall } from '../helpers/onClientCall/enqueueNotificationsOnClientCall.helper';
+import { eventThrottlingChecker } from '../helpers/onClientCall/eventThrottlingChecker.helper';
+import { generateHashKey } from '../helpers/onClientCall/generateHashKey.helper';
 import { returnCallOnClientCall } from '../helpers/onClientCall/returnCallOnClientCall.helper';
 import { getProjectByProjectName } from '../helpers/project/getProjectByProjectName.helper.';
 import { notificationChannelChatIdsCheckerAndGetter } from '../helpers/project/notificationChannelChatIdsCheckerAndGetter.helper';
 import { errorReturnCall } from '../helpers/returnCall/error.returnCall';
 import { eventCountChecker } from '../helpers/user/eventCountChecker.helper';
 import { getSelectedNotificationChannelsOfUser } from '../helpers/user/getSelectedNotificationChannelsOfUser.helper';
-import { onClientIncidentType } from '../types/dataTypes';
+import { ClientCallType } from '../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../types/errorCodes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
-    const validateData = onClientIncidentType.safeParse(req.body);
+    const validateData = ClientCallType.safeParse(req.body);
 
     // Validate the req body
     if (!validateData.success) {
@@ -30,7 +32,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Get the user along with billing, project and contactDetails
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { billing: true, project: { include: { contactDetails: true } } },
+      include: { billing: true, project: { include: { contactDetails: true } }, projectSettings: true },
     });
 
     // If user does not exist return
@@ -58,6 +60,51 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
       return errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.EVENTS_LIMIT_REACHED);
     }
 
+    // Event throttling
+    const throttlingResult = await eventThrottlingChecker(user, validateData.data);
+
+    // If event exists and we dont have to send the notification, udpate the event
+    if (throttlingResult.hasActiveEvent && !throttlingResult.sendNotification) {
+      await prisma.event.update({
+        where: { id: throttlingResult.event.id },
+        data: {
+          occurrences: { increment: 1 },
+          occurrencesFromLastNotificationSent: { increment: 1 },
+          ...(throttlingResult.event.occurrencesFromLastNotificationSent === 0 && {
+            firstOccurenceAfterLastNotificationSent: new Date(),
+          }),
+        },
+      });
+
+      res.status(HttpStatus.OK).json({ message: 'Notification throttled' });
+      return;
+    } else if (throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
+      await prisma.event.update({
+        where: { id: throttlingResult.event.id },
+        data: {
+          occurrences: { increment: 1 },
+          occurrencesFromLastNotificationSent: 0,
+          lastNotificationSent: new Date(),
+          firstOccurenceAfterLastNotificationSent: null,
+        },
+      });
+    } else if (!throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
+      // Gemerate hash key for the event
+      const eventHashKey = generateHashKey(validateData.data);
+      // Create an incident in the db
+      await prisma.event.create({
+        data: {
+          ...validateData.data,
+          lastNotificationSent: new Date(),
+          userId,
+          eventHashKey,
+          throttlingWindow: user.projectSettings?.globalThrottleWindow!,
+          occurrencesFromLastNotificationSent: 0,
+          firstOccurenceAfterLastNotificationSent: new Date(),
+        },
+      });
+    }
+
     // Check and get the notification channel's chat ids
     const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user);
 
@@ -67,13 +114,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Enqueue notifications
     await enqueueNotificationsOnClientCall(userId, channels, allChatIdsInfo);
 
-    // Create an incident in the db
-    await prisma.incident.create({
-      data: { ...validateData.data, userId },
-    });
-
     // Increase events used of user by 1
-    await prisma.user.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
+    await prisma.projectSettings.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
 
     // Return to user
     returnCallOnClientCall(res, allChatIdsInfo);
@@ -83,3 +125,5 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     return;
   }
 };
+
+// event comes -> event throttling -> if event exists -> increase the occurrences if its not resolved previously -> if resolved, continue ->
