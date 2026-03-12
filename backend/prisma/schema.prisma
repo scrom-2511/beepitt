@@ -55,8 +55,10 @@ model User {
 
 model ProjectSettings {
   id                   Int                    @id @default(autoincrement())
-  throttlingTime       Int?
   eventsUsed           Int
+  globalThrottleWindow Int
+  eventTriggerCount    Int
+  eventTriggerWindow   Int
   notificationChannels NotificationChannels[] @default([])
   userId               Int                    @unique
 
@@ -155,6 +157,11 @@ enum Environment {
   sandbox
 }
 
+enum EventType {
+  issue
+  incident
+}
+
 model Event {
   id          Int            @id @default(autoincrement())
   type        EventType
@@ -163,17 +170,20 @@ model Event {
   description String
   priority    IssuePriority?
 
-  environment Environment @default(production)
+  throttlingWindow Int
+  environment      Environment @default(production)
 
   createdAt  DateTime  @default(now())
   resolvedAt DateTime?
   seenAt     DateTime?
 
-  filePath             String?
-  occurrences          Int      @default(1)
-  lineNumber           Int
-  columnNumber         Int
-  lastNotificationSent DateTime
+  filePath                                String?
+  occurrences                             Int       @default(1)
+  occurrencesFromLastNotificationSent     Int
+  firstOccurenceAfterLastNotificationSent DateTime?
+  lineNumber                              Int?
+  columnNumber                            Int?
+  lastNotificationSent                    DateTime
 
   eventHashKey String
 
@@ -183,11 +193,6 @@ model Event {
   @@index([userId])
   @@index([userId, type])
   @@index([userId, priority])
-}
-
-enum EventType {
-  issue
-  incident
 }
 
 model ContactDetails {
