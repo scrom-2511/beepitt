@@ -1,11 +1,14 @@
 import z from 'zod';
+import { Prisma } from '../../../generated/prisma/client';
 import { prisma } from '../../database/prismaClient';
 import { ClientCallType } from '../../types/dataTypes';
 import { UserWithOtherDetails } from '../../types/prismaTypes';
 import { generateHashKey } from './generateHashKey.helper';
 
+type Event = Prisma.EventGetPayload<{}>;
+
 type EventThrottlingResult =
-  | { hasActiveEvent: true; sendNotification: boolean; eventId: number }
+  | { hasActiveEvent: true; sendNotification: boolean; event: Event }
   | { hasActiveEvent: false; sendNotification: true };
 
 export const eventThrottlingChecker = async (
@@ -34,18 +37,43 @@ export const eventThrottlingChecker = async (
   }
 
   // Get users throttling time in milliseconds
-  const userThrottlingTimeInMilliseconds = user.projectSettings?.throttlingTime! * 60 * 1000;
+  const userThrottlingWindow = user.projectSettings?.globalThrottleWindow! * 60 * 1000;
 
   // Get last notification sent time in milliseconds
-  const lastNotificationSentTimeInMilliseconds = new Date(event.lastNotificationSent).getTime();
+  const lastNotificationSentTimeMs = event.lastNotificationSent.getTime();
 
   // Get current time in milliseconds
-  const currentTimeInMilliseconds = Date.now();
+  const currentTimeMs = Date.now();
 
   // Determine whether the notification should be sent again based on the user-defined throttling time
-  const shouldSendNotification =
-    currentTimeInMilliseconds - lastNotificationSentTimeInMilliseconds > userThrottlingTimeInMilliseconds;
+  const cooldownExpired = currentTimeMs - lastNotificationSentTimeMs > userThrottlingWindow;
 
-  // Return the result
-  return { hasActiveEvent: true, sendNotification: shouldSendNotification, eventId: event.id };
+  // Return for "starter"
+  if (user.billing?.subscription_tier === 'starter') {
+    return { hasActiveEvent: true, sendNotification: cooldownExpired, event };
+  }
+
+  // If cooldown isn't expired, don't send notification
+  if (!cooldownExpired) {
+    return { hasActiveEvent: true, sendNotification: false, event };
+  }
+
+  // Get user trigger count
+  const userTriggerCount = user.projectSettings?.eventTriggerCount || 1;
+
+  // Get user trigger window
+  const userTriggerWindowMs = user.projectSettings?.eventTriggerWindow || 1000;
+
+  // Calculate time after first occurence
+  const timeAfterFirstOccurence = currentTimeMs - event.firstOccurenceAfterLastNotificationSent!.getTime();
+
+  // Check if occurences from last notification sent are greater than user-defined trigger count
+  const userTriggerCountExceeded = event.occurrencesFromLastNotificationSent >= userTriggerCount;
+
+  // Check if time after first occurence is greater than user-defined trigger window
+  const userTriggerWindowExceeded = timeAfterFirstOccurence >= userTriggerWindowMs;
+
+  // Check if the frequency exceeded
+  const frequencyExceeded = userTriggerCountExceeded && userTriggerWindowExceeded;
+  return { hasActiveEvent: true, sendNotification: frequencyExceeded, event };
 };
