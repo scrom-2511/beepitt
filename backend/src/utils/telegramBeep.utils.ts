@@ -1,6 +1,12 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { SUBSCRIPTION_LIMITS } from '../../config/subscriptionLimits.config';
+import { EventType } from '../../generated/prisma/enums';
 import { prisma } from '../database/prismaClient';
-import { NotificationType } from '../types/dataTypes';
+
+enum SelectedIdentifierKey {
+  identifierKey,
+  identifierKey2,
+}
 
 const token = process.env.TELEGRAM_SECRET_TOKEN!;
 
@@ -8,12 +14,9 @@ const token = process.env.TELEGRAM_SECRET_TOKEN!;
 export const bot = new TelegramBot(token, { webHook: true });
 
 // Register webhook
-bot.setWebHook(
-  'https://francisco-unscholarlike-punctually.ngrok-free.dev/app/webhook/telegramBot',
-  {
-    secret_token: 'somethiadf',
-  },
-);
+bot.setWebHook('https://francisco-unscholarlike-punctually.ngrok-free.dev/app/webhook/telegramBot', {
+  secret_token: 'somethiadf',
+});
 
 // Handle /start command
 bot.onText(/\/start/, (msg) => {
@@ -29,208 +32,106 @@ bot.on('message', async (msg) => {
   const identifierKey = msg.text.trim();
 
   try {
-    // Find user by identifier key
-    const user = await prisma.user.findUnique({
-      where: { identifierKey },
-      include: { billing: true },
+    // Find project by identifier key
+    const project = await prisma.project.findFirst({
+      where: { OR: [{ identifierKey }, { identifierKey2: identifierKey }] },
+      include: { contactDetails: true },
     });
 
-    if (!user) {
+    // If project doesnot exists, that means identifier key is wrong
+    if (!project) {
       await bot.sendMessage(chatId, 'Wrong identifier key.');
+      return;
+    }
+
+    // Get user along with billing details
+    const user = await prisma.user.findUnique({ where: { id: project.userId }, select: { billing: true } });
+
+    // If user doesnot exists, return
+    if (!user) {
+      await bot.sendMessage(chatId, 'User doesnt exist.');
+      return;
+    }
+
+    // Get user's subscription tier
+    const userSubscriptionTier = user.billing?.subscription_tier;
+
+    // Determine which identifier key was used
+    const selectedIdentifierKey: SelectedIdentifierKey =
+      project.identifierKey === identifierKey
+        ? SelectedIdentifierKey.identifierKey
+        : SelectedIdentifierKey.identifierKey2;
+
+    // Prevent usage of identifierKey2 if subscription tier is not pro
+    if (selectedIdentifierKey === SelectedIdentifierKey.identifierKey2 && userSubscriptionTier != 'pro') {
+      await bot.sendMessage(chatId, 'You subscription tier doesnot support separate recepients');
       return;
     }
 
     // Prisma transaction to handle concurrency safely
     await prisma.$transaction(async (tx) => {
-      const contact = await tx.contactDetails.findUnique({
-        where: { userId: user.id },
-        select: { telegramChatIds: true },
-      });
+      const contact = project.contactDetails; // Existing contact details for the project
 
-      // Create contact details if they do not exist
+      // Decide which field to update based on identifier key used
+      const field =
+        selectedIdentifierKey === SelectedIdentifierKey.identifierKey ? 'telegramChatIds' : 'telegramChatIds2';
+
+      // If contactDetails record does not exist, create it
       if (!contact) {
         await tx.contactDetails.create({
           data: {
-            userId: user.id,
-            telegramChatIds: [chatId],
-            discordChatIds: [],
+            projectId: project.id,
+            [field]: [chatId], // Initialize chat ID for the selected field
           },
         });
         await bot.sendMessage(chatId, 'Telegram account linked.');
         return;
       }
 
-      // Prevent linking the same Telegram account twice
-      if (contact.telegramChatIds.includes(chatId)) {
-        throw new Error('ALREADY_LINKED');
+      // Extract current list of chat IDs depending on identifier key
+      const chatIds = contact[field] ?? [];
+
+      // If Telegram account is already linked, inform user
+      if (chatIds?.includes(chatId)) {
+        await bot.sendMessage(chatId, 'This Telegram account is already linked.');
+        return;
       }
 
-      const count = contact.telegramChatIds.length;
+      // Determine maximum allowed recipients for user's subscription
+      const maxRecepients =
+        selectedIdentifierKey === SelectedIdentifierKey.identifierKey
+          ? SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients
+          : SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients2;
 
-      // Enforce limit for Free users
-      if (user.billing?.subscription_tier === 'Free' && count >= 1) {
-        throw new Error('FREE_LIMIT');
+      // Extract number of linked chat IDs
+      const count = chatIds.length;
+
+      // If recipient limit reached, block linking
+      if (count >= maxRecepients) {
+        await bot.sendMessage(chatId, 'Max recepients linked. To link more recepients consider upgrading your plan.');
+        return;
       }
 
-      // Enforce limit for Premium users
-      if (user.billing?.subscription_tier === 'Premium' && count >= 4) {
-        throw new Error('PREMIUM_LIMIT');
-      }
-
-      // Add Telegram chat ID
+      // Add new Telegram chat ID to the array
       await tx.contactDetails.update({
-        where: { userId: user.id },
+        where: { projectId: project.id },
         data: {
-          telegramChatIds: { push: chatId },
+          [field]: { push: chatId },
         },
       });
+
+      // Confirm successful linking
       await bot.sendMessage(chatId, 'Telegram account linked.');
+      return;
     });
   } catch (error: any) {
-    // Handle known business errors
-    switch (error.message) {
-      case 'ALREADY_LINKED':
-        await bot.sendMessage(
-          chatId,
-          'This Telegram account is already linked.',
-        );
-        break;
-
-      case 'FREE_LIMIT':
-        await bot.sendMessage(
-          chatId,
-          'Upgrade to premium to add more members.',
-        );
-        break;
-
-      case 'PREMIUM_LIMIT':
-        await bot.sendMessage(
-          chatId,
-          'Maximum team members reached. Remove an existing one to add more.',
-        );
-        break;
-
-      default:
-        console.error(error);
-        await bot.sendMessage(
-          chatId,
-          'Something went wrong. Please try again.',
-        );
-    }
+    console.error(error);
+    await bot.sendMessage(chatId, 'Internal Server Error.');
+    return;
   }
 });
 
-// // src/bot/index.ts
-// import { prisma } from '../database/prismaClient';
-// import { NotificationType } from '../types/dataTypes';
-// import { TelegramBot } from './telegramBot';
-
-// const token = process.env.TELEGRAM_SECRET_TOKEN!;
-// export const bot = new TelegramBot(token, { webHook: true });
-
-// await bot.deleteWebHook();
-
-// await bot.setWebHook(
-//   'https://francisco-unscholarlike-punctually.ngrok-free.dev/app/webhook/telegramBot',
-//   {
-//     secret_token: 'somethiadf',
-//   },
-// );
-
-// // /start command
-// bot.onText(/\/start/, async (msg) => {
-//   const chatId = msg.chat.id;
-//   await bot.sendMessage(chatId, 'Hey tell give me the identifier key');
-// });
-
-// // Message handler
-// bot.on('message', async (msg) => {
-//   if (!msg.text || msg.text.startsWith('/')) return;
-
-//   const chatId = msg.chat.id.toString();
-//   const identifierKey = msg.text.trim();
-
-//   try {
-//     const user = await prisma.user.findUnique({
-//       where: { identifierKey },
-//     });
-
-//     if (!user) {
-//       await bot.sendMessage(chatId, 'Wrong identifier key.');
-//       return;
-//     }
-
-//     await prisma.$transaction(async (tx) => {
-//       const contact = await tx.contactDetails.findUnique({
-//         where: { userId: user.id },
-//         select: { telegramChatIds: true },
-//       });
-
-//       if (!contact) {
-//         await tx.contactDetails.create({
-//           data: {
-//             userId: user.id,
-//             telegramChatIds: [chatId],
-//             discordChatIds: [],
-//           },
-//         });
-
-//         await bot.sendMessage(chatId, 'Telegram account linked.');
-//         return;
-//       }
-
-//       if (contact.telegramChatIds.includes(chatId)) {
-//         throw new Error('ALREADY_LINKED');
-//       }
-
-//       const count = contact.telegramChatIds.length;
-
-//       if (user.subscription_tier === 'Free' && count >= 1) {
-//         throw new Error('FREE_LIMIT');
-//       }
-
-//       if (user.subscription_tier === 'Premium' && count >= 4) {
-//         throw new Error('PREMIUM_LIMIT');
-//       }
-
-//       await tx.contactDetails.update({
-//         where: { userId: user.id },
-//         data: {
-//           telegramChatIds: { push: chatId },
-//         },
-//       });
-
-//       await bot.sendMessage(chatId, 'Telegram account linked.');
-//     });
-//   } catch (error: any) {
-//     switch (error.message) {
-//       case 'ALREADY_LINKED':
-//         await bot.sendMessage(chatId, 'This Telegram account is already linked.');
-//         break;
-
-//       case 'FREE_LIMIT':
-//         await bot.sendMessage(chatId, 'Upgrade to premium to add more members.');
-//         break;
-
-//       case 'PREMIUM_LIMIT':
-//         await bot.sendMessage(
-//           chatId,
-//           'Maximum team members reached. Remove an existing one to add more.',
-//         );
-//         break;
-
-//       default:
-//         console.error(error);
-//         await bot.sendMessage(chatId, 'Something went wrong. Please try again.');
-//     }
-//   }
-// });
-
-// Send alert messages to all linked Telegram chats
-export const telegramBeep = async (
-  telegramChatIds: string[],
-  type: NotificationType,
-) => {
+export const telegramBeep = async (telegramChatIds: string[], type: EventType) => {
   try {
     if (!telegramChatIds.length) return;
 
@@ -238,9 +139,7 @@ export const telegramBeep = async (
       telegramChatIds.map((chatId) =>
         bot.sendMessage(
           chatId,
-          type === NotificationType.Issue
-            ? 'Backend issue detected, please check it'
-            : 'Backend incident detected, please check it',
+          type === 'issue' ? 'Backend issue detected, please check it' : 'Backend incident detected, please check it',
         ),
       ),
     );
