@@ -2,11 +2,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { SUBSCRIPTION_LIMITS } from '../../config/subscriptionLimits.config';
 import { EventType } from '../../generated/prisma/enums';
 import { prisma } from '../database/prismaClient';
-
-enum SelectedIdentifierKey {
-  identifierKey,
-  identifierKey2,
-}
+import { SelectedIdentifierKey } from '../types/applicationTypes';
 
 const token = process.env.TELEGRAM_SECRET_TOKEN!;
 
@@ -99,7 +95,7 @@ bot.on('message', async (msg) => {
 
       // Determine maximum allowed recipients for user's subscription
       const maxRecepients =
-        selectedIdentifierKey === SelectedIdentifierKey.identifierKey
+        field === "telegramChatIds"
           ? SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients
           : SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients2;
 
