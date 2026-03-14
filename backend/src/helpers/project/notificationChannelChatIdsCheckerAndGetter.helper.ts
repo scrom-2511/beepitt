@@ -1,4 +1,6 @@
 import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
+import { EventType, SubscriptionTier } from '../../../generated/prisma/enums';
+import { ContactDetailsGetPayload } from '../../../generated/prisma/models';
 import { ChatIdsInfo } from '../../types/applicationTypes';
 import { UserWithOtherDetails } from '../../types/prismaTypes';
 import { getProjectByProjectName } from './getProjectByProjectName.helper.';
@@ -8,6 +10,7 @@ type ChatIdsResult = ChatIdsInfo[];
 export const notificationChannelChatIdsCheckerAndGetter = (
   projectName: string,
   user: UserWithOtherDetails,
+  eventType: EventType,
 ): ChatIdsResult => {
   // Find project linked to the user by project name
   const project = getProjectByProjectName(projectName, user);
@@ -20,6 +23,10 @@ export const notificationChannelChatIdsCheckerAndGetter = (
   // Get the contact details of the project
   const contactDetails = project.contactDetails;
 
+  if (!contactDetails) {
+    throw new Error('Contact details not found');
+  }
+
   // Get users subscription tier
   const userSubscriptionTier = user.billing?.subscription_tier!;
 
@@ -28,8 +35,16 @@ export const notificationChannelChatIdsCheckerAndGetter = (
 
   // Build and return the array of chat ids info for each channel
   return [
-    buildChatIdsInfo('discord', maxRecepientsLimit, contactDetails?.discordChatIds),
-    buildChatIdsInfo('telegram', maxRecepientsLimit, contactDetails?.telegramChatIds),
+    buildChatIdsInfo(
+      'discord',
+      maxRecepientsLimit,
+      extractChatIdsFromContactDetails(contactDetails, userSubscriptionTier, eventType).discordChatIds,
+    ),
+    buildChatIdsInfo(
+      'telegram',
+      maxRecepientsLimit,
+      extractChatIdsFromContactDetails(contactDetails, userSubscriptionTier, eventType).telegramChatIds,
+    ),
   ];
 };
 
@@ -47,4 +62,19 @@ const buildChatIdsInfo = (
     present: ids.length > 0, // Set present according to the length of the chat ids
     chatIds: ids.slice(0, maxRecepientsLimit), // Select recepients according to users subscription limit
   };
+};
+
+type ExtractChatIdsResult = { telegramChatIds: string[]; discordChatIds: string[] };
+
+// Extract chat ids from contact details
+const extractChatIdsFromContactDetails = (
+  contactDetails: ContactDetailsGetPayload<{}>,
+  userSubscriptionTier: SubscriptionTier,
+  eventType: EventType,
+): ExtractChatIdsResult => {
+  if (userSubscriptionTier !== 'pro' || (userSubscriptionTier === 'pro' && eventType === 'incident')) {
+    return { telegramChatIds: contactDetails.telegramChatIds, discordChatIds: contactDetails.discordChatIds };
+  } else {
+    return { telegramChatIds: contactDetails.telegramChatIds2, discordChatIds: contactDetails.discordChatIds2 };
+  }
 };
