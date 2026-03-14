@@ -59,6 +59,8 @@ model ProjectSettings {
   globalThrottleWindow Int
   eventTriggerCount    Int
   eventTriggerWindow   Int
+  maxRetries           Int
+  retryOffset          Int
   notificationChannels NotificationChannels[] @default([])
   userId               Int                    @unique
 
@@ -68,6 +70,7 @@ model ProjectSettings {
 model Project {
   id             Int             @id @default(autoincrement())
   identifierKey  String          @unique
+  identifierKey2 String          @unique
   projectName    String
   userId         Int
   contactDetails ContactDetails?
@@ -108,46 +111,6 @@ enum IssuePriority {
   closed
 }
 
-// model Issue {
-//   id                      Int           @id @default(autoincrement())
-//   projectName             String
-//   issueName               String
-//   issueDesc               String
-//   issuePriority           IssuePriority
-//   issueDateAndTime        DateTime      @default(now())
-//   issueResolveDateAndTime DateTime?
-//   filePath                String?
-//   frequency               Int
-//   lineNumber              Int
-//   columnNumber            Int
-//   lastNotificationSent    DateTime
-//   userId                  Int
-//   user                    User          @relation(fields: [userId], references: [id])
-
-//   @@index([userId])
-//   @@index([userId, issuePriority])
-// }
-
-// model Incident {
-//   id                      Int       @id @default(autoincrement())
-//   projectName             String    @default("Untitled Project")
-//   incidentName            String
-//   incidentDesc            String
-//   incidentSeen            Boolean   @default(false)
-//   incidentDateAndTime     DateTime  @default(now())
-//   incidentSeenDateAndTime DateTime?
-//   filePath                String?
-//   frequency               Int
-//   lineNumber              Int
-//   columnNumber            Int
-//   lastNotificationSent    DateTime
-//   userId                  Int
-//   user                    User      @relation(fields: [userId], references: [id])
-
-//   @@index([userId])
-//   @@index([userId, incidentSeen])
-// }
-
 enum Environment {
   production
   staging
@@ -174,8 +137,8 @@ model Event {
   environment      Environment @default(production)
 
   createdAt  DateTime  @default(now())
-  resolvedAt DateTime?
-  seenAt     DateTime?
+  resolvedAt DateTime? //For issue
+  seenAt     DateTime? // For incident
 
   filePath                                String?
   occurrences                             Int       @default(1)
@@ -198,10 +161,12 @@ model Event {
 }
 
 model ContactDetails {
-  id              Int      @id @default(autoincrement())
-  telegramChatIds String[]
-  discordChatIds  String[]
-  projectId       Int      @unique
+  id               Int      @id @default(autoincrement())
+  telegramChatIds  String[] @default([])
+  telegramChatIds2 String[] @default([]) // For "pro" tier
+  discordChatIds   String[] @default([])
+  discordChatIds2  String[] @default([]) // For "pro" tier
+  projectId        Int      @unique
 
   project Project @relation(fields: [projectId], references: [id])
 }
