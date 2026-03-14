@@ -1,14 +1,25 @@
-import { NotificationChannels } from "../../generated/prisma/enums";
-import { NotificationType } from "./dataTypes";
+import { EventType, NotificationChannels } from '../../generated/prisma/enums';
 
 export type NotificationJob = {
   userId: number;
-  type: NotificationType;
+  type: EventType;
   data: string[];
-}
+  jobId: string;
+  delay: number;
+};
 
 export type ChatIdsInfo = {
   channel: NotificationChannels;
   present: boolean;
   chatIds: string[];
 };
+
+export type EventIdAndType = {
+  id: number;
+  type: EventType;
+};
+
+export enum SelectedIdentifierKey {
+  identifierKey,
+  identifierKey2,
+}
