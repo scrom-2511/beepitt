@@ -1,7 +1,8 @@
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { validate as isUUID } from 'uuid';
+import { SUBSCRIPTION_LIMITS } from '../../config/subscriptionLimits.config';
+import { EventType } from '../../generated/prisma/enums';
 import { prisma } from '../database/prismaClient';
-import { NotificationType } from '../types/dataTypes';
+import { SelectedIdentifierKey } from '../types/applicationTypes';
 
 // Create a new Discord client with required intents
 export const discordClient = new Client({
@@ -19,134 +20,136 @@ discordClient.on('ready', () => {
 });
 discordClient.login(process.env.DISCORD_SECRET_TOKEN);
 
-// Listen for new messages
+// Listen for direct messages
 discordClient.on('messageCreate', async (msg) => {
   try {
-    if (!msg.author.id) return; // If there is no author ID, return
-    if (msg.author.bot) return; // If the message is from a bot, return
+    if (msg.author.bot) return; // Ignore bot messages
+    if (msg.guild) return; // Ignore server messages
 
-    // If the message is from a guild/server, return
-    if (msg.guild) return;
-
-    // Get the Discord chat ID
     const chatId = msg.author.id;
-    // Get the message text
-    const msgText = msg.content;
+    const text = msg.content?.trim();
 
-    // If the message is "start", begin the linking process
-    if (msgText.trim().toLowerCase() === 'start') {
+    if (!text) return;
+
+    // Handle start command
+    if (text.toLowerCase() === 'start') {
       await msg.reply('Send your identifier key');
       return;
     }
 
-    // If the message is not a valid UUID, return
-    if (!isUUID(msgText.trim())) {
-      await msg.reply('Please provide a valid identifier key');
+    const identifierKey = text;
+
+    // Find project by identifier key
+    const project = await prisma.project.findFirst({
+      where: {
+        OR: [{ identifierKey }, { identifierKey2: identifierKey }],
+      },
+      include: { contactDetails: true },
+    });
+
+    // If project doesnot exists, that means identifier key is wrong
+    if (!project) {
+      await msg.reply('Wrong identifier key.');
       return;
     }
 
-    // If the message is a valid UUID
-    if (isUUID(msgText.trim())) {
-      // Store the identifier key
-      const identifierKey = msgText;
+    // Get user along with billing details
+    const user = await prisma.user.findUnique({
+      where: { id: project.userId },
+      select: { billing: true },
+    });
 
-      // Find the user linked to the identifier key
-      const user = await prisma.user.findUnique({
-        where: { identifierKey },
-        include: { billing: true },
-      });
+    // If user doesnot exists, return
+    if (!user) {
+      await msg.reply('User does not exist.');
+      return;
+    }
 
-      // If no user is found, return
-      if (!user) {
-        msg.reply('Wrong identifier key!');
+    // Get user's subscription tier
+    const subscriptionTier = user.billing?.subscription_tier;
+
+    // Determine which identifier key was used
+    const selectedIdentifierKey: SelectedIdentifierKey =
+      project.identifierKey === identifierKey
+        ? SelectedIdentifierKey.identifierKey
+        : SelectedIdentifierKey.identifierKey2;
+
+    // Prevent usage of identifierKey2 if subscription tier is not pro
+    if (selectedIdentifierKey === SelectedIdentifierKey.identifierKey2 && subscriptionTier !== 'pro') {
+      await msg.reply('Your subscription tier does not support separate recipients.');
+      return;
+    }
+
+    // Prisma transaction to handle concurrency safely
+    await prisma.$transaction(async (tx) => {
+      const contact = project.contactDetails; // Existing contact details for the project
+
+      // Decide which field to update based on identifier key used
+      const field =
+        selectedIdentifierKey === SelectedIdentifierKey.identifierKey ? 'discordChatIds' : 'discordChatIds2';
+
+      // If contactDetails record does not exist, create it
+      if (!contact) {
+        await tx.contactDetails.create({
+          data: {
+            projectId: project.id,
+            [field]: [chatId], // Initialize chat ID for the selected field
+          },
+        });
+
+        await msg.reply('Discord account linked.');
         return;
       }
 
-      // Prisma transaction to safely handle concurrent requests
-      await prisma.$transaction(async (tx) => {
-        // Find existing contact details for the user
-        const contact = await tx.contactDetails.findUnique({
-          where: { userId: user.id },
-          select: { discordChatIds: true },
-        });
+      // Extract current list of chat IDs depending on identifier key
+      const chatIds = contact[field] ?? [];
 
-        // Create contact details if they do not exist
-        if (!contact) {
-          await tx.contactDetails.create({
-            data: {
-              userId: user.id,
-              telegramChatIds: [],
-              discordChatIds: [chatId],
-            },
-          });
-          return;
-        }
+      // If Discord account is already linked, inform user
+      if (chatIds.includes(chatId)) {
+        await msg.reply('This Discord account is already linked.');
+        return;
+      }
 
-        // Prevent linking the same Discord account twice
-        if (contact.discordChatIds.includes(chatId)) {
-          throw new Error('ALREADY_LINKED');
-        }
+      // Determine maximum allowed recipients for user's subscription
+      const maxRecipients =
+        field === 'discordChatIds'
+          ? SUBSCRIPTION_LIMITS[subscriptionTier!].maxRecepients
+          : SUBSCRIPTION_LIMITS[subscriptionTier!].maxRecepients2;
 
-        // Get the number of linked Discord accounts
-        const count = contact.discordChatIds.length;
+      // Extract number of linked chat IDs
+      const count = chatIds.length;
 
-        // Enforce limit for Free users
-        if (user.billing?.subscription_tier === 'Free' && count >= 1) {
-          throw new Error('FREE_LIMIT');
-        }
+      // If recipient limit reached, block linking
+      if (count >= maxRecipients) {
+        await msg.reply('Maximum recipients reached. Upgrade your plan to add more.');
+        return;
+      }
 
-        // Enforce limit for Premium users
-        if (user.billing?.subscription_tier === 'Premium' && count >= 4) {
-          throw new Error('PREMIUM_LIMIT');
-        }
-
-        // Add the new Discord chat ID
-        await tx.contactDetails.update({
-          where: { userId: user.id },
-          data: {
-            discordChatIds: { push: chatId },
-          },
-        });
+      // Add new Telegram chat ID to the array
+      await tx.contactDetails.update({
+        where: { projectId: project.id },
+        data: {
+          [field]: { push: chatId },
+        },
       });
 
-      // Notify the user that linking was successful
+      // Confirm successful linking
       await msg.reply('Discord account linked.');
       return;
-    }
-  } catch (error: any) {
-    // Handle all the errors
-    switch (error.message) {
-      case 'ALREADY_LINKED':
-        await msg.reply('This Discord account is already linked.');
-        break;
-      case 'FREE_LIMIT':
-        await msg.reply('Upgrade to premium to add more members.');
-        break;
-      case 'PREMIUM_LIMIT':
-        await msg.reply(
-          'Maximum team members reached. Remove an existing one to add more.',
-        );
-        break;
-      default:
-        console.error(error);
-        await msg.reply('Something went wrong. Please try again.');
-    }
+    });
+  } catch (error) {
+    console.error(error);
+    await msg.reply('Internal Server Error.');
+    return;
   }
 });
 
-export const discordBeep = async (
-  discordChatIds: string[],
-  type: NotificationType,
-) => {
+export const discordBeep = async (discordChatIds: string[], type: EventType) => {
   try {
     await Promise.allSettled(
       discordChatIds.map(async (chatId) => {
         const user = await discordClient.users.fetch(chatId);
-        await user.send(
-          type === NotificationType.Incident
-            ? 'There was an incident!'
-            : 'There was an issue!',
-        );
+        await user.send(type === 'incident' ? 'There was an incident!' : 'There was an issue!');
       }),
     );
   } catch (error) {
