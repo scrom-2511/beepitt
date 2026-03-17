@@ -1,11 +1,11 @@
-import OtpComponent from "@/components/auth/OtpComponent";
-import ProfileDetailsInputComponent from "@/components/auth/ProfileDetailsInputComponent";
-import SigninCardComponent from "@/components/auth/SigninCardComponent";
-import SignupCardComponent from "@/components/auth/SignupCardComponent";
-import { AuthProvider } from "@/contextProviders/AuthProvider";
-import { useAuthState } from "@/hooks/useAuthState";
-import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import OtpComponent from '@/components/auth/OtpComponent';
+import ProfileDetailsInputComponent from '@/components/auth/ProfileDetailsInputComponent';
+import SigninCardComponent from '@/components/auth/SigninCardComponent';
+import SignupCardComponent from '@/components/auth/SignupCardComponent';
+import { AuthProvider } from '@/contextProviders/AuthProvider';
+import { useAuthState } from '@/hooks/useAuthState';
+import { motion } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 const Authentication = () => {
   return (
@@ -32,30 +32,30 @@ const AuthenticationContent = () => {
       <motion.div
         ref={cardRef}
         animate={{
-          x: animate ? (step === "signup" ? "100%" : "0%") : "",
+          x: animate ? (step === 'signup' ? '100%' : '0%') : '',
         }}
         onAnimationStart={() => {
-          if (cardRef.current) cardRef.current.style.filter = "blur(5px)";
+          if (cardRef.current) cardRef.current.style.filter = 'blur(5px)';
         }}
         onAnimationComplete={() => {
-          if (cardRef.current) cardRef.current.style.filter = "blur(0px)";
+          if (cardRef.current) cardRef.current.style.filter = 'blur(0px)';
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="w-full h-full order-1"
       >
-        {step === "signup" && <SignupCardComponent />}
+        {step === 'signup' && <SignupCardComponent />}
 
-        {step === "signin" && <SigninCardComponent />}
-        {step === "otp" && <OtpComponent />}
+        {step === 'signin' && <SigninCardComponent />}
+        {step === 'otp' && <OtpComponent />}
 
-        {step === "profile" && <ProfileDetailsInputComponent />}
+        {step === 'profile' && <ProfileDetailsInputComponent />}
       </motion.div>
 
       <motion.div
         animate={{
-          x: animate ? (step === "signup" ? "-100%" : "0%") : "",
+          x: animate ? (step === 'signup' ? '-100%' : '0%') : '',
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="bg-black order-2 mr-20 rounded-3xl hidden lg:block"
       >
         content yet to come

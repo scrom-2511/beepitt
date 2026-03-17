@@ -1,4 +1,5 @@
-import axios from "axios";
+import { BACKEND_URL } from '@/config/app.config';
+import axios from 'axios';
 
 export interface Incident {
   id: number;
@@ -8,22 +9,27 @@ export interface Incident {
   incidentDateAndTime: string;
 }
 
-export const getUnseenIncidentsHandler = async (): Promise<Incident[]> => {
+export interface IncidentsResponse {
+  incidents: Incident[];
+  nextCursor: number | null;
+}
+
+export const getUnseenIncidentsHandler = async (lastId: number): Promise<IncidentsResponse> => {
   try {
-    const res = await axios.get(
-      "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/getUnseenIncidents",
-      { withCredentials: true },
-    );
+    const res = await axios.get(BACKEND_URL + '/user/getUnseenIncidents', {
+      withCredentials: true,
+      params: { lastId },
+    });
 
     if (res.data.success) {
-      return res.data.data as Incident[];
+      return res.data.data as IncidentsResponse;
     }
 
-    throw new Error(res.data.error?.message || "Failed to fetch incidents");
+    throw new Error(res.data.error?.message || 'Failed to fetch incidents');
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       throw new Error(err.response?.data?.error?.message || err.message);
     }
-    throw new Error("There was an unknown error, please try again.");
+    throw new Error('There was an unknown error, please try again.');
   }
 };

@@ -1,38 +1,28 @@
-import { AppSidebar } from "@/components/dashboard/AppSidebar";
-import Billing from "@/components/dashboard/Billing";
-import { SeenIncidents } from "@/components/dashboard/incidents/SeenIncidents";
-import { UnseenIncidents } from "@/components/dashboard/incidents/UnseenIncidents";
-import ClosedIssues from "@/components/dashboard/issues/ClosedIssues";
-import { OpenIssues } from "@/components/dashboard/issues/OpenIssues";
-import { UnseenIssues } from "@/components/dashboard/issues/UnseenIssues";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useState } from "react";
-import Settings from "./Settings";
+import { AppSidebar } from '@/components/dashboard/AppSidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Outlet, useLocation } from 'react-router-dom';
 
 export type DashboardState =
-  | "Unseen Issues"
-  | "Open Issues"
-  | "Closed Issues"
-  | "Unseen Incidents"
-  | "Seen Incidents"
-  | "Settings"
-  | "Billing";
+  | 'Unseen Issues'
+  | 'Open Issues'
+  | 'Closed Issues'
+  | 'Unseen Incidents'
+  | 'Seen Incidents'
+  | 'Settings'
+  | 'Billing';
 
 const Dashboard = () => {
-  const [selected, setSelected] = useState<DashboardState>("Unseen Incidents");
+  const location = useLocation();
+
+  const selected = location.pathname.split('/').pop();
+
   return (
-    <SidebarProvider className="h-full w-max-500 p-5">
-      <AppSidebar selected={selected} setSelected={setSelected} />
+    <SidebarProvider className="h-full p-5">
+      <AppSidebar />
       <div className="bg-background w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5">
         <TopBar selected={selected} />
         <div className="overflow-y-scroll">
-          {selected === "Unseen Incidents" && <UnseenIncidents />}
-          {selected === "Seen Incidents" && <SeenIncidents />}
-          {selected === "Unseen Issues" && <UnseenIssues />}
-          {selected === "Open Issues" && <OpenIssues />}
-          {selected === "Closed Issues" && <ClosedIssues />}
-          {selected === "Settings" && <Settings />}
-          {selected === "Billing" && <Billing />}
+          <Outlet />
         </div>
       </div>
     </SidebarProvider>
@@ -41,12 +31,24 @@ const Dashboard = () => {
 
 export default Dashboard;
 
-const TopBar = ({ selected }: { selected: string }) => {
+const routeTitleMap: Record<string, string> = {
+  'unseen-incidents': 'Unseen Incidents',
+  'seen-incidents': 'Seen Incidents',
+  'unseen-issues': 'Unseen Issues',
+  'open-issues': 'Open Issues',
+  'closed-issues': 'Closed Issues',
+  settings: 'Settings',
+  billing: 'Billing',
+};
+
+export const TopBar = ({ selected }: { selected: string | undefined }) => {
+  const displayTitle = selected ? routeTitleMap[selected] || selected.charAt(0).toUpperCase() + selected.slice(1) : '';
+
   return (
     <div>
       <div className="flex p-5 gap-5 items-center font-montserrat">
         <SidebarTrigger />
-        <h1 className="text-foreground font-medium text-xl">{selected}</h1>
+        <h1 className="text-foreground font-medium text-xl">{displayTitle}</h1>
       </div>
       <div className="border border-foreground opacity-25"></div>
     </div>

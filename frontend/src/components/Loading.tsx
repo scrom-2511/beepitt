@@ -1,5 +1,5 @@
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
-import { Spinner } from "@/components/ui/spinner";
+import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
+import { Spinner } from '@/components/ui/spinner';
 
 export function Loading({ title }: { title: string }) {
   return (

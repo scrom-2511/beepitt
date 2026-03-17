@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 type UseInfiniteScrollProps = {
   targetRef: React.RefObject<HTMLDivElement | null>;
@@ -9,12 +9,7 @@ type UseInfiniteScrollProps = {
   rootMargin?: string;
 };
 
-export function useInfiniteScroll({
-  targetRef,
-  hasNextPage,
-  fetchNextPage,
-  threshold = 0.5,
-}: UseInfiniteScrollProps) {
+export function useInfiniteScroll({ targetRef, hasNextPage, fetchNextPage, threshold = 0.5 }: UseInfiniteScrollProps) {
   useEffect(() => {
     if (!targetRef.current) return;
 

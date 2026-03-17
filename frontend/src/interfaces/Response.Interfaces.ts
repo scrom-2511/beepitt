@@ -1,4 +1,4 @@
-export interface ResponseInterface{
-    success:boolean;
-    message:string;
+export interface ResponseInterface {
+  success: boolean;
+  message: string;
 }

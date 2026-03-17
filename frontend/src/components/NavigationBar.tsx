@@ -1,15 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-type Position = "relative" | "fixed" | "static";
+type Position = 'relative' | 'fixed' | 'static';
 
 const NavigationBar = ({ position }: { position: Position }) => {
   const navigate = useNavigate();
 
   const buttons = [
-    { key: "DASHBOARD", navigate: "dashboard" },
-    { key: "PRICING", navigate: "pricing" },
-    { key: "DOCS", navigate: "docs" },
-    { key: "SIGNIN", navigate: "signin" },
+    { key: 'DASHBOARD', navigate: 'dashboard' },
+    { key: 'PRICING', navigate: 'pricing' },
+    { key: 'DOCS', navigate: 'docs' },
+    { key: 'SIGNIN', navigate: 'signin' },
   ];
 
   return (
@@ -19,18 +19,11 @@ const NavigationBar = ({ position }: { position: Position }) => {
     >
       <div className="flex items-center">
         {buttons.map((btn, index) => (
-          <button
-            key={index}
-            className="button-navigation h-17.5"
-            onClick={() => navigate(`/${btn.navigate}`)}
-          >
+          <button key={index} className="button-navigation h-17.5" onClick={() => navigate(`/${btn.navigate}`)}>
             {btn.key}
           </button>
         ))}
-        <button
-          className="button-navigation h-17.5"
-          onClick={() => navigate("/settings")}
-        >
+        <button className="button-navigation h-17.5" onClick={() => navigate('/settings')}>
           <img src="/images/settings.png" alt="" className="h-6" />
         </button>
       </div>

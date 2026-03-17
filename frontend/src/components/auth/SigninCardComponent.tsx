@@ -1,16 +1,16 @@
-import { useAuthState } from "@/hooks/useAuthState";
-import useGoogleButton from "@/hooks/useGoogleButton";
-import { signinHandler } from "@/requestHandler/auth/Signin.ReqHandler";
-import { useMutation } from "@tanstack/react-query";
-import { useRef } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { Input } from "../ui/input";
-import AuthFooter from "./AuthFooter";
-import AuthHeader from "./AuthHeader";
+import { useAuthState } from '@/hooks/useAuthState';
+import useGoogleButton from '@/hooks/useGoogleButton';
+import { signinHandler } from '@/requestHandler/auth/Signin.ReqHandler';
+import { useMutation } from '@tanstack/react-query';
+import { useRef } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Input } from '../ui/input';
+import AuthFooter from './AuthFooter';
+import AuthHeader from './AuthHeader';
 
 type SigninFormValues = {
   email: string;
@@ -30,7 +30,7 @@ const SigninCardComponent = () => {
             className="pl-2 underline cursor-pointer text-xs sm:text-base"
             variant="link"
             onClick={() => {
-              setStep("signup");
+              setStep('signup');
             }}
           >
             Create an account
@@ -61,8 +61,10 @@ const SigninCardForm = () => {
   const { mutate: signin, isPending } = useMutation({
     mutationFn: signinHandler,
     onSuccess: (res) => {
-      toast.success("Signed in successfully");
-      // navigate("/dashboard");
+      toast.success('Signed in successfully');
+      localStorage.setItem('timeZone', res.timeZone);
+      console.log(res.timeZone);
+      navigate('/dashboard');
     },
     onError: (error) => {
       toast.error(error.message);
@@ -83,54 +85,45 @@ const SigninCardForm = () => {
           {/* Email Field */}
           <div className="grid gap-2">
             <Input
+              defaultValue="use@use.com"
+              autoFocus
               id="email"
               type="email"
               placeholder="Email"
               className="py-4 sm:py-6 text-sm sm:text-base"
               autoComplete="off"
-              {...register("email", { required: "Email is required" })}
+              {...register('email', { required: 'Email is required' })}
             />
-            {errors.email && (
-              <span className="text-red-500 text-xs sm:text-sm">
-                {errors.email.message}
-              </span>
-            )}
+            {errors.email && <span className="text-red-500 text-xs sm:text-sm">{errors.email.message}</span>}
           </div>
 
           {/* Password Field */}
           <div className="grid gap-2">
             <div className="flex items-center">
-              <a
+              {/* <a
                 href="#"
                 className="ml-auto text-xs sm:text-sm underline-offset-4 hover:underline"
               >
                 Reset Password
-              </a>
+              </a> */}
             </div>
 
             <Input
+              defaultValue="use1234"
               id="password"
               type="text"
               placeholder="Password"
               className="py-4 sm:py-6 text-sm sm:text-base"
               autoComplete="off"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
               })}
             />
 
-            {errors.password && (
-              <span className="text-red-500 text-xs sm:text-sm">
-                {errors.password.message}
-              </span>
-            )}
+            {errors.password && <span className="text-red-500 text-xs sm:text-sm">{errors.password.message}</span>}
           </div>
         </div>
-
-        <AuthFooter
-          hiddenGoogleBtnRef={hiddenGoogleBtnRef}
-          isPending={isPending}
-        />
+        <AuthFooter hiddenGoogleBtnRef={hiddenGoogleBtnRef} isPending={isPending} />
       </form>
     </CardContent>
   );

@@ -1,26 +1,26 @@
-// import { useEffect, useState, type JSX } from 'react';
-// import { Navigate } from 'react-router-dom';
-// import { isLoggedIn } from '../requestHandler/isLoggedIn';
+import { checkLoggedInHandler } from '@/requestHandler/auth/CheckLoggedIn.reqhandler';
+import { useQuery } from '@tanstack/react-query';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { Loading } from './Loading';
 
-// const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-//   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  console.log('i am in protected route');
+  const { data, isLoading, isSuccess, isError } = useQuery({
+    queryKey: ['checkLoggedIn'],
+    queryFn: checkLoggedInHandler,
+  });
 
-//   useEffect(() => {
-//     const checkAuth = async () => {
-//       try {
-//         const LoggedIn = await isLoggedIn();
-//         setIsAuthenticated( LoggedIn );
-//       } catch {
-//         setIsAuthenticated( false );
-//       }
-//     };
+  if (isLoading) return <Loading title="Checking authentication..." />;
 
-//     checkAuth();
-//   }, []);
+  if (isSuccess) return children;
 
-//   if (isAuthenticated === null) return <div>Loading...</div>;
-//   if (!isAuthenticated) return <Navigate to="/signin" replace />;
-//   return children;
-// };
+  if (isError) {
+    console.log('Error');
+    return <Navigate to="/auth" replace />;
+  }
 
-// export default ProtectedRoute;
+  return children;
+};
+
+export default ProtectedRoute;

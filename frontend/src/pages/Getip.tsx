@@ -1,18 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { BACKEND_URL } from '@/config/app.config';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 const Getip = () => {
   const getMyIp = async () => {
-    const res = await axios.get(
-      "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/__debug", {withCredentials: true}
-    );
+    const res = await axios.get(BACKEND_URL + '/user/__debug', {
+      withCredentials: true,
+    });
     return res.data;
   };
   const { data, isLoading, isPending } = useQuery({
-    queryKey: ["asdf"],
+    queryKey: ['asdf'],
     queryFn: getMyIp,
   });
-  console.log("The data is");
+  console.log('The data is');
   console.log(data);
   if (isPending) {
     return <></>;

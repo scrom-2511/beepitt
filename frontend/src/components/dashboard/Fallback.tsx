@@ -1,21 +1,19 @@
-import { CircleAlert, PartyPopper } from "lucide-react";
-import { toast } from "sonner";
-import ButtonComp from "../ButtonComp";
-import { Loading } from "../Loading";
-import {
-  Empty,
-  EmptyContent,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "../ui/empty";
+import type { DashboardState } from '@/pages/Dashboard';
+import { CircleAlert, FilePlusCorner, PartyPopper } from 'lucide-react';
+import { toast } from 'sonner';
+import ButtonComp from '../ButtonComp';
+import { Loading } from '../Loading';
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from '../ui/empty';
 
-interface fallbackInterface<T> {
+interface FallbackInterface<T> {
   isError: boolean;
   error: Error | null;
   isLoading: boolean;
   data: T[] | undefined;
   refetch: () => void;
+  emptyTitle: DashboardState;
+  loadingTitle: string;
+  addNew: boolean;
 }
 
 const Fallback = <T,>({
@@ -24,7 +22,10 @@ const Fallback = <T,>({
   isLoading,
   data,
   refetch,
-}: fallbackInterface<T>) => {
+  emptyTitle,
+  loadingTitle,
+  addNew,
+}: FallbackInterface<T>) => {
   if (!isError && !isLoading && data?.length !== 0) {
     return null;
   }
@@ -34,12 +35,10 @@ const Fallback = <T,>({
     return (
       <Empty className="h-full">
         <EmptyHeader className="flex flex-row items-center justify-center">
-          <EmptyMedia variant="icon" className="m-0">
-            <CircleAlert color="red" />
+          <EmptyMedia variant="icon" className="m-0 p-0">
+            <CircleAlert className="text-red-600 m-0 p-0" />
           </EmptyMedia>
-          <EmptyTitle className="text-foreground ">
-            Error fetching data
-          </EmptyTitle>
+          <EmptyTitle className="text-foreground ">Error fetching data</EmptyTitle>
         </EmptyHeader>
         <EmptyContent>
           <ButtonComp className="w-50 font-bold" onClick={() => refetch()}>
@@ -50,26 +49,32 @@ const Fallback = <T,>({
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="text-white flex justify-center h-full w-full">
+        <Loading title={loadingTitle} />
+      </div>
+    );
+  }
+
   if (data?.length === 0) {
     return (
       <Empty className="h-full">
         <EmptyHeader className="flex flex-row items-center justify-center">
           <EmptyMedia variant="icon" className="m-0">
-            <PartyPopper className="text-muted-foreground" />
+            {addNew ? (
+              <FilePlusCorner className="text-muted-foreground" />
+            ) : (
+              <PartyPopper className="text-muted-foreground" />
+            )}
           </EmptyMedia>
           <EmptyTitle className="text-muted-foreground">
-            Woohoo, zero open issues!
+            {!addNew
+              ? 'Woohoo, zero' + emptyTitle.toLowerCase()
+              : 'Currently you have zero ' + loadingTitle.toLowerCase() + '!'}
           </EmptyTitle>
         </EmptyHeader>
       </Empty>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="text-white flex justify-center h-full w-full">
-        <Loading title="Open Issues" />
-      </div>
     );
   }
 };

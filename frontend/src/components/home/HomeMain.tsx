@@ -1,11 +1,11 @@
-import { Separator } from "@/components/ui/separator";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import HowItWorks from "./HowItWorks";
-import Navbar from "./Navbar";
+import { Separator } from '@/components/ui/separator';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import HowItWorks from './HowItWorks';
+import Navbar from './Navbar';
 
 const HomeMain = () => {
-  const words = ["Issue", "Error"];
+  const words = ['Incident', 'Issue'];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -17,35 +17,37 @@ const HomeMain = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full h-full">
       <Navbar />
 
       {/* Hero section */}
-      <div className="relative w-full min-h-screen bg-[#171211] overflow-hidden">
+      <div
+        className="relative w-full min-h-screen bg-[#0d0b0e] overflow-hidden"
+        // style={{
+        //   backgroundImage: "url(/bg2.jpg)",
+        //   backgroundSize: "cover",
+        //   backgroundPosition: "center",
+        //   backgroundRepeat: "no-repeat",
+        // }}
+      >
         {/* Background video */}
         <video
-          className="absolute right-0 top-0 h-full w-auto object-contain"
-          src="/beepitt-bg.mp4"
+          onLoadedMetadata={(e) => {
+            e.currentTarget.playbackRate = 0.5;
+          }}
+          className="absolute right-0 top-0 h-full w-auto"
+          src="/beepitt-bg3.mp4"
           autoPlay
           loop
           muted
-          playsInline
         />
 
         {/* Content */}
         <div
           className="relative z-10 h-full flex flex-col gap-8 justify-end
-            font-poppins font-light text-7xl text-foreground p-20 pt-40"
+            font-poppins font-light text-7xl text-foreground pt-40 p-20"
         >
           <div>
-            {/* <div className="mb-20">
-              <h1 className="text-muted-foreground text-xl">
-                Get instant notifications whenever an,
-              </h1>
-              <h1 className="text-muted-foreground text-xl">
-                issue is detected or an error is caught!
-              </h1>
-            </div> */}
             <h1 className="text-7xl font-light mb-5">
               <AnimatePresence mode="wait">
                 <motion.span
@@ -53,12 +55,12 @@ const HomeMain = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  transition={{ duration: 0.4, ease: 'easeInOut' }}
                   className="inline-block"
                 >
                   {words[index]}
                 </motion.span>
-              </AnimatePresence>{" "}
+              </AnimatePresence>{' '}
               caught,
             </h1>
             <h1>

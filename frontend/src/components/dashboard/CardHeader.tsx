@@ -1,4 +1,4 @@
-import { CardDescription, CardHeader, CardTitle } from "../ui/card";
+import { CardDescription, CardHeader, CardTitle } from '../ui/card';
 
 const CardHeaderComp = ({ title, desc }: { title: string; desc: string }) => {
   return (

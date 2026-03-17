@@ -1,12 +1,12 @@
-import ButtonComp from "@/components/ButtonComp";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { profileDetailsUpdateHandler } from "@/requestHandler/auth/ProfileDetailsUpdater.reqHandler";
-import type { ProfileDetailsAndPrefernces } from "@/requestHandler/settings/getProfileDetailsAndPreferences.reqhandler";
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import ButtonComp from '@/components/ButtonComp';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { profileDetailsUpdateHandler } from '@/requestHandler/auth/ProfileDetailsUpdater.reqHandler';
+import type { ProfileDetailsAndPrefernces } from '@/requestHandler/settings/profile/getProfileDetailsAndPreferences.reqhandler';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 type ProfileFormValues = {
   firstName: string;
@@ -15,11 +15,7 @@ type ProfileFormValues = {
   email: string;
 };
 
-const ProfileForm = ({
-  profile,
-}: {
-  profile?: ProfileDetailsAndPrefernces;
-}) => {
+const ProfileForm = ({ profile }: { profile?: ProfileDetailsAndPrefernces }) => {
   const {
     register,
     handleSubmit,
@@ -33,7 +29,7 @@ const ProfileForm = ({
         firstName: profile.firstName,
         lastName: profile.lastName,
         email: profile.email,
-        username: "",
+        username: '',
       });
     }
   }, [profile, reset]);
@@ -41,7 +37,7 @@ const ProfileForm = ({
   const { mutate: profileDetailsUpdate, isPending } = useMutation({
     mutationFn: profileDetailsUpdateHandler,
     onSuccess: (res) => {
-      toast.success("Updated Successfuly!");
+      toast.success('Updated Successfuly!');
     },
     onError: (error) => {
       toast.error(error.message);
@@ -49,7 +45,7 @@ const ProfileForm = ({
   });
 
   const onSubmit = (data: ProfileFormValues) => {
-    console.log("Profile Data:", data);
+    console.log('Profile Data:', data);
     profileDetailsUpdate(data);
   };
 
@@ -62,7 +58,7 @@ const ProfileForm = ({
             <Input
               id="firstName"
               className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
-              {...register("firstName", { required: true })}
+              {...register('firstName', { required: true })}
             />
           </div>
 
@@ -71,7 +67,7 @@ const ProfileForm = ({
             <Input
               id="lastName"
               className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
-              {...register("lastName", { required: true })}
+              {...register('lastName', { required: true })}
             />
           </div>
         </div>
@@ -83,17 +79,13 @@ const ProfileForm = ({
             type="email"
             readOnly
             className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
-            {...register("email", { required: true })}
+            {...register('email', { required: true })}
           />
         </div>
 
         {isDirty && (
           <div className="w-full flex justify-center pt-4">
-            <ButtonComp
-              variant={isPending ? "ghost" : "default"}
-              type="submit"
-              disabled={isPending}
-            >
+            <ButtonComp variant={isPending ? 'ghost' : 'default'} type="submit" disabled={isPending}>
               Save
             </ButtonComp>
           </div>

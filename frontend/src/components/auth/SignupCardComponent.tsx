@@ -1,14 +1,15 @@
-import { useAuthState } from "@/hooks/useAuthState";
-import useGoogleButton from "@/hooks/useGoogleButton";
-import { signupHandler } from "@/requestHandler/auth/Signup.ReqHandler";
-import { useMutation } from "@tanstack/react-query";
-import { useRef } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { Input } from "../ui/input";
-import AuthFooter from "./AuthFooter";
-import AuthHeader from "./AuthHeader";
+import { useAuthState } from '@/hooks/useAuthState';
+import useGoogleButton from '@/hooks/useGoogleButton';
+import { signupHandler } from '@/requestHandler/auth/Signup.ReqHandler';
+import { useMutation } from '@tanstack/react-query';
+import { useRef } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
+import { Card, CardContent } from '../ui/card';
+import { Input } from '../ui/input';
+import AuthFooter from './AuthFooter';
+import AuthHeader from './AuthHeader';
 
 type SignupFormValues = {
   email: string;
@@ -29,7 +30,7 @@ const SignupCardComponent = () => {
             className="pl-2 underline cursor-pointer text-sm sm:text-base"
             variant="link"
             onClick={() => {
-              setStep("signin");
+              setStep('signin');
             }}
           >
             Log in
@@ -60,7 +61,10 @@ const SignupCardForm = () => {
     mutationFn: signupHandler,
     onSuccess: (res) => {
       setAnimate(false);
-      setStep("otp");
+      setStep('otp');
+    },
+    onError: (error) => {
+      toast(error.message);
     },
   });
 
@@ -69,7 +73,7 @@ const SignupCardForm = () => {
       email: formData.email,
       username: formData.username,
       password: formData.password!,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC',
     });
   };
 
@@ -80,20 +84,17 @@ const SignupCardForm = () => {
           {/* Email Field */}
           <div className="grid gap-2">
             <Input
+              autoFocus
               id="email"
               type="email"
               placeholder="m@example.com"
               className="py-4 sm:py-6 text-sm sm:text-base"
               autoComplete="off"
-              {...register("email", {
-                required: "Email is required",
+              {...register('email', {
+                required: 'Email is required',
               })}
             />
-            {errors.email && (
-              <span className="text-red-500 text-xs sm:text-sm">
-                {errors.email.message}
-              </span>
-            )}
+            {errors.email && <span className="text-red-500 text-xs sm:text-sm">{errors.email.message}</span>}
           </div>
 
           {/* Username Field */}
@@ -104,15 +105,11 @@ const SignupCardForm = () => {
               placeholder="Username"
               className="py-4 sm:py-6 text-sm sm:text-base"
               autoComplete="off"
-              {...register("username", {
-                required: "Username is required",
+              {...register('username', {
+                required: 'Username is required',
               })}
             />
-            {errors.username && (
-              <span className="text-red-500 text-xs sm:text-sm">
-                {errors.username.message}
-              </span>
-            )}
+            {errors.username && <span className="text-red-500 text-xs sm:text-sm">{errors.username.message}</span>}
           </div>
 
           {/* Password Field */}
@@ -123,26 +120,19 @@ const SignupCardForm = () => {
               placeholder="Password"
               className="py-4 sm:py-6 text-sm sm:text-base"
               autoComplete="off"
-              {...register("password", {
-                required: "Password is required",
+              {...register('password', {
+                required: 'Password is required',
                 minLength: {
                   value: 6,
-                  message: "Password must be at least 6 characters",
+                  message: 'Password must be at least 6 characters',
                 },
               })}
             />
-            {errors.password && (
-              <span className="text-red-500 text-xs sm:text-sm">
-                {errors.password.message}
-              </span>
-            )}
+            {errors.password && <span className="text-red-500 text-xs sm:text-sm">{errors.password.message}</span>}
           </div>
         </div>
 
-        <AuthFooter
-          hiddenGoogleBtnRef={hiddenGoogleBtnRef}
-          isPending={isPending}
-        />
+        <AuthFooter hiddenGoogleBtnRef={hiddenGoogleBtnRef} isPending={isPending} />
       </form>
     </CardContent>
   );

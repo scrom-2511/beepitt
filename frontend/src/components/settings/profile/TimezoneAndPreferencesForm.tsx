@@ -1,29 +1,21 @@
-import ButtonComp from "@/components/ButtonComp";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { ProfileDetailsAndPrefernces } from "@/requestHandler/settings/getProfileDetailsAndPreferences.reqhandler";
-import { updateTimeZoneAndPreferencesHandler } from "@/requestHandler/settings/preferencesAndCityUpdater.reqhandler";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@radix-ui/react-tooltip";
-import { useMutation } from "@tanstack/react-query";
-import { CircleQuestionMark } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import ButtonComp from '@/components/ButtonComp';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { ProfileDetailsAndPrefernces } from '@/requestHandler/settings/profile/getProfileDetailsAndPreferences.reqhandler';
+import { updateTimeZoneAndPreferencesHandler } from '@/requestHandler/settings/profile/preferencesAndCityUpdater.reqhandler';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@radix-ui/react-tooltip';
+import { useMutation } from '@tanstack/react-query';
+import { CircleQuestionMark } from 'lucide-react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 type TimezoneFormValues = {
   city: string;
   timezone: string;
 };
 
-export const TimezoneAndPreferencesForm = ({
-  profile,
-}: {
-  profile?: ProfileDetailsAndPrefernces;
-}) => {
+export const TimezoneAndPreferencesForm = ({ profile }: { profile?: ProfileDetailsAndPrefernces }) => {
   const {
     register,
     handleSubmit,
@@ -44,7 +36,7 @@ export const TimezoneAndPreferencesForm = ({
   const { mutate: updatePreferencesAndCity, isPending } = useMutation({
     mutationFn: updateTimeZoneAndPreferencesHandler,
     onSuccess: (res) => {
-      toast.success("Updated Successfuly!");
+      toast.success('Updated Successfuly!');
     },
     onError: (error) => {
       toast.error(error.message);
@@ -55,7 +47,7 @@ export const TimezoneAndPreferencesForm = ({
     try {
       Intl.DateTimeFormat(undefined, { timeZone: data.timezone });
     } catch (e) {
-      toast.error("Please provide an IANA-formatted time zone.")
+      toast.error('Please provide an IANA-formatted time zone.');
       return;
     }
     updatePreferencesAndCity(data);
@@ -67,11 +59,7 @@ export const TimezoneAndPreferencesForm = ({
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
             <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              className="py-4 sm:py-6 mt-2 text-foreground"
-              {...register("city", { required: true })}
-            />
+            <Input id="city" className="py-4 sm:py-6 mt-2 text-foreground" {...register('city', { required: true })} />
           </div>
 
           <div className="flex-1">
@@ -89,18 +77,14 @@ export const TimezoneAndPreferencesForm = ({
             <Input
               id="timezone"
               className="py-4 sm:py-6 mt-2 text-foreground"
-              {...register("timezone", { required: true })}
+              {...register('timezone', { required: true })}
             />
           </div>
         </div>
 
         {isDirty && (
           <div className="w-full flex justify-center pt-4">
-            <ButtonComp
-              type="submit"
-              variant={isPending ? "ghost" : "default"}
-              disabled={isSubmitting || isPending}
-            >
+            <ButtonComp type="submit" variant={isPending ? 'ghost' : 'default'} disabled={isSubmitting || isPending}>
               Save
             </ButtonComp>
           </div>

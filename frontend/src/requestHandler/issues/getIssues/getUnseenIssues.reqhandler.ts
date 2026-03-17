@@ -1,6 +1,7 @@
-import axios from "axios";
+import { BACKEND_URL } from '@/config/app.config';
+import axios from 'axios';
 
-export type IssuePriority = "Undefined";
+export type IssuePriority = 'Undefined';
 
 export interface Issue {
   id: number;
@@ -15,24 +16,22 @@ export interface IssuesResponse {
   nextCursor: number | null;
 }
 
-export const getUnseenIssuesHandler = async (
-  lastId: number,
-): Promise<IssuesResponse> => {
+export const getUnseenIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {
   try {
-    const res = await axios.get(
-      "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/getUnseenIssues",
-      { withCredentials: true, params: { lastId } },
-    );
+    const res = await axios.get(BACKEND_URL + '/user/getUnseenIssues', {
+      withCredentials: true,
+      params: { lastId },
+    });
 
     if (res.data.success) {
       return res.data.data as IssuesResponse;
     }
 
-    throw new Error(res.data.error?.message || "Failed to fetch issues");
+    throw new Error(res.data.error?.message || 'Failed to fetch issues');
   } catch (err: any) {
     if (axios.isAxiosError(err)) {
       throw new Error(err.response?.data?.error?.message || err.message);
     }
-    throw new Error("There was an unknown error, please try again.");
+    throw new Error('There was an unknown error, please try again.');
   }
 };

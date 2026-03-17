@@ -1,5 +1,5 @@
-import { googleAuthHandler } from "@/requestHandler/auth/GoogleAuth.reqhandler";
-import { useMutation } from "@tanstack/react-query";
+import { googleAuthHandler } from '@/requestHandler/auth/GoogleAuth.reqhandler';
+import { useMutation } from '@tanstack/react-query';
 
 export const useGoogleAuth = () => {
   const { mutate: googleAuth } = useMutation({

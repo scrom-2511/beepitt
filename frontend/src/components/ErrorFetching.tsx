@@ -1,21 +1,9 @@
-import { CircleAlert } from "lucide-react";
-import { toast } from "sonner";
-import ButtonComp from "./ButtonComp";
-import {
-    Empty,
-    EmptyContent,
-    EmptyHeader,
-    EmptyMedia,
-    EmptyTitle,
-} from "./ui/empty";
+import { CircleAlert } from 'lucide-react';
+import { toast } from 'sonner';
+import ButtonComp from './ButtonComp';
+import { Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle } from './ui/empty';
 
-const ErrorFetching = ({
-  error,
-  refetch,
-}: {
-  error: any;
-  refetch: () => void;
-}) => {
+const ErrorFetching = ({ error, refetch }: { error: any; refetch: () => void }) => {
   toast.error(error.message);
   return (
     <Empty className="h-full">
@@ -23,9 +11,7 @@ const ErrorFetching = ({
         <EmptyMedia variant="icon" className="m-0">
           <CircleAlert color="red" />
         </EmptyMedia>
-        <EmptyTitle className="text-foreground ">
-          Error fetching data
-        </EmptyTitle>
+        <EmptyTitle className="text-foreground ">Error fetching data</EmptyTitle>
       </EmptyHeader>
       <EmptyContent>
         <ButtonComp className="w-50 font-bold" onClick={() => refetch()}>

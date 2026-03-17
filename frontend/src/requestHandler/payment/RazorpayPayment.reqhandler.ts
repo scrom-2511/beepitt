@@ -1,6 +1,7 @@
-import type { RazorPayCreateOrderType } from "@/types/dataTypes";
-import axios from "axios";
-import type z from "zod";
+import { BACKEND_URL } from '@/config/app.config';
+import type { RazorPayCreateOrderType } from '@/types/dataTypes';
+import axios from 'axios';
+import type z from 'zod';
 
 export interface RazorPayCreateOrderResponse {
   orderId: string;
@@ -14,7 +15,7 @@ export const razorPayCreateOrderHandler = async (
 ): Promise<RazorPayCreateOrderResponse> => {
   try {
     const res = await axios.post(
-      "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/razorPayCreateOrder",
+      BACKEND_URL + '/user/razorPayCreateOrder',
       data,
       {
         withCredentials: true,
@@ -33,6 +34,6 @@ export const razorPayCreateOrderHandler = async (
       throw new Error(err.response?.data?.error?.message || err.message);
     }
 
-    throw new Error("There was an unknown error, please try again.");
+    throw new Error('There was an unknown error, please try again.');
   }
 };

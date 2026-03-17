@@ -1,13 +1,12 @@
-import { ProfileUpdateType } from "@/types/dataTypes";
-import axios from "axios";
-import type z from "zod";
+import { BACKEND_URL } from '@/config/app.config';
+import { ProfileUpdateType } from '@/types/dataTypes';
+import axios from 'axios';
+import type z from 'zod';
 
-export const profileDetailsUpdateHandler = async (
-  data: z.infer<typeof ProfileUpdateType>,
-): Promise<void> => {
+export const profileDetailsUpdateHandler = async (data: z.infer<typeof ProfileUpdateType>): Promise<void> => {
   try {
     const res = await axios.post(
-      "https://francisco-unscholarlike-punctually.ngrok-free.dev/user/updateProfileDetails",
+      BACKEND_URL + '/user/updateProfileDetails',
       data,
       {
         withCredentials: true,
@@ -21,6 +20,6 @@ export const profileDetailsUpdateHandler = async (
     if (axios.isAxiosError(err)) {
       throw new Error(err.response?.data?.error?.message || err.message);
     }
-    throw new Error("There was an unknown error, please try again.");
+    throw new Error('There was an unknown error, please try again.');
   }
 };
