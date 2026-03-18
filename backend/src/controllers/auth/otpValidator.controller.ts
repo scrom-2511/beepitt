@@ -29,11 +29,7 @@ export const otpValidateController = async (req: Request, res: Response) => {
     successReturnCall(res, HttpStatus.OK, null);
     return;
   } catch (error) {
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

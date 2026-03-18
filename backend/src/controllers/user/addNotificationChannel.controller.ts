@@ -27,7 +27,10 @@ export const addNotificationChannelController = async (req: Request, res: Respon
       return;
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId }, include: { billing: true } });
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { billing: true, projectSettings: true },
+    });
 
     // If user does not exist return
     if (!user) {
@@ -42,7 +45,13 @@ export const addNotificationChannelController = async (req: Request, res: Respon
     const maxNotificationChannelsLimit = SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxNotificationChannels;
 
     // Get users notification channels
-    const userNotificationChannels = user.notificationChannels;
+    const userNotificationChannels = user.projectSettings?.notificationChannels;
+
+    // Error if users notification channels are not found
+    if (!userNotificationChannels) {
+      throw new Error('user notification channels not found');
+      return;
+    }
 
     // If users notification channel length >= max notification channel limit return
     if (userNotificationChannels.length >= maxNotificationChannelsLimit) {
@@ -70,7 +79,7 @@ export const addNotificationChannelController = async (req: Request, res: Respon
 
     // Only hit the DB if there are actually new channels to add
     if (notificationChannelsToAdd.length > 0) {
-      await prisma.user.update({
+      await prisma.projectSettings.update({
         where: { id: userId },
         data: {
           notificationChannels: {

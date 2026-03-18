@@ -11,10 +11,7 @@ enum Tier {
   starter = 'starter',
 }
 
-export const razorpayCreateOrderController = async (
-  req: Request,
-  res: Response,
-) => {
+export const razorpayCreateOrderController = async (req: Request, res: Response) => {
   try {
     console.log(req.userId);
     const validateData = RazorPayCreateOrderType.safeParse(req.body);
@@ -55,11 +52,7 @@ export const razorpayCreateOrderController = async (
     return;
   } catch (error) {
     console.error(error);
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

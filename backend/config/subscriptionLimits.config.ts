@@ -1,4 +1,4 @@
-import { SubscriptionTier } from '../generated/prisma/client';
+import { SubscriptionTier } from "../generated/prisma/enums";
 
 type PlanLimits = {
   maxEvents: number;

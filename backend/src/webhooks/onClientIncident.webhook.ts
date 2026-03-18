@@ -10,8 +10,10 @@ import { notificationChannelChatIdsCheckerAndGetter } from '../helpers/project/n
 import { errorReturnCall } from '../helpers/returnCall/error.returnCall';
 import { eventCountChecker } from '../helpers/user/eventCountChecker.helper';
 import { getSelectedNotificationChannelsOfUser } from '../helpers/user/getSelectedNotificationChannelsOfUser.helper';
+import { EventIdAndType } from '../types/applicationTypes';
 import { ClientCallType } from '../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../types/errorCodes';
+import { Event } from '../types/prismaTypes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
@@ -62,6 +64,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
 
     // Event throttling
     const throttlingResult = await eventThrottlingChecker(user, validateData.data);
+    let event!: Event;
 
     // If event exists and we dont have to send the notification, udpate the event
     if (throttlingResult.hasActiveEvent && !throttlingResult.sendNotification) {
@@ -75,6 +78,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           }),
         },
       });
+      event = throttlingResult.event;
 
       res.status(HttpStatus.OK).json({ message: 'Notification throttled' });
       return;
@@ -88,11 +92,12 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           firstOccurenceAfterLastNotificationSent: null,
         },
       });
+      event = throttlingResult.event;
     } else if (!throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
       // Gemerate hash key for the event
       const eventHashKey = generateHashKey(validateData.data);
       // Create an incident in the db
-      await prisma.event.create({
+      event = await prisma.event.create({
         data: {
           ...validateData.data,
           lastNotificationSent: new Date(),
@@ -106,13 +111,16 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     }
 
     // Check and get the notification channel's chat ids
-    const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user);
+    const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user, event.type);
 
     // Get selected notification channels of user
     const channels = getSelectedNotificationChannelsOfUser(user);
 
+    // Extract event id and type
+    const eventIdAndType: EventIdAndType = { id: event.id, type: event.type };
+
     // Enqueue notifications
-    await enqueueNotificationsOnClientCall(userId, channels, allChatIdsInfo);
+    await enqueueNotificationsOnClientCall(user, eventIdAndType, channels, allChatIdsInfo);
 
     // Increase events used of user by 1
     await prisma.projectSettings.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });

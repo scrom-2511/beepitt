@@ -48,20 +48,17 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
       });
 
       const now = new Date();
-      const baseDate =
-        userData?.billing?.validTill! > now
-          ? userData?.billing?.validTill!
-          : now;
+      const baseDate = userData?.billing?.validTill! > now ? userData?.billing?.validTill! : now;
 
       const updatedValidTill = new Date(baseDate);
-      updatedValidTill.setDate(updatedValidTill.getDate() + 30);
+      updatedValidTill.setUTCDate(updatedValidTill.getUTCDate() + 30);
 
       await prisma.user.update({
         where: { id: Number(entity.notes.userId) },
         data: {
           billing: {
             update: {
-              subscription_tier: 'Premium',
+              subscription_tier: 'Starter',
               currentStatus: 'Active',
               validTill: updatedValidTill,
             },

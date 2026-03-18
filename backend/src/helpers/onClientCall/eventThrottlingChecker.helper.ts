@@ -1,11 +1,8 @@
 import z from 'zod';
-import { Prisma } from '../../../generated/prisma/client';
 import { prisma } from '../../database/prismaClient';
 import { ClientCallType } from '../../types/dataTypes';
-import { UserWithOtherDetails } from '../../types/prismaTypes';
+import { Event, UserWithOtherDetails } from '../../types/prismaTypes';
 import { generateHashKey } from './generateHashKey.helper';
-
-type Event = Prisma.EventGetPayload<{}>;
 
 type EventThrottlingResult =
   | { hasActiveEvent: true; sendNotification: boolean; event: Event }

@@ -12,4 +12,5 @@ export const errorReturnCall = (res: Response, statusCode: HttpStatus, errorCode
       message: meta.message,
     },
   });
+  return;
 };

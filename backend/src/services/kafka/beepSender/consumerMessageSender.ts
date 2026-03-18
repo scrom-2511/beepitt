@@ -1,6 +1,6 @@
-import { prisma } from "../../../database/prismaClient";
-import { beepitt } from "../../../utils/beepitt.util";
-import { kafka } from "../kafkaClient";
+import { prisma } from '../../../database/prismaClient';
+import { beepitt } from '../../../utils/beepitt.util';
+import { kafka } from '../kafkaClient';
 
 const consumer = kafka.consumer({
   groupId: `message-sender-consumer-${process.pid}`,
@@ -8,7 +8,7 @@ const consumer = kafka.consumer({
 
 export const consumerConnect = async () => {
   await consumer.connect();
-  await consumer.subscribe({ topic: "message-sender" });
+  await consumer.subscribe({ topic: 'message-sender' });
 };
 
 export const consumeMessageForMessageSender = async () => {
@@ -48,7 +48,7 @@ export const consumeMessageForMessageSender = async () => {
           },
         ]);
       } catch (err) {
-        console.error("Message sender failed:", err);
+        console.error('Message sender failed:', err);
       }
     },
   });

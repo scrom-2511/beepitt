@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../../database/prismaClient';
 import { HttpStatus } from '../../types/errorCodes';
 import { verifyGoogleToken } from '../../utils/verifyGoogleToken.util';
@@ -12,7 +11,7 @@ export const googleAuthController = async (req: Request, res: Response) => {
 
   const authAccount = await prisma.authAccount.findUnique({
     where: {
-      provider: 'GOOGLE',
+      provider: 'google',
       providerId: googleUser.googleId,
     },
     include: { user: true },
@@ -29,7 +28,7 @@ export const googleAuthController = async (req: Request, res: Response) => {
     if (user) {
       await prisma.authAccount.create({
         data: {
-          provider: 'GOOGLE',
+          provider: 'google',
           providerId: googleUser.googleId,
           userId: user.id,
         },
@@ -44,20 +43,20 @@ export const googleAuthController = async (req: Request, res: Response) => {
         username: googleUser.name,
         authAccounts: {
           create: {
-            provider: 'GOOGLE',
+            provider: 'google',
             providerId: googleUser.googleId,
           },
         },
-        identifierKey: uuidv4(),
         billing: {
           create: {
-            currentStatus: 'Active',
-            subscription_tier: 'Free',
-            validTill: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            currentStatus: 'active',
+            subscription_tier: 'free',
+            validTill: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           },
         },
         password: '',
-        emailVerified: true
+        emailVerified: true,
+        eventsUsed: 0,
       },
     });
   }

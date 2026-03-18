@@ -5,10 +5,7 @@ import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { TimeZoneAndPreferencesUpdateType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
-export const updateTimeZoneAndPreferencesController = async (
-  req: Request,
-  res: Response,
-) => {
+export const updateTimeZoneAndPreferencesController = async (req: Request, res: Response) => {
   try {
     const validateData = TimeZoneAndPreferencesUpdateType.safeParse(req.body);
     if (!validateData.success) {
@@ -25,11 +22,7 @@ export const updateTimeZoneAndPreferencesController = async (
     return;
   } catch (error) {
     console.error('Error updating user preferences:', error);
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

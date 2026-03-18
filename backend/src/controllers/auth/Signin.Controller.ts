@@ -23,25 +23,10 @@ export const signinController = async (req: Request, res: Response) => {
       return;
     }
 
-    // if (data.otpVerified === false) {
-    //   res.status(HttpStatus.UNAUTHORIZED).json({
-    //     success: false,
-    //     error: {
-    //       id: ERROR_CODES.OTP_VERIFICATION_NEEDED.id,
-    //       code: ERROR_CODES.OTP_VERIFICATION_NEEDED.code,
-    //       message: ERROR_CODES.OTP_VERIFICATION_NEEDED.message,
-    //     },
-    //   });
-    //   return;
-    // }
-
-    const isPasswordValid = await bcrypt.compare(
-      validateData.data.password,
-      data.password!,
-    );
+    const isPasswordValid = await bcrypt.compare(validateData.data.password, data.password!);
 
     if (!isPasswordValid) {
-      errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+      errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.USER_NOT_FOUND);
       return;
     }
 
@@ -53,20 +38,17 @@ export const signinController = async (req: Request, res: Response) => {
     res
       .cookie('authToken', authToken, {
         httpOnly: true,
-        secure: true, // REQUIRED
-        sameSite: 'none', // REQUIRED for cross-site
+        secure: true,
+        sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
       })
       .status(HttpStatus.CREATED)
       .json({ success: true, data: { timeZone: data.timezone } });
 
     return;
   } catch (error) {
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

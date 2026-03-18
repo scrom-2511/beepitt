@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
 import { prisma } from '../../database/prismaClient';
 import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
 import { sendOTPEmail } from '../../services/mailgun/sendOtpMail';
@@ -28,8 +27,8 @@ export const signupController = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(validateData.data.password, 10);
-
-    const identifierKey = uuidv4();
+    const validTill = new Date();
+    validTill.setUTCDate(validTill.getUTCDate() + 30);
 
     const newUser = await prisma.user.create({
       data: {
@@ -37,15 +36,25 @@ export const signupController = async (req: Request, res: Response) => {
         username: validateData.data.username,
         timezone: validateData.data.timezone,
         password: hashedPassword,
-        identifierKey,
         billing: {
           create: {
-            currentStatus: 'Active',
-            subscription_tier: 'Free',
-            validTill: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+            currentStatus: 'active',
+            subscription_tier: 'free',
+            validTill: validTill,
           },
         },
         emailVerified: false,
+        configuration: {
+          create: {
+            eventsUsed: 0,
+            eventTriggerCount: 0,
+            eventTriggerWindow: 0,
+            globalThrottleWindow: 0,
+            maxRetries: 0,
+            retryOffset: 0,
+            notificationChannels: [],
+          },
+        },
       },
     });
 
@@ -71,11 +80,7 @@ export const signupController = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

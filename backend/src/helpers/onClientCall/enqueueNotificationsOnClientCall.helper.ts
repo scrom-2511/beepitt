@@ -1,8 +1,8 @@
 import { NotificationChannels } from '../../../generated/prisma/enums';
 import { enqueueDiscordNotifications } from '../../services/bullmq/producers/discordNotifications.producer';
 import { enqueueTelegramNotifications } from '../../services/bullmq/producers/telegramNotifications.producer';
-import { ChatIdsInfo, NotificationJob } from '../../types/applicationTypes';
-import { NotificationType } from '../../types/dataTypes';
+import { ChatIdsInfo, EventIdAndType, NotificationJob } from '../../types/applicationTypes';
+import { UserWithOtherDetails } from '../../types/prismaTypes';
 
 const enqueuerMap: Record<NotificationChannels, (args: NotificationJob) => Promise<void>> = {
   [NotificationChannels.discord]: enqueueDiscordNotifications,
@@ -12,12 +12,14 @@ const enqueuerMap: Record<NotificationChannels, (args: NotificationJob) => Promi
 };
 
 export const enqueueNotificationsOnClientCall = async (
-  userId: number,
+  user: UserWithOtherDetails,
+  event: EventIdAndType,
   notificationChannels: NotificationChannels[],
   allChatIdsInfo: ChatIdsInfo[],
 ) => {
   // Set of notification channel
   const enabledChannels = new Set(notificationChannels);
+  const jobs: Promise<void>[] = [];
 
   for (const channelInfo of allChatIdsInfo) {
     const channelName = channelInfo.channel;
@@ -30,14 +32,36 @@ export const enqueueNotificationsOnClientCall = async (
 
     // Get the enqueuer
     const enqueuer = enqueuerMap[channelName];
+    if (!enqueuer) continue;
 
     // If enqueuer exists, enqueue notification
-    if (enqueuer) {
-      await enqueuer({
-        userId,
+    jobs.push(
+      enqueuer({
+        userId: user.id,
         data: channelInfo.chatIds,
-        type: NotificationType.incident,
-      });
+        type: event.type,
+        jobId: `${event.id}`,
+        delay: 0,
+      }),
+    );
+
+    const projectSettings = user.projectSettings;
+    let maxRetries = projectSettings?.maxRetries!;
+    const retryOffset = projectSettings?.retryOffset!;
+
+    if (user.billing?.subscription_tier === 'pro') {
+      for (let retry = 1; retry <= maxRetries; retry++) {
+        jobs.push(
+          enqueuer({
+            userId: user.id,
+            data: channelInfo.chatIds,
+            type: event.type,
+            jobId: `${event.id}-retry-${retry}`,
+            delay: retryOffset * retry,
+          }),
+        );
+      }
     }
   }
+  await Promise.all(jobs);
 };

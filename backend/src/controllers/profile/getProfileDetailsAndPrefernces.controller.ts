@@ -4,10 +4,7 @@ import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
 import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
-export const getProfileDetailsAndPreferncesController = async (
-  req: Request,
-  res: Response,
-) => {
+export const getProfileDetailsAndPreferncesController = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
 
@@ -26,11 +23,7 @@ export const getProfileDetailsAndPreferncesController = async (
     return;
   } catch (error) {
     console.error(error);
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

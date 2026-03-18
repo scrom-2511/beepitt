@@ -1,11 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
 
-export const checkLastId = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const checkLastId = (req: Request, res: Response, next: NextFunction) => {
   try {
     const lastIdRaw = req.query.lastId;
     const lastId = lastIdRaw ? Number(lastIdRaw) : null;

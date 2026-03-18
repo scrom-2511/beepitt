@@ -4,22 +4,20 @@ import { errorReturnCall } from '../../../helpers/returnCall/error.returnCall';
 import { successReturnCall } from '../../../helpers/returnCall/success.returnCall';
 import { ErrorCode, HttpStatus } from '../../../types/errorCodes';
 
-export const getAllClosedIssuesController = async (
-  req: Request,
-  res: Response,
-) => {
+export const getAllClosedIssuesController = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
 
     const PAGE_SIZE = 10;
     const lastId = Number(req.query.lastId);
 
-    const issues = await prisma.issue.findMany({
+    const issues = await prisma.event.findMany({
       where: {
         userId,
-        issuePriority: {
-          in: ['Closed'],
+        priority: {
+          in: ['closed'],
         },
+        type: 'issue',
       },
       orderBy: [{ id: 'desc' }],
       ...(lastId && {
@@ -29,19 +27,14 @@ export const getAllClosedIssuesController = async (
       take: PAGE_SIZE,
     });
 
-    const nextCursor =
-      issues.length === PAGE_SIZE ? issues[issues.length - 1].id : null;
+    const nextCursor = issues.length === PAGE_SIZE ? issues[issues.length - 1].id : null;
 
     successReturnCall(res, HttpStatus.OK, { issues, nextCursor });
 
     return;
   } catch (error) {
     console.error(error);
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

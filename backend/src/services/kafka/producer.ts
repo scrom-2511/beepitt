@@ -1,4 +1,4 @@
-import { kafka } from "./kafkaClient";
+import { kafka } from './kafkaClient';
 
 const producer = kafka.producer();
 let isConnected = false;

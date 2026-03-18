@@ -1,5 +1,5 @@
 import { Worker } from 'bullmq';
-import { NotificationJob } from '../../../types/dataTypes';
+import { NotificationJob } from '../../../types/applicationTypes';
 import { telegramBeep } from '../../../utils/telegramBeep.utils';
 import { redis } from '../../redis/redisClient';
 

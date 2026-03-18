@@ -14,7 +14,7 @@ export const eventCountChecker = (user: UserWithOtherDetails): boolean => {
   const tierLimits = SUBSCRIPTION_LIMITS[tier];
 
   // Get users events used
-  const userEventCount = user.eventsUsed ?? 0;
+  const userEventCount = user.projectSettings?.eventsUsed ?? 0;
 
   // If users event count >= max events limit, return true, else return false
   return userEventCount >= tierLimits.maxEvents;

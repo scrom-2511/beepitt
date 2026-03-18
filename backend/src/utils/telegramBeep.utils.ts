@@ -1,4 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
+import { BACKEND_URL } from '../../config/app.config';
 import { SUBSCRIPTION_LIMITS } from '../../config/subscriptionLimits.config';
 import { EventType } from '../../generated/prisma/enums';
 import { prisma } from '../database/prismaClient';
@@ -10,7 +11,7 @@ const token = process.env.TELEGRAM_SECRET_TOKEN!;
 export const bot = new TelegramBot(token, { webHook: true });
 
 // Register webhook
-bot.setWebHook('https://francisco-unscholarlike-punctually.ngrok-free.dev/app/webhook/telegramBot', {
+bot.setWebHook(BACKEND_URL + '/app/webhook/telegramBot', {
   secret_token: 'somethiadf',
 });
 
@@ -95,7 +96,7 @@ bot.on('message', async (msg) => {
 
       // Determine maximum allowed recipients for user's subscription
       const maxRecepients =
-        field === "telegramChatIds"
+        field === 'telegramChatIds'
           ? SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients
           : SUBSCRIPTION_LIMITS[userSubscriptionTier!].maxRecepients2;
 

@@ -5,13 +5,13 @@ import { prisma } from '../../database/prismaClient';
 import { getProjectByProjectName } from '../../helpers/project/getProjectByProjectName.helper.';
 import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
 import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
-import { CreateProjectType } from '../../types/dataTypes';
+import { ProjectNameType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
 export const createProjectController = async (req: Request, res: Response) => {
   try {
     // Validate the data
-    const validateData = CreateProjectType.safeParse(req.body);
+    const validateData = ProjectNameType.safeParse(req.body);
 
     // Return if validation fails
     if (!validateData.success) {
@@ -31,7 +31,7 @@ export const createProjectController = async (req: Request, res: Response) => {
     // Get user along with billing and project with contact details for each project
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { billing: true, project: { include: { contactDetails: true } } },
+      include: { billing: true, project: { include: { contactDetails: true } }, configuration: true },
     });
 
     // If user does not exist return
@@ -63,10 +63,17 @@ export const createProjectController = async (req: Request, res: Response) => {
 
     // Generate an identifier key
     const identifierKey = uuidv4();
+    const identifierKey2 = uuidv4();
 
     // Else create a project for the user
     await prisma.project.create({
-      data: { identifierKey, projectName: validateData.data.projectName, userId },
+      data: {
+        identifierKey,
+        identifierKey2,
+        projectName: validateData.data.projectName,
+        userId,
+        projectDesc: validateData.data.projectDesc,
+      },
     });
 
     successReturnCall(res, HttpStatus.OK, { identifierKey });

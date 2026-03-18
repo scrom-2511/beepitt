@@ -5,10 +5,7 @@ import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { ProfileUpdateType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
-export const updateProfileDetailsController = async (
-  req: Request,
-  res: Response,
-) => {
+export const updateProfileDetailsController = async (req: Request, res: Response) => {
   try {
     const validateData = ProfileUpdateType.safeParse(req.body);
     if (!validateData.success) {
@@ -28,11 +25,7 @@ export const updateProfileDetailsController = async (
     return;
   } catch (error) {
     console.log(error);
-    errorReturnCall(
-      res,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      ErrorCode.INTERNAL_SERVER_ERROR,
-    );
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }
 };

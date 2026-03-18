@@ -1,6 +1,7 @@
 import { mg } from './mailgunClient';
 
 export const sendOTPEmail = async (toEmail: string, otp: number) => {
+  console.log(otp);
   try {
     const data = await mg.messages.create('beepitt.scrom.in', {
       from: 'Beepitt <no-reply@beepitt.scrom.in>',

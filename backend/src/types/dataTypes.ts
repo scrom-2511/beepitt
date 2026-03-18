@@ -61,6 +61,7 @@ export const UpdateIncidentSeenType = z.object({
 
 export const ProjectNameType = z.object({
   projectName: z.string(),
+  projectDesc: z.string(),
 });
 
 export const ExportLogsType = z.object({
@@ -68,6 +69,18 @@ export const ExportLogsType = z.object({
   exportType: z.enum(['csv', 'json']),
 });
 
+type ExportLogsInput = z.infer<typeof ExportLogsType>['exportType'];
+
+const something: ExportLogsInput = 'csv';
+
 export const AddNotificationChannel = z.object({
   channels: z.array(z.enum(NotificationChannels)).min(1),
+});
+
+export const UpdateNotificationChannelsType = z.object({
+  channels: z.array(z.enum(NotificationChannels)),
+});
+
+export const UpdateGlobalThrottleWindowType = z.object({
+  globalThrottleWindow: z.number(),
 });

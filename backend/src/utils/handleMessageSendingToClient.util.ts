@@ -1,5 +1,5 @@
-import { produceMessageForMessageSender } from "../services/kafka/beepSender/producerMessageSender";
-import { ProducerMessage } from "../types/dataTypes";
+import { produceMessageForMessageSender } from '../services/kafka/beepSender/producerMessageSender';
+import { ProducerMessage } from '../types/dataTypes';
 
 interface InputData {
   name: string;
@@ -7,8 +7,7 @@ interface InputData {
   userId: number;
 }
 
-export const handleMessageSendingToClient = async(data: InputData) => {
-
+export const handleMessageSendingToClient = async (data: InputData) => {
   const dataToSend: ProducerMessage = {
     key: data.userId.toString(),
     value: JSON.stringify(data),

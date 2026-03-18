@@ -1,132 +1,70 @@
-import { Request, Response } from 'express';
-import { prisma } from '../database/prismaClient';
-import { enqueueDiscordNotifications } from '../services/bullmq/producers/discordNotifications.producer';
-import { enqueueTelegramNotifications } from '../services/bullmq/producers/telegramNotifications.producer';
-import { NotificationType, onClientIssueType } from '../types/dataTypes';
-import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
+// import { Request, Response } from 'express';
+// import { prisma } from '../database/prismaClient';
+// import { projectExistsChecker } from '../helpers/project/getProjectByProjectName.helper.';
+// import { chatIdsCheckerAndNotificationEnque } from '../helpers/project/notificationChannelChatIdsCheckerAndGetter.helper';
+// import { errorReturnCall } from '../helpers/returnCall/error.returnCall';
+// import { successReturnCall } from '../helpers/returnCall/success.returnCall';
+// import { eventCountChecker } from '../helpers/user/eventCountChecker.helper';
+// import { onClientIssueType } from '../types/dataTypes';
+// import { ErrorCode, HttpStatus } from '../types/errorCodes';
 
-export const onClientIssueWebhook = async (req: Request, res: Response) => {
-  try {
-    const validateData = onClientIssueType.safeParse(req.body);
+// export const onClientIssueWebhook = async (req: Request, res: Response) => {
+//   try {
+//     const validateData = onClientIssueType.safeParse(req.body);
+//     console.log(req.body);
 
-    if (!validateData.success) {
-      res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        error: {
-          id: ERROR_CODES.INVALID_INPUT.code,
-          code: ERROR_CODES.INVALID_INPUT.code,
-          message: ERROR_CODES.INVALID_INPUT.message,
-        },
-      });
-      return;
-    }
+//     if (!validateData.success) {
+//       errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
+//       return;
+//     }
 
-    const userId = req.userId!;
-    let telegramChatIdsPresent = false;
-    let discordChatIdsPresent = false;
+//     const userId = req.userId!;
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { contactDetails: true, billing: true },
-    });
+//     const user = await prisma.user.findUnique({
+//       where: { id: userId },
+//       include: {
+//         billing: true,
+//         project: { include: { contactDetails: true } },
+//       },
+//     });
 
-    if (user?.billing?.subscription_tier === 'Free') {
-      const projectName = validateData.data.projectName.toLowerCase();
+//     const normalizedProjectName = validateData.data.projectName.toLowerCase();
 
-      if (user.projects.length === 0) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            projects: [projectName],
-          },
-        });
-      } else if (user.projects[0] !== projectName) {
-        res.status(HttpStatus.FORBIDDEN).json({
-          success: false,
-          error: {
-            code: ERROR_CODES.PROJECT_LIMIT_REACHED_FREE.code,
-            message: ERROR_CODES.PROJECT_LIMIT_REACHED_FREE.message,
-          },
-        });
-        return;
-      }
-    } else if (user?.billing?.subscription_tier === 'Premium') {
-      const projectName = validateData.data.projectName.toLowerCase();
-      const projects = user.projects ?? [];
+//     const projectExists = await projectExistsChecker(req, res, normalizedProjectName, user);
 
-      if (projects.includes(projectName)) {
-        return;
-      }
+//     if (!projectExists) {
+//       errorReturnCall(res, HttpStatus.NOT_FOUND, ErrorCode.PROJECT_NOT_FOUND);
+//       return;
+//     }
 
-      if (projects.length < 4) {
-        await prisma.user.update({
-          where: { id: userId },
-          data: {
-            projects: [...projects, projectName],
-          },
-        });
-      } else {
-        res.status(HttpStatus.FORBIDDEN).json({
-          success: false,
-          error: {
-            code: ERROR_CODES.PROJECT_LIMIT_REACHED_PREMIUM.code,
-            message: ERROR_CODES.PROJECT_LIMIT_REACHED_PREMIUM.message,
-          },
-        });
-        return;
-      }
-    }
+//     const eventCountExceeds = eventCountChecker(res, user);
 
-    const contactDetails = user?.contactDetails;
+//     if (eventCountExceeds) {
+//       errorReturnCall(res, HttpStatus.FORBIDDEN, ErrorCode.EVENTS_LIMIT_REACHED);
+//       return;
+//     }
 
-    if (
-      contactDetails?.discordChatIds.length &&
-      contactDetails.discordChatIds.length > 0
-    ) {
-      discordChatIdsPresent = true;
-      await enqueueDiscordNotifications({
-        userId: req.userId!,
-        data: contactDetails.discordChatIds,
-        type: NotificationType.Issue,
-      });
-    }
+//     const { discordChatIdsPresent, telegramChatIdsPresent } = await chatIdsCheckerAndNotificationEnque(
+//       req,
+//       normalizedProjectName,
+//       user,
+//     );
 
-    if (
-      contactDetails?.telegramChatIds.length &&
-      contactDetails.telegramChatIds.length > 0
-    ) {
-      telegramChatIdsPresent = true;
-      await enqueueTelegramNotifications({
-        userId: req.userId!,
-        data: contactDetails.telegramChatIds,
-        type: NotificationType.Issue,
-      });
-    }
+//     await prisma.issue.create({
+//       data: { ...validateData.data, userId, issuePriority: 'Unseen' },
+//     });
 
-    await prisma.issue.create({
-      data: { ...validateData.data, userId, issuePriority: 'Unseen' },
-    });
+//     if (!discordChatIdsPresent) {
+//       errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.NO_DISCORD_ACCOUNT_LINKED);
+//     } else if (!telegramChatIdsPresent) {
+//       errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.NO_TELEGRAM_ACCOUNT_LINKED);
+//     } else {
+//       successReturnCall(res, HttpStatus.OK, null);
+//     }
 
-    if (!discordChatIdsPresent) {
-      res.status(HttpStatus.CONFLICT).json({
-        success: false,
-        error: {
-          message: 'No discord accounts linked!',
-        },
-      });
-    } else if (!telegramChatIdsPresent) {
-      res.status(HttpStatus.CONFLICT).json({
-        success: false,
-        error: {
-          message: 'No telegram accounts linked!',
-        },
-      });
-    } else {
-      res.status(HttpStatus.OK).json({
-        success: true,
-      });
-    }
-
-    return;
-  } catch (error) {}
-};
+//     return;
+//   } catch (error) {
+//     errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
+//     return;
+//   }
+// };

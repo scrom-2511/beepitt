@@ -18,9 +18,7 @@ export const consumerBeepMessageSenderRetry = async () => {
     eachMessage: async ({ topic, partition, message, heartbeat }) => {
       if (!message.value || !message.key) return;
 
-      const parsedMessage: RetryQueueMessage = JSON.parse(
-        message.value.toString(),
-      );
+      const parsedMessage: RetryQueueMessage = JSON.parse(message.value.toString());
 
       try {
         await heartbeat();

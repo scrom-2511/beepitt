@@ -45,15 +45,15 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  authAccounts    AuthAccount[]
-  events          Event[]
-  orders          Orders[]
-  billing         Billing?
-  project         Project[]
-  projectSettings ProjectSettings?
+  authAccounts  AuthAccount[]
+  events        Event[]
+  orders        Orders[]
+  billing       Billing?
+  project       Project[]
+  configuration Configuration?
 }
 
-model ProjectSettings {
+model Configuration {
   id                   Int                    @id @default(autoincrement())
   eventsUsed           Int
   globalThrottleWindow Int
@@ -72,10 +72,13 @@ model Project {
   identifierKey  String          @unique
   identifierKey2 String          @unique
   projectName    String
+  projectDesc    String
   userId         Int
   contactDetails ContactDetails?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@unique([projectName, userId])
 }
 
 enum CurrentStatus {
