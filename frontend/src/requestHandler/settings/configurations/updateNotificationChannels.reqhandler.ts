@@ -1,13 +1,14 @@
 import { BACKEND_URL } from '@/config/app.config';
+import type { NotificationChannels } from '@/types/dataTypes';
 import axios from 'axios';
 
 type UpdateNotificationChannelsPayload = {
-  channels: ('slack' | 'email' | 'telegram' | 'discord')[];
+  channels: NotificationChannels[];
 };
 
 export const updateNotificationChannelsHandler = async (data: UpdateNotificationChannelsPayload): Promise<void> => {
   try {
-    const res = await axios.patch(BACKEND_URL + '/user/updateNotificationChannels', data, { withCredentials: true });
+    const res = await axios.post(BACKEND_URL + '/user/updateNotificationChannels', data, { withCredentials: true });
 
     if (res.data.success) {
       return;

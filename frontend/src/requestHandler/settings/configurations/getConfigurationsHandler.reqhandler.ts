@@ -1,7 +1,6 @@
 import { BACKEND_URL } from '@/config/app.config';
+import type { NotificationChannels } from '@/types/dataTypes';
 import axios from 'axios';
-
-export type NotificationChannels = 'telegram' | 'discord' | 'slack' | 'email';
 
 export interface ConfigurationsResponse {
   globalThrottleWindow: number;
@@ -19,6 +18,7 @@ export const getConfigurationsHandler = async (): Promise<ConfigurationsResponse
     });
 
     if (res.data.success) {
+      console.log(res.data.data);
       return res.data.data as ConfigurationsResponse;
     }
 

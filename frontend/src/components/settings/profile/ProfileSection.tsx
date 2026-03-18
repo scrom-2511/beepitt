@@ -21,7 +21,18 @@ const ProfileSection = () => {
   });
 
   if (isError || isLoading) {
-    return <Fallback data={undefined} error={error} isError={isError} isLoading={isLoading} refetch={refetch} emptyTitle='Settings' />;
+    return (
+      <Fallback
+        data={undefined}
+        error={error}
+        isError={isError}
+        isLoading={isLoading}
+        refetch={refetch}
+        emptyTitle="Settings"
+        addNew={false}
+        loadingTitle="profile"
+      />
+    );
   }
 
   const sections = [

@@ -1,24 +1,13 @@
 import Fallback from '@/components/dashboard/Fallback';
 import { CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Field, FieldGroup } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { getConfigurationsHandler } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { useQuery } from '@tanstack/react-query';
+import NotificationChannels from './NotificationChannelsSection';
+import ThrottlingSection from './ThrottlingSection';
 const ConfigurationSection = () => {
   const {
-    data: projectDetails,
+    data: configurations,
     isLoading,
     isPending,
     isError,
@@ -26,10 +15,10 @@ const ConfigurationSection = () => {
     refetch,
   } = useQuery({
     queryKey: ['getConfigurations'],
-    queryFn: () => getConfigurationsHandler,
+    queryFn: getConfigurationsHandler,
   });
 
-  if (isError || !projectDetails)
+  if (isError || !configurations)
     return (
       <Fallback
         data={undefined}
@@ -46,12 +35,12 @@ const ConfigurationSection = () => {
     {
       title: 'Notification Channels',
       description: 'Select your notification channels',
-      content: <NotificationChannels />,
+      content: <NotificationChannels configurations={configurations} />,
     },
     {
       title: 'Throttling',
       description: 'Configure throttling. Throttling will take effect after at least one notification is sent',
-      content: <Throttling />,
+      content: <ThrottlingSection configurations={configurations} />,
     },
   ];
 
@@ -77,48 +66,3 @@ const ConfigurationSection = () => {
   );
 };
 export default ConfigurationSection;
-
-const NotificationChannels = () => {
-  const channels = ['slack', 'email', 'telegram', 'discord'];
-
-  return (
-    <section className="flex flex-col gap-6 text-muted-foreground text-sm">
-      <FieldGroup className="w-full">
-        {channels.map((channel) => (
-          <Field key={channel} orientation="horizontal" className="flex justify-between">
-            <Label
-              htmlFor={`${channel}-checkbox`}
-              className="text-foreground text-lg mb-2 font-poppins font-light capitalize"
-            >
-              {channel}
-            </Label>
-
-            <Checkbox className="size-8" id={`${channel}-checkbox`} name={`${channel}-checkbox`} />
-          </Field>
-        ))}
-      </FieldGroup>
-    </section>
-  );
-};
-
-const Throttling = () => {
-  return (
-    <section className="flex items-center text-foreground gap-4 text-sm">
-      <h1 className="font-poppins font-light text-lg">Send a new notification for the same event after,</h1>
-      <Input className="w-20 text-center" />
-      <Select>
-        <SelectTrigger className="w-full max-w-48">
-          <SelectValue placeholder="Time units" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Fruits</SelectLabel>
-            <SelectItem value="sec">seconds</SelectItem>
-            <SelectItem value="minutes">minutes</SelectItem>
-            <SelectItem value="hours">hours</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-    </section>
-  );
-};
