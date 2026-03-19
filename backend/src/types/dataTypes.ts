@@ -84,3 +84,9 @@ export const UpdateNotificationChannelsType = z.object({
 export const UpdateGlobalThrottleWindowType = z.object({
   globalThrottleWindow: z.number(),
 });
+
+export const UpdateProThrottleType = z.object({
+  eventTriggerCount: z.number(),
+  eventTriggerWindow: z.number(),
+  globalThrottleWindow: z.number(),
+});

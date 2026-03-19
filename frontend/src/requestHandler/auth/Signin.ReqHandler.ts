@@ -1,4 +1,5 @@
 import { BACKEND_URL } from '@/config/app.config';
+import type { SubscriptionTier } from '@/types/applicationTypes';
 import { LoginType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
@@ -10,6 +11,7 @@ export interface SigninRequest {
 
 interface SigninResponse {
   timeZone: string;
+  userSubscriptionTier: SubscriptionTier;
 }
 
 export const signinHandler = async (data: z.infer<typeof LoginType>): Promise<SigninResponse> => {

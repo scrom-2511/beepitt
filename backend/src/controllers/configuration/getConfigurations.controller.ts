@@ -37,21 +37,8 @@ export const getConfigurationsController = async (req: Request, res: Response) =
         retryOffset: 0,
         notificationChannels: [],
       });
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
-      console.log('Project does not exists bahiiiiiiiiii');
       return;
     }
-
-    console.log('Project exists bahiiiiiiiiii');
-    console.log('Project exists bahiiiiiiiiii');
-    console.log('Project exists bahiiiiiiiiii');
-    console.log('Project exists bahiiiiiiiiii');
-    console.log('Project exists bahiiiiiiiiii');
 
     // Return response
     successReturnCall(res, HttpStatus.OK, {

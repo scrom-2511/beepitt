@@ -68,16 +68,16 @@ export const ExportLogsType = z.object({
   exportType: z.enum(['csv', 'json']),
 });
 
-type ExportLogsInput = z.infer<typeof ExportLogsType>['exportType'];
-
-const something: ExportLogsInput = 'csv';
-
 export const AddNotificationChannel = z.object({
   channels: z.array(z.enum(['telegram', 'discord', 'slack', 'email'])).min(1),
 });
 
-export type NotificationChannels = 'telegram' | 'discord' | 'slack' | 'email';
-
 export const UpdateGlobalThrottleWindowType = z.object({
+  globalThrottleWindow: z.number(),
+});
+
+export const UpdateProThrottleType = z.object({
+  eventTriggerCount: z.number(),
+  eventTriggerWindow: z.number(),
   globalThrottleWindow: z.number(),
 });

@@ -1,15 +1,6 @@
 import { BACKEND_URL } from '@/config/app.config';
+import type { CurrentStatus, SubscriptionTier } from '@/types/applicationTypes';
 import axios from 'axios';
-
-enum CurrentStatus {
-  'Active',
-  'Inactive',
-}
-
-export enum SubscriptionTier {
-  'Free',
-  'Starter',
-}
 
 export interface BillingDetailsResponse {
   id: number;

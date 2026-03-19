@@ -1,5 +1,5 @@
 import { Loading } from '@/components/Loading';
-import { getBillingDetailsHandler, SubscriptionTier } from '@/requestHandler/billing/getBillingDetails.reqhandler';
+import { getBillingDetailsHandler } from '@/requestHandler/billing/getBillingDetails.reqhandler';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,13 +17,13 @@ const PaymentConfirmation = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (billingDetails?.subscription_tier === SubscriptionTier.Starter) {
+    if (billingDetails?.subscription_tier === 'starter') {
       const timer = setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
 
       return () => clearTimeout(timer);
-    } else if (billingDetails?.subscription_tier === SubscriptionTier.Free) {
+    } else if (billingDetails?.subscription_tier === 'free') {
       const timer = setTimeout(() => {
         navigate('/pricing');
       }, 2000);
@@ -40,11 +40,11 @@ const PaymentConfirmation = () => {
     return <h1>Something went wrong</h1>;
   }
 
-  if (billingDetails?.subscription_tier === SubscriptionTier.Free) {
+  if (billingDetails?.subscription_tier === 'free') {
     return <h1>Payment unsuccessful. Money will be refunded in case of deduction.</h1>;
   }
 
-  if (billingDetails?.subscription_tier === SubscriptionTier.Starter) {
+  if (billingDetails?.subscription_tier === 'starter') {
     return <h1>Payment Successful</h1>;
   }
 

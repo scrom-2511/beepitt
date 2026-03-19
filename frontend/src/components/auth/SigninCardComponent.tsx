@@ -58,11 +58,16 @@ const SigninCardForm = () => {
     formState: { errors },
   } = useForm<SigninFormValues>();
 
-  const { mutate: signin, isPending } = useMutation({
+  const {
+    data,
+    mutate: signin,
+    isPending,
+  } = useMutation({
     mutationFn: signinHandler,
     onSuccess: (res) => {
       toast.success('Signed in successfully');
       localStorage.setItem('timeZone', res.timeZone);
+      localStorage.setItem('userSubscriptionTier', res.userSubscriptionTier);
       console.log(res.timeZone);
       navigate('/dashboard');
     },

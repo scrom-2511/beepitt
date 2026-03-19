@@ -45,7 +45,7 @@ export const enqueueNotificationsOnClientCall = async (
       }),
     );
 
-    const projectSettings = user.projectSettings;
+    const projectSettings = user.configuration;
     let maxRetries = projectSettings?.maxRetries!;
     const retryOffset = projectSettings?.retryOffset!;
 

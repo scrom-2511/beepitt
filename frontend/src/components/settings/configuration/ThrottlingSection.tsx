@@ -1,22 +1,36 @@
 import ButtonComp from '@/components/ButtonComp';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
-import {
-    type ConfigurationsResponse
-} from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
+import { type ConfigurationsResponse } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { updateGlobalThrottleWindowHandler } from '@/requestHandler/settings/configurations/updateGlobalThrottleWindow.reqhandler';
+import { updateProThrottleHandler } from '@/requestHandler/settings/configurations/updateProThrottleHandler.reqhandler';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+
 const ThrottlingSection = ({ configurations }: { configurations: ConfigurationsResponse }) => {
+  const userSubscriptionTier = localStorage.getItem('userSubscriptionTier');
+
+  if (userSubscriptionTier === 'free') return;
+
+  return userSubscriptionTier === 'starter' ? (
+    <ThrottlingSectionStarter configurations={configurations} />
+  ) : (
+    <ThrottlingSectionPro configurations={configurations} />
+  );
+};
+
+export default ThrottlingSection;
+
+const ThrottlingSectionStarter = ({ configurations }: { configurations: ConfigurationsResponse }) => {
   const [value, setValue] = useState<string>('');
   const [unit, setUnit] = useState<'sec' | 'minutes' | 'hours'>('minutes');
 
@@ -105,7 +119,6 @@ const ThrottlingSection = ({ configurations }: { configurations: ConfigurationsR
         </Select>
       </div>
 
-      {/* ✅ Save Button (only when dirty) */}
       {isDirty && (
         <div className="w-full flex justify-center">
           <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
@@ -117,4 +130,163 @@ const ThrottlingSection = ({ configurations }: { configurations: ConfigurationsR
   );
 };
 
-export default ThrottlingSection
+type ThrottleConfig = {
+  count: number;
+  windowSeconds: number;
+  cooldownSeconds: number;
+};
+
+const ThrottlingSectionPro = ({ configurations }: { configurations: ConfigurationsResponse }) => {
+  const [count, setCount] = useState<string>('');
+
+  const [windowValue, setWindowValue] = useState<string>('');
+  const [windowUnit, setWindowUnit] = useState<'sec' | 'minutes' | 'hours'>('minutes');
+
+  const [cooldownValue, setCooldownValue] = useState<string>('');
+  const [cooldownUnit, setCooldownUnit] = useState<'sec' | 'minutes' | 'hours'>('minutes');
+
+  const [initialState, setInitialState] = useState<{
+    count: number;
+    window: number;
+    cooldown: number;
+  } | null>(null);
+
+  const convertToSeconds = (val: number, unit: string) => {
+    if (unit === 'sec') return val;
+    if (unit === 'minutes') return val * 60;
+    if (unit === 'hours') return val * 3600;
+    return val;
+  };
+
+  const convertFromSeconds = (seconds: number) => {
+    if (seconds % 3600 === 0) {
+      return { value: String(seconds / 3600), unit: 'hours' };
+    }
+    if (seconds % 60 === 0) {
+      return { value: String(seconds / 60), unit: 'minutes' };
+    }
+    return { value: String(seconds), unit: 'sec' };
+  };
+
+  const { mutate: updateGlobalThrottleWindow, isPending } = useMutation({
+    mutationFn: updateProThrottleHandler,
+    onError: (error) => toast.error(error.message),
+    onSuccess: () => toast.success('Updated'),
+  });
+
+  useEffect(() => {
+    if (!configurations) return;
+
+    const { eventTriggerCount, eventTriggerWindow, globalThrottleWindow } = configurations;
+
+    const window = convertFromSeconds(eventTriggerWindow);
+    const cooldown = convertFromSeconds(globalThrottleWindow);
+
+    setCount(String(eventTriggerCount));
+
+    setWindowValue(window.value);
+    setWindowUnit(window.unit as any);
+
+    setCooldownValue(cooldown.value);
+    setCooldownUnit(cooldown.unit as any);
+
+    setInitialState({
+      count: eventTriggerCount,
+      window: eventTriggerWindow,
+      cooldown: globalThrottleWindow,
+    });
+  }, [configurations]);
+
+  const currentWindow = windowValue ? convertToSeconds(Number(windowValue), windowUnit) : null;
+  const currentCooldown = cooldownValue ? convertToSeconds(Number(cooldownValue), cooldownUnit) : null;
+  const currentCount = count ? Number(count) : null;
+
+  const isDirty =
+    initialState &&
+    currentCount !== null &&
+    currentWindow !== null &&
+    currentCooldown !== null &&
+    (currentCount !== initialState.count ||
+      currentWindow !== initialState.window ||
+      currentCooldown !== initialState.cooldown);
+
+  const handleSave = () => {
+    if (!currentCount || !currentWindow || !currentCooldown) return;
+
+    updateGlobalThrottleWindow(
+      {
+        eventTriggerCount: currentCount,
+        eventTriggerWindow: currentWindow,
+        globalThrottleWindow: currentCooldown,
+      },
+      {
+        onSuccess: () => {
+          setInitialState({
+            count: currentCount,
+            window: currentWindow,
+            cooldown: currentCooldown,
+          });
+        },
+      },
+    );
+  };
+
+  return (
+    <section className="flex flex-col gap-4 text-foreground text-sm">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="font-poppins font-light text-lg">Send notification if event occurs</h1>
+
+        {/* X */}
+        <Input className="w-20 text-center" value={count} onChange={(e) => setCount(e.target.value)} />
+
+        <span>times in</span>
+
+        {/* Y value */}
+        <Input className="w-20 text-center" value={windowValue} onChange={(e) => setWindowValue(e.target.value)} />
+
+        {/* Y unit */}
+        <Select value={windowUnit} onValueChange={(val: any) => setWindowUnit(val)}>
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Window</SelectLabel>
+              <SelectItem value="sec">seconds</SelectItem>
+              <SelectItem value="minutes">minutes</SelectItem>
+              <SelectItem value="hours">hours</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <span>then wait</span>
+
+        {/* Z value */}
+        <Input className="w-20 text-center" value={cooldownValue} onChange={(e) => setCooldownValue(e.target.value)} />
+
+        {/* Z unit */}
+        <Select value={cooldownUnit} onValueChange={(val: any) => setCooldownUnit(val)}>
+          <SelectTrigger className="w-32">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Cooldown</SelectLabel>
+              <SelectItem value="sec">seconds</SelectItem>
+              <SelectItem value="minutes">minutes</SelectItem>
+              <SelectItem value="hours">hours</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isDirty && (
+        <div className="w-full flex justify-center">
+          <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
+            Save
+          </ButtonComp>
+        </div>
+      )}
+    </section>
+  );
+};

@@ -20,7 +20,5 @@ export const getAnalyticsOfUser = async (req: Request, res: Response) => {
     });
 
     successReturnCall(res, HttpStatus.OK, lastSevenDaysEvents);
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 };

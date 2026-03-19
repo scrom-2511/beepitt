@@ -34,7 +34,7 @@ export const eventThrottlingChecker = async (
   }
 
   // Get users throttling time in milliseconds
-  const userThrottlingWindow = user.projectSettings?.globalThrottleWindow! * 60 * 1000;
+  const userThrottlingWindow = user.configuration?.globalThrottleWindow! * 60 * 1000;
 
   // Get last notification sent time in milliseconds
   const lastNotificationSentTimeMs = event.lastNotificationSent.getTime();
@@ -56,10 +56,10 @@ export const eventThrottlingChecker = async (
   }
 
   // Get user trigger count
-  const userTriggerCount = user.projectSettings?.eventTriggerCount || 1;
+  const userTriggerCount = user.configuration?.eventTriggerCount || 1;
 
   // Get user trigger window
-  const userTriggerWindowMs = user.projectSettings?.eventTriggerWindow || 1000;
+  const userTriggerWindowMs = user.configuration?.eventTriggerWindow || 1000;
 
   // Calculate time after first occurence
   const timeAfterFirstOccurence = currentTimeMs - event.firstOccurenceAfterLastNotificationSent!.getTime();

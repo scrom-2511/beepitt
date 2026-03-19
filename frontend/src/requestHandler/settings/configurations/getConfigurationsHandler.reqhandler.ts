@@ -1,5 +1,5 @@
 import { BACKEND_URL } from '@/config/app.config';
-import type { NotificationChannels } from '@/types/dataTypes';
+import type { NotificationChannels } from '@/types/applicationTypes';
 import axios from 'axios';
 
 export interface ConfigurationsResponse {

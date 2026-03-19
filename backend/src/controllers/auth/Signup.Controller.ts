@@ -76,7 +76,10 @@ export const signupController = async (req: Request, res: Response) => {
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(HttpStatus.CREATED)
-      .json({ success: true });
+      .json({
+        success: true,
+        data: { timeZone: newUser.timezone, userSubscriptionTier: 'free' },
+      });
 
     return;
   } catch (error) {

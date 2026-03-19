@@ -16,6 +16,9 @@ export const signinController = async (req: Request, res: Response) => {
 
     const data = await prisma.user.findUnique({
       where: { email: validateData.data.email },
+      include: {
+        billing: true,
+      },
     });
 
     if (!data) {
@@ -44,7 +47,10 @@ export const signinController = async (req: Request, res: Response) => {
         path: '/',
       })
       .status(HttpStatus.CREATED)
-      .json({ success: true, data: { timeZone: data.timezone } });
+      .json({
+        success: true,
+        data: { timeZone: data.timezone, userSubscriptionTier: data.billing?.subscription_tier },
+      });
 
     return;
   } catch (error) {
