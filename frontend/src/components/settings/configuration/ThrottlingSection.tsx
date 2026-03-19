@@ -12,6 +12,8 @@ import {
 import { type ConfigurationsResponse } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { updateGlobalThrottleWindowHandler } from '@/requestHandler/settings/configurations/updateGlobalThrottleWindow.reqhandler';
 import { updateProThrottleHandler } from '@/requestHandler/settings/configurations/updateProThrottleHandler.reqhandler';
+import { convertFromSeconds } from '@/utils/convertFromSeconds';
+import { convertToSeconds } from '@/utils/convertToSeconds';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
@@ -35,25 +37,6 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
   const [unit, setUnit] = useState<'sec' | 'minutes' | 'hours'>('minutes');
 
   const [initialSeconds, setInitialSeconds] = useState<number | null>(null);
-
-  // Convert to seconds
-  const convertToSeconds = (val: number, unit: string) => {
-    if (unit === 'sec') return val;
-    if (unit === 'minutes') return val * 60;
-    if (unit === 'hours') return val * 60 * 60;
-    return val;
-  };
-
-  // Convert from seconds → UI format
-  const convertFromSeconds = (seconds: number) => {
-    if (seconds % 3600 === 0) {
-      return { value: String(seconds / 3600), unit: 'hours' };
-    }
-    if (seconds % 60 === 0) {
-      return { value: String(seconds / 60), unit: 'minutes' };
-    }
-    return { value: String(seconds), unit: 'sec' };
-  };
 
   // Mutation
   const { mutate, isPending } = useMutation({
@@ -130,12 +113,6 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
   );
 };
 
-type ThrottleConfig = {
-  count: number;
-  windowSeconds: number;
-  cooldownSeconds: number;
-};
-
 const ThrottlingSectionPro = ({ configurations }: { configurations: ConfigurationsResponse }) => {
   const [count, setCount] = useState<string>('');
 
@@ -150,23 +127,6 @@ const ThrottlingSectionPro = ({ configurations }: { configurations: Configuratio
     window: number;
     cooldown: number;
   } | null>(null);
-
-  const convertToSeconds = (val: number, unit: string) => {
-    if (unit === 'sec') return val;
-    if (unit === 'minutes') return val * 60;
-    if (unit === 'hours') return val * 3600;
-    return val;
-  };
-
-  const convertFromSeconds = (seconds: number) => {
-    if (seconds % 3600 === 0) {
-      return { value: String(seconds / 3600), unit: 'hours' };
-    }
-    if (seconds % 60 === 0) {
-      return { value: String(seconds / 60), unit: 'minutes' };
-    }
-    return { value: String(seconds), unit: 'sec' };
-  };
 
   const { mutate: updateGlobalThrottleWindow, isPending } = useMutation({
     mutationFn: updateProThrottleHandler,

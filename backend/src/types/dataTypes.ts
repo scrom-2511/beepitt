@@ -90,3 +90,8 @@ export const UpdateProThrottleType = z.object({
   eventTriggerWindow: z.number(),
   globalThrottleWindow: z.number(),
 });
+
+export const UpdateRetryConfigType = z.object({
+  maxRetries: z.number(),
+  retryOffset: z.number(),
+});

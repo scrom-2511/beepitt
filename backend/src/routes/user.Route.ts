@@ -8,6 +8,7 @@ import { getBillingDetailsController } from '../controllers/billing/getBillingDe
 import { getConfigurationsController } from '../controllers/configuration/getConfigurations.controller';
 import { updateGlobalThrottleWindowController } from '../controllers/configuration/updateGlobalThrottleWindow.controller';
 import { updateNotificationChannelsController } from '../controllers/configuration/updateNotificationChannels.controller';
+import { updateRetryConfigController } from '../controllers/configuration/updateRetryConfig.controller';
 import { getAllSeenIncidentsController } from '../controllers/incidents/getIncidents/getAllSeenIncidents.controller';
 import { getAllUnseenIncidentsController } from '../controllers/incidents/getIncidents/getAllUnseenIncidents.controller';
 import { updateIncidentSeenController } from '../controllers/incidents/updateIncidents/updateIncidentSeen.controller';
@@ -37,7 +38,6 @@ userRouter.post('/googleAuth', googleAuthController);
 userRouter.post('/updateProfileDetails', isLoggedIn, updateProfileDetailsController);
 userRouter.post('/updateTimeZoneAndPreferences', isLoggedIn, updateTimeZoneAndPreferencesController);
 userRouter.get('/getProfileDetailsAndPreferences', isLoggedIn, getProfileDetailsAndPreferncesController);
-userRouter.post('/updateTimeZoneAndPreferences', isLoggedIn, updateTimeZoneAndPreferencesController);
 userRouter.get('/getProjectDetails/:projectId', isLoggedIn, getProjectDetailsController);
 
 userRouter.get('/getTeamInfo', isLoggedIn, getTeamInfoController);
@@ -59,7 +59,5 @@ userRouter.post('/updateIncidentSeen', isLoggedIn, updateIncidentSeenController)
 
 userRouter.get('/getConfigurations', isLoggedIn, getConfigurationsController);
 userRouter.post('/updateNotificationChannels', isLoggedIn, updateNotificationChannelsController);
-
-userRouter.get('/getConfigurations', isLoggedIn, getConfigurationsController);
-userRouter.post('/updateNotificationChannels', isLoggedIn, updateNotificationChannelsController);
 userRouter.post('/updateGlobalThrottleWindow', isLoggedIn, updateGlobalThrottleWindowController);
+userRouter.post('/updateRetryConfig', isLoggedIn, updateRetryConfigController);
