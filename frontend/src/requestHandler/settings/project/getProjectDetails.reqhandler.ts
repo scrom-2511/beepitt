@@ -1,25 +1,26 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export interface ContactDetails {
   telegramChatIds: string[];
   discordChatIds: string[];
-  telegramChatIds2?: string[];
-  discordChatIds2?: string[];
+  emailIds: string[];
+  telegramChatIds2: string[];
+  discordChatIds2: string[];
+  emailIds2: string[];
 }
 
 export interface ProjectDetails {
   projectName: string;
   projectDesc: string;
   identifierKey: string;
+  identifierKey2: string;
   contactDetails: ContactDetails;
 }
 
 export const getProjectDetailsHandler = async (projectId: number): Promise<ProjectDetails> => {
   try {
-    const res = await axios.get(BACKEND_URL + `/user/getProjectDetails/${projectId}`, {
-      withCredentials: true,
-    });
+    const res = await api.get(`/user/getProjectDetails/${projectId}`);
 
     if (res.data.success) {
       return res.data.data as ProjectDetails;

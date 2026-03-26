@@ -16,11 +16,13 @@ import { Card, CardContent, CardFooter } from '../../ui/card';
 import CardAnimation from '../CardAnimation';
 import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
+import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
 
 export const UnseenIssues = () => {
   return (
     <>
+      <FilterSection showEnvironment={true} showGroup={true} showPriority={false} />
       <IssueCardsSection />
     </>
   );
@@ -30,14 +32,13 @@ const IssueCardsSection = () => {
   type UpdateIssuePriorityType = z.infer<typeof UpdateIssuePriorityType>;
   const [priorities, setPriorities] = useState<Record<string, UpdateIssuePriorityType['issuePriority']>>({});
   const queryClient = useQueryClient();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, refetch } = useInfiniteQuery(
-    {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
+    useInfiniteQuery({
       queryKey: ['unseenIssues'],
       queryFn: ({ pageParam }) => getUnseenIssuesHandler(pageParam),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
+    });
 
   const issue_card_items = data?.pages.flatMap((page) => page.issues) ?? [];
 
@@ -60,16 +61,18 @@ const IssueCardsSection = () => {
     updateIssuePriority({ issuePriority: priority, issueId });
   };
 
-  if (isError || isLoading || issue_card_items?.length === 0) {
+  if (isError || isLoading || isPending || issue_card_items?.length === 0) {
     return (
       <Fallback
         data={issue_card_items}
         error={error}
         isError={isError}
         isLoading={isLoading}
+        isPending={isPending}
         refetch={refetch}
         emptyTitle="Unseen Issues"
-        loadingTitle='Unseen Issues'
+        loadingTitle="unseen issues"
+        addNew={false}
       />
     );
   }

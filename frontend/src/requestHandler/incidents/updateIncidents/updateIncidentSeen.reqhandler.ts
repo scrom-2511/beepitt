@@ -1,15 +1,11 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { UpdateIncidentSeenType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
 
-export const updateIncidentSeenHandler = async (data: z.infer<typeof UpdateIncidentSeenType>): Promise<void> => {
+export const updateIncidentSeenHandler = async (payload: z.infer<typeof UpdateIncidentSeenType>): Promise<void> => {
   try {
-    const res = await axios.post(
-      BACKEND_URL + '/user/updateIncidentSeen',
-      data,
-      { withCredentials: true },
-    );
+    const res = await api.post('/user/updateIncidentSeen', data);
 
     if (res.data.success) {
       return;

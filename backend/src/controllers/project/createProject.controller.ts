@@ -31,9 +31,8 @@ export const createProjectController = async (req: Request, res: Response) => {
     // Get user along with billing and project with contact details for each project
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { billing: true, project: { include: { contactDetails: true } }, configuration: true },
+      include: { billing: true, project: true, configuration: true },
     });
-
     // If user does not exist return
     if (!user) {
       errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);

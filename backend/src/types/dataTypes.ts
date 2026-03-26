@@ -65,7 +65,6 @@ export const ProjectNameType = z.object({
 });
 
 export const ExportLogsType = z.object({
-  projectName: z.string(),
   exportType: z.enum(['csv', 'json']),
 });
 
@@ -94,4 +93,11 @@ export const UpdateProThrottleType = z.object({
 export const UpdateRetryConfigType = z.object({
   maxRetries: z.number(),
   retryOffset: z.number(),
+});
+
+export const UpdateContactDetailsType = z.object({
+  projectId: z.number(),
+  emailIds: z.array(z.string().email()).optional(),
+  telegramChatIds: z.array(z.string()).optional(),
+  discordChatIds: z.array(z.string()).optional(),
 });

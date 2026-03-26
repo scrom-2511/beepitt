@@ -1,7 +1,7 @@
 import z from 'zod';
 import { prisma } from '../../database/prismaClient';
 import { ClientCallType } from '../../types/dataTypes';
-import { Event, UserWithOtherDetails } from '../../types/prismaTypes';
+import { Event, UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
 import { generateHashKey } from './generateHashKey.helper';
 
 type EventThrottlingResult =
@@ -9,7 +9,7 @@ type EventThrottlingResult =
   | { hasActiveEvent: false; sendNotification: true };
 
 export const eventThrottlingChecker = async (
-  user: UserWithOtherDetails,
+  user: UserWithBillingConfigurationProjectContactDetails,
   eventData: z.infer<typeof ClientCallType>,
 ): Promise<EventThrottlingResult> => {
   // If subscription tier is free, we will send notification, as free tier doesnot support throttling

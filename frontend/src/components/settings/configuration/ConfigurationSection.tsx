@@ -3,7 +3,7 @@ import { CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { getConfigurationsHandler } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { useQuery } from '@tanstack/react-query';
-import NotificationChannels from './NotificationChannelsSection';
+import NotificationChannelsSection from './NotificationChannelsSection';
 import RetryOffsetSection from './RetryOffsetSection';
 import ThrottlingSection from './ThrottlingSection';
 const ConfigurationSection = () => {
@@ -19,7 +19,7 @@ const ConfigurationSection = () => {
     queryFn: getConfigurationsHandler,
   });
 
-  if (isError || !configurations)
+  if (isError || !configurations || isPending)
     return (
       <Fallback
         data={undefined}
@@ -38,7 +38,7 @@ const ConfigurationSection = () => {
     {
       title: 'Notification Channels',
       description: 'Select your notification channels',
-      content: <NotificationChannels configurations={configurations} />,
+      content: <NotificationChannelsSection configurations={configurations} />,
       display: true,
     },
     {
@@ -48,8 +48,8 @@ const ConfigurationSection = () => {
       display: userSubscriptionTier !== 'free',
     },
     {
-      title: 'Retry',
-      description: 'Configure retry offset',
+      title: 'Retry Policy',
+      description: 'Retry sending notifications up to a limit when no response is received',
       content: <RetryOffsetSection configurations={configurations} />,
       display: userSubscriptionTier !== 'free',
     },

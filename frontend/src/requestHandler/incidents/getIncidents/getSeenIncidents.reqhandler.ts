@@ -1,10 +1,9 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 import type { IncidentsResponse } from './getUnseenIncidents.reqhandler';
 export const getSeenIncidentsHandler = async (lastId: number): Promise<IncidentsResponse> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/getSeenIncidents', {
-      withCredentials: true,
+    const res = await api.get('/user/getSeenIncidents', {
       params: { lastId },
     });
 

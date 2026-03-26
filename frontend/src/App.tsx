@@ -1,4 +1,3 @@
-import Billing from '@/components/dashboard/Billing';
 import { SeenIncidents } from '@/components/dashboard/incidents/SeenIncidents';
 import { UnseenIncidents } from '@/components/dashboard/incidents/UnseenIncidents';
 import ClosedIssues from '@/components/dashboard/issues/ClosedIssues';
@@ -6,8 +5,10 @@ import { OpenIssues } from '@/components/dashboard/issues/OpenIssues';
 import { UnseenIssues } from '@/components/dashboard/issues/UnseenIssues';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import AnalyticsSection from './components/dashboard/analytics/AnalyticsSection';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfigurationSection from './components/settings/configuration/ConfigurationSection';
+import MoreSettingsSection from './components/settings/moreSettings/MoreSettingsSection';
 import ProfileSection from './components/settings/profile/ProfileSection';
 import ProjectDetail from './components/settings/project/projectDetails/ProjectDetailsSection';
 import ProjectSection from './components/settings/project/ProjectSection';
@@ -48,7 +49,7 @@ function AppLayout() {
   }
 
   return (
-    <div className={`${backgroundClr} flex min-h-screen`}>
+    <div className={`${backgroundClr} flex min-h-screen overflow-hidden`}>
       <div className={`${backgroundClr} w-full max-w-500 mx-auto`}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -81,10 +82,10 @@ function AppLayout() {
               <Route path="projects" element={<ProjectSection />} />
               <Route path="projects/:id" element={<ProjectDetail />} />
               <Route path="configurations" element={<ConfigurationSection />} />
+              <Route path="more-settings" element={<MoreSettingsSection />} />
             </Route>
 
-            {/* Billing page */}
-            <Route path="billing" element={<Billing />} />
+            <Route path="analytics" element={<AnalyticsSection />} />
           </Route>
         </Routes>
       </div>

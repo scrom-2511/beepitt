@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { RazorPayCreateOrderType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
@@ -14,13 +14,7 @@ export const razorPayCreateOrderHandler = async (
   data: z.infer<typeof RazorPayCreateOrderType>,
 ): Promise<RazorPayCreateOrderResponse> => {
   try {
-    const res = await axios.post(
-      BACKEND_URL + '/user/razorPayCreateOrder',
-      data,
-      {
-        withCredentials: true,
-      },
-    );
+    const res = await api.post('/user/razorPayCreateOrder', data);
 
     if (res.data.success) {
       return res.data.data as RazorPayCreateOrderResponse;

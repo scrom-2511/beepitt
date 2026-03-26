@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { UpdateGlobalThrottleWindowType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
@@ -7,7 +7,7 @@ export const updateGlobalThrottleWindowHandler = async (
   data: z.infer<typeof UpdateGlobalThrottleWindowType>,
 ): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/updateGlobalThrottleWindow', data, { withCredentials: true });
+    const res = await api.post('/user/updateGlobalThrottleWindow', data);
 
     if (res.data.success) {
       return;

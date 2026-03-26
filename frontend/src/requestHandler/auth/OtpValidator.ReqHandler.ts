@@ -1,17 +1,15 @@
-import { BACKEND_URL } from '@/config/app.config';
 import { OtpValidateType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
+import api from '../api';
 
 export interface OtpValidatorRequest {
   otp: string;
 }
 
-export const otpValidatorHandler = async (data: z.infer<typeof OtpValidateType>): Promise<void> => {
+export const otpValidatorHandler = async (payload: z.infer<typeof OtpValidateType>): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/otpValidator', data, {
-      withCredentials: true,
-    });
+    const res = await api.post('/user/otpValidator', data);
 
     if (res.data.success) {
       return;

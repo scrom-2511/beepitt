@@ -1,7 +1,7 @@
 import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
-import { UserWithOtherDetails } from '../../types/prismaTypes';
+import { UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
 
-export const eventCountChecker = (user: UserWithOtherDetails): boolean => {
+export const eventCountChecker = (user: UserWithBillingConfigurationProjectContactDetails): boolean => {
   // Get users subscription tier
   const tier = user.billing?.subscription_tier;
 

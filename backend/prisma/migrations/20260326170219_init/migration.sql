@@ -40,7 +40,7 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "ProjectSettings" (
+CREATE TABLE "Configuration" (
     "id" SERIAL NOT NULL,
     "eventsUsed" INTEGER NOT NULL,
     "globalThrottleWindow" INTEGER NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE "ProjectSettings" (
     "notificationChannels" "NotificationChannels"[] DEFAULT ARRAY[]::"NotificationChannels"[],
     "userId" INTEGER NOT NULL,
 
-    CONSTRAINT "ProjectSettings_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Configuration_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -121,6 +121,8 @@ CREATE TABLE "ContactDetails" (
     "telegramChatIds2" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "discordChatIds" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "discordChatIds2" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "emailIds" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "emailIds2" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "projectId" INTEGER NOT NULL,
 
     CONSTRAINT "ContactDetails_pkey" PRIMARY KEY ("id")
@@ -148,7 +150,7 @@ CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ProjectSettings_userId_key" ON "ProjectSettings"("userId");
+CREATE UNIQUE INDEX "Configuration_userId_key" ON "Configuration"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Project_identifierKey_key" ON "Project"("identifierKey");
@@ -190,7 +192,7 @@ CREATE UNIQUE INDEX "Orders_razorPayOrderId_key" ON "Orders"("razorPayOrderId");
 CREATE INDEX "Orders_userId_idx" ON "Orders"("userId");
 
 -- AddForeignKey
-ALTER TABLE "ProjectSettings" ADD CONSTRAINT "ProjectSettings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Configuration" ADD CONSTRAINT "Configuration_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

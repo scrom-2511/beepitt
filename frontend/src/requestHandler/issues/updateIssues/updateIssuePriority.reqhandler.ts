@@ -1,17 +1,13 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { UpdateIssuePriorityType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
 
 export type UpdateIssuePriorityEnum = 'Low' | 'Critical' | 'High' | 'Closed';
 
-export const updateIssuePriorityHandler = async (data: z.infer<typeof UpdateIssuePriorityType>): Promise<void> => {
+export const updateIssuePriorityHandler = async (payload: z.infer<typeof UpdateIssuePriorityType>): Promise<void> => {
   try {
-    const res = await axios.post(
-      BACKEND_URL + '/user/updateIssuePriority',
-      data,
-      { withCredentials: true },
-    );
+    const res = await api.post('/user/updateIssuePriority', data);
 
     if (res.data.success) {
       return;

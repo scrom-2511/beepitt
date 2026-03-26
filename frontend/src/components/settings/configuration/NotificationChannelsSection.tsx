@@ -3,6 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { type ConfigurationsResponse } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { updateNotificationChannelsHandler } from '@/requestHandler/settings/configurations/updateNotificationChannels.reqhandler';
+import { type NotificationChannels } from '@/types/applicationTypes';
 import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -15,9 +16,9 @@ type FormValues = {
   discord: boolean;
 };
 
-const allChannels: (keyof FormValues)[] = ['slack', 'email', 'telegram', 'discord'];
+const allChannels: NotificationChannels[] = ['slack', 'email', 'telegram', 'discord'];
 
-const NotificationChannels = ({ configurations }: { configurations: ConfigurationsResponse }) => {
+const NotificationChannelsSection = ({ configurations }: { configurations: ConfigurationsResponse }) => {
   const {
     register,
     handleSubmit,
@@ -63,21 +64,24 @@ const NotificationChannels = ({ configurations }: { configurations: Configuratio
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <section className="flex flex-col gap-6 text-muted-foreground text-sm">
-        {allChannels.map((channel) => (
-          <div key={channel} className="flex justify-between items-center">
-            <Label className="text-foreground text-lg capitalize">{channel}</Label>
+        {allChannels.map(
+          (channel) =>
+            channel !== 'slack' && (
+              <div key={channel} className="flex justify-between items-center">
+                <Label className="text-foreground text-lg capitalize">{channel}</Label>
 
-            <Checkbox
-              className="size-8"
-              checked={watch(channel)}
-              onCheckedChange={(checked) => {
-                setValue(channel, !!checked, {
-                  shouldDirty: true,
-                });
-              }}
-            />
-          </div>
-        ))}
+                <Checkbox
+                  className="size-8"
+                  checked={watch(channel)}
+                  onCheckedChange={(checked) => {
+                    setValue(channel, !!checked, {
+                      shouldDirty: true,
+                    });
+                  }}
+                />
+              </div>
+            ),
+        )}
 
         {isDirty && (
           <div className="w-full flex justify-center pt-4">
@@ -91,4 +95,4 @@ const NotificationChannels = ({ configurations }: { configurations: Configuratio
   );
 };
 
-export default NotificationChannels;
+export default NotificationChannelsSection;

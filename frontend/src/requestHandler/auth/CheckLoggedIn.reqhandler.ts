@@ -1,11 +1,9 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export const checkLoggedInHandler = async (): Promise<boolean> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/checkLoggedIn', {
-      withCredentials: true,
-    });
+    const res = await api.get('/user/checkLoggedIn');
 
     if (res.data.success) {
       return true;

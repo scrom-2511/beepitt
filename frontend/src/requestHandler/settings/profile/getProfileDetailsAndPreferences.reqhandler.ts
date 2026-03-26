@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export interface ProfileDetailsAndPrefernces {
@@ -12,10 +12,7 @@ export interface ProfileDetailsAndPrefernces {
 
 export const getProfileDetailsAndPreferences = async (): Promise<ProfileDetailsAndPrefernces> => {
   try {
-    const res = await axios.get(
-      BACKEND_URL + '/user/getProfileDetailsAndPreferences',
-      { withCredentials: true },
-    );
+    const res = await api.get('/user/getProfileDetailsAndPreferences');
 
     if (res.data.success) {
       return res.data.data as ProfileDetailsAndPrefernces;

@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { TimeZoneAndPreferencesUpdateType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
@@ -12,11 +12,7 @@ export const updateTimeZoneAndPreferencesHandler = async (
   data: z.infer<typeof TimeZoneAndPreferencesUpdateType>,
 ): Promise<void> => {
   try {
-    const res = await axios.post(
-      BACKEND_URL + '/user/updateTimeZoneAndPreferences',
-      data,
-      { withCredentials: true },
-    );
+    const res = await api.post('/user/updateTimeZoneAndPreferences', data);
 
     if (res.data.success) return;
 

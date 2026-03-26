@@ -6,7 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { CircleCheckBigIcon, CircleXIcon, DollarSign, EyeOffIcon, LogOut, Settings } from 'lucide-react';
+import { ChartArea, CircleCheckBigIcon, CircleXIcon, EyeOffIcon, LogOut, Settings } from 'lucide-react';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ButtonComp from '../ButtonComp';
@@ -22,9 +22,11 @@ const incidentItems = [
   { title: 'Seen Incidents', url: '/dashboard/seen-incidents', icon: CircleCheckBigIcon },
 ];
 
+const moreItems = [{ title: 'Analytics', url: '/dashboard/analytics', icon: ChartArea }];
+
 const items_footer = [
   { title: 'Settings', url: '/dashboard/settings', icon: Settings },
-  { title: 'Billing', url: '/dashboard/billing', icon: DollarSign },
+  // { title: 'Billing', url: '/dashboard/billing', icon: DollarSign },
   { title: 'Log Out', url: '/auth', icon: LogOut },
 ];
 
@@ -76,6 +78,33 @@ export function AppSidebar() {
         <SidebarSectionLabel>Issues</SidebarSectionLabel>
         <SidebarMenu className="gap-2.5">
           {issuesItems.map((item) => (
+            <SidebarMenuItem key={item.title}>
+              {/* <NavLink
+                to={item.url}
+                className={`flex w-full justify-start gap-5 text-md p-2 rounded-md ${
+                  isActive(item.url) ? 'bg-primary text-background' : 'text-foreground hover:bg-foreground/10'
+                }`}
+              >
+                <item.icon className="size-4.5" />
+                {item.title}
+              </NavLink> */}
+              <ButtonComp
+                variant={isActive(item.url) ? 'default' : 'ghost'}
+                className="flex flex-row w-full justify-start gap-5 text-md cursor-pointer"
+                onClick={() => {
+                  navigate(item.url);
+                }}
+              >
+                <item.icon className="size-4.5" />
+                {item.title}
+              </ButtonComp>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+
+        <SidebarSectionLabel>Analytics</SidebarSectionLabel>
+        <SidebarMenu className="gap-2.5">
+          {moreItems.map((item) => (
             <SidebarMenuItem key={item.title}>
               {/* <NavLink
                 to={item.url}

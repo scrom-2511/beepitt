@@ -8,25 +8,26 @@ import { Card, CardContent } from '../../ui/card';
 import CardAnimation from '../CardAnimation';
 import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
+import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
 
 export const SeenIncidents = () => {
   return (
     <>
+      <FilterSection showEnvironment={true} showGroup={true} showPriority={false} />
       <IncidentCardsSection />
     </>
   );
 };
 
 const IncidentCardsSection = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, refetch } = useInfiniteQuery(
-    {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
+    useInfiniteQuery({
       queryKey: ['seenIncidents'],
       queryFn: ({ pageParam }) => getSeenIncidentsHandler(pageParam),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
+    });
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -53,15 +54,18 @@ const IncidentCardsSection = () => {
 
   const incident_card_items = data?.pages.flatMap((page) => page.incidents) ?? [];
 
-  if (isError || isLoading || incident_card_items?.length === 0) {
+  if (isError || isLoading || isPending || incident_card_items?.length === 0) {
     return (
       <Fallback
         data={incident_card_items}
         error={error}
         isError={isError}
         isLoading={isLoading}
+        isPending={isPending}
         refetch={refetch}
         emptyTitle="Seen Incidents"
+        loadingTitle="seen incidents"
+        addNew={false}
       />
     );
   }

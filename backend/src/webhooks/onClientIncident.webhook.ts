@@ -34,7 +34,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Get the user along with billing, project and contactDetails
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: { billing: true, project: { include: { contactDetails: true } }, projectSettings: true },
+      include: { billing: true, project: { include: { contactDetails: true } }, configuration: true },
     });
 
     // If user does not exist return
@@ -103,7 +103,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           lastNotificationSent: new Date(),
           userId,
           eventHashKey,
-          throttlingWindow: user.projectSettings?.globalThrottleWindow!,
+          throttlingWindow: user.configuration?.globalThrottleWindow!,
           occurrencesFromLastNotificationSent: 0,
           firstOccurenceAfterLastNotificationSent: new Date(),
         },
@@ -123,7 +123,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     await enqueueNotificationsOnClientCall(user, eventIdAndType, channels, allChatIdsInfo);
 
     // Increase events used of user by 1
-    await prisma.projectSettings.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
+    await prisma.configuration.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
 
     // Return to user
     returnCallOnClientCall(res, allChatIdsInfo);

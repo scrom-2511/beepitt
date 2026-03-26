@@ -1,14 +1,14 @@
-import { BACKEND_URL } from '@/config/app.config';
-import type { NotificationChannels } from '@/types/dataTypes';
+import api from '@/requestHandler/api';
+import type { NotificationChannels } from '@/types/applicationTypes';
 import axios from 'axios';
 
 type UpdateNotificationChannelsPayload = {
   channels: NotificationChannels[];
 };
 
-export const updateNotificationChannelsHandler = async (data: UpdateNotificationChannelsPayload): Promise<void> => {
+export const updateNotificationChannelsHandler = async (payload: UpdateNotificationChannelsPayload): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/updateNotificationChannels', data, { withCredentials: true });
+    const res = await api.post('/user/updateNotificationChannels', data);
 
     if (res.data.success) {
       return;

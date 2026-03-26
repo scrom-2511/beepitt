@@ -5,6 +5,7 @@ import { appWebhook } from './routes/app.webhooks';
 import { userRouter } from './routes/user.Route';
 // import './services/bullmq/workers/discordNotifications.worker';
 // import './services/bullmq/workers/telegramNotifications.worker';
+import { FRONTEND_URL } from '../config/app.config';
 import { discordClient } from './utils/discordBeep.util';
 const app: Express = express();
 
@@ -12,17 +13,19 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log('ORIGIN:', req.headers.origin);
-  res.setHeader('X-CORS-DEBUG', 'MAIN_APP');
+  console.log(`[${req.method}] ${req.url} - Origin: ${req.headers.origin}`);
+  if (req.headers['access-control-request-private-network']) {
+    res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  }
   next();
 });
 
 app.use(
   cors({
-    origin: ['http://localhost:5173'],
+    origin: [FRONTEND_URL, 'http://localhost:5173', 'https://linear-proposed-made-followed.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],
   }),
 );
 

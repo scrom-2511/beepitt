@@ -69,7 +69,7 @@ const SigninCardForm = () => {
       localStorage.setItem('timeZone', res.timeZone);
       localStorage.setItem('userSubscriptionTier', res.userSubscriptionTier);
       console.log(res.timeZone);
-      navigate('/dashboard');
+      navigate('/dashboard/unseen-incidents');
     },
     onError: (error) => {
       toast.error(error.message);

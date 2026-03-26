@@ -28,10 +28,18 @@ bot.on('message', async (msg) => {
   const chatId = msg.chat.id.toString();
   const identifierKey = msg.text.trim();
 
+  console.log('identifierKey is: ');
+  console.log(identifierKey);
+
   try {
     // Find project by identifier key
+    // const project = await prisma.project.findFirst({
+    //   where: { OR: [{ identifierKey }, { identifierKey2: identifierKey }] },
+    //   include: { contactDetails: true },
+    // });
+
     const project = await prisma.project.findFirst({
-      where: { OR: [{ identifierKey }, { identifierKey2: identifierKey }] },
+      where: { identifierKey: identifierKey },
       include: { contactDetails: true },
     });
 

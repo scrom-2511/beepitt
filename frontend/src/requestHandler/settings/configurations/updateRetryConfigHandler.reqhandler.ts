@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import { UpdateRetryConfigType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
@@ -7,11 +7,7 @@ export const updateRetryConfigHandler = async (
   data: z.infer<typeof UpdateRetryConfigType>,
 ): Promise<void> => {
   try {
-    const res = await axios.post(
-      BACKEND_URL + '/user/updateRetryConfig',
-      data,
-      { withCredentials: true },
-    );
+    const res = await api.post('/user/updateRetryConfig', data);
 
     if (res.data.success) {
       return;

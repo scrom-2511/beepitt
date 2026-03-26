@@ -116,19 +116,19 @@ const Pricing = () => {
 
   return (
     <div className="w-full min-h-screen bg-background relative overflow-hidden">
-      <div className=" max-w-7xl mx-auto px-6 py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24">
         {/* Header */}
-        <div className="text-center mb-20">
-          <h1 className="font-montserrat text-4xl sm:text-5xl md:text-6xl font-semibold text-foreground mb-6">
+        <div className="text-center mb-14 sm:mb-16 md:mb-20">
+          <h1 className="font-montserrat text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-foreground mb-4 sm:mb-6">
             Let's talk numbers
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-xl sm:max-w-2xl mx-auto">
             Choose the perfect plan for monitoring your projects and incidents. Upgrade anytime as you grow.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {items.map((item) => {
             const isStarter = item.tier === Tier.Starter;
             const isFree = item.tier === Tier.Free;
@@ -137,27 +137,29 @@ const Pricing = () => {
               <Card
                 key={item.tier}
                 className={`
-                  bg-card
-                relative flex flex-col justify-between p-10 rounded-xl
-                border border-border
-                ${isStarter ? 'ring-2 ring-primary shadow-lg scale-105' : ''}
+                bg-card relative flex flex-col justify-between
+                p-6 sm:p-8 md:p-10
+                rounded-xl border border-border
+                transition-all duration-300
+                ${isStarter ? 'ring-2 ring-primary shadow-lg lg:scale-105' : 'hover:shadow-md'}
               `}
               >
                 {/* Featured Badge */}
                 {isStarter && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-sm px-4 py-1 rounded-full font-medium">
+                  <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs sm:text-sm px-3 sm:px-4 py-1 rounded-full font-medium">
                     Most Popular
                   </div>
                 )}
 
                 <div>
-                  <CardHeader className="p-0 mb-6">
-                    <div className="flex flex-row justify-between">
-                      <CardTitle className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
+                  <CardHeader className="p-0 mb-4 sm:mb-6">
+                    <div className="flex flex-row justify-between items-center gap-2">
+                      <CardTitle className="text-muted-foreground text-xs sm:text-sm font-medium tracking-wide uppercase">
                         {item.title}
                       </CardTitle>
+
                       {!isFree && (
-                        <div className="bg-accent px-3 rounded-2xl">
+                        <div className="bg-accent px-2 sm:px-3 py-1 rounded-xl text-xs sm:text-sm">
                           {Math.round(
                             ((Number(item.lineThroughPrice) - Number(item.price)) / Number(item.lineThroughPrice)) *
                               100,
@@ -167,31 +169,37 @@ const Pricing = () => {
                       )}
                     </div>
 
-                    <div className="mt-2 flex flex-col gap-2">
-                      <h1 className="line-through text-muted-foreground">
-                        {isFree ? '' : '$'}
-                        {item.lineThroughPrice}
-                      </h1>
-                      <h1 className="text-5xl font-semibold text-foreground">
-                        {isFree ? '' : '$'}
-                        {item.price}
-                        <span className="text-muted-foreground mb-2 text-base font-light">
-                          {isFree ? '' : ' / month'}
-                        </span>
+                    <div className="mt-3 flex flex-col gap-1">
+                      {!isFree && (
+                        <h1 className="line-through text-muted-foreground text-sm sm:text-base">
+                          ${item.lineThroughPrice}
+                        </h1>
+                      )}
+
+                      <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-foreground">
+                        {isFree ? item.price : `$${item.price}`}
+                        {!isFree && (
+                          <span className="text-muted-foreground ml-1 text-xs sm:text-sm font-light">/ month</span>
+                        )}
                       </h1>
                     </div>
                   </CardHeader>
 
-                  <Separator className="my-6" />
+                  <Separator className="my-4 sm:my-6" />
 
-                  <CardContent className="px-0 space-y-6">
+                  <CardContent className="px-0 space-y-5 sm:space-y-6">
                     {/* Limits */}
                     <div>
-                      <h3 className="font-light text-foreground mb-4 font-montserrat text-base">Limits:</h3>
-                      <div className="space-y-3">
+                      <h3 className="font-light text-foreground mb-3 sm:mb-4 font-montserrat text-sm sm:text-base">
+                        Limits:
+                      </h3>
+                      <div className="space-y-2 sm:space-y-3">
                         {item.limits.map((limit) => (
-                          <div key={limit} className="flex items-start gap-3 text-sm text-muted-foreground">
-                            <CircleCheck className="size-5 text-primary shrink-0" />
+                          <div
+                            key={limit}
+                            className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground"
+                          >
+                            <CircleCheck className="size-4 sm:size-5 text-primary shrink-0" />
                             <span>{limit}</span>
                           </div>
                         ))}
@@ -200,11 +208,16 @@ const Pricing = () => {
 
                     {/* Features */}
                     <div>
-                      <h3 className="font-light text-foreground mb-4 font-montserrat text-base">Features:</h3>
-                      <div className="space-y-3">
+                      <h3 className="font-light text-foreground mb-3 sm:mb-4 font-montserrat text-sm sm:text-base">
+                        Features:
+                      </h3>
+                      <div className="space-y-2 sm:space-y-3">
                         {item.features.map((feature) => (
-                          <div key={feature} className="flex items-start gap-3 text-sm text-muted-foreground">
-                            <CircleCheck className="size-5 text-primary shrink-0" />
+                          <div
+                            key={feature}
+                            className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground"
+                          >
+                            <CircleCheck className="size-4 sm:size-5 text-primary shrink-0" />
                             <span>{feature}</span>
                           </div>
                         ))}
@@ -213,17 +226,17 @@ const Pricing = () => {
                   </CardContent>
                 </div>
 
-                <CardFooter className="pt-8">
+                <CardFooter className="pt-6 sm:pt-8">
                   <ButtonComp
                     disabled={isPending}
                     variant={isStarter ? 'default' : 'secondary'}
                     className={`
-                    w-full font-semibold transition-all duration-300
+                    w-full text-sm sm:text-base font-semibold transition-all duration-300 cursor-pointer
                     ${!isStarter ? 'hover:bg-primary hover:text-primary-foreground' : ''}
                   `}
                     onClick={() => onSubmit(item.tier)}
                   >
-                    {item.tier === Tier.Free ? 'Get Started' : 'Get Started'}
+                    Get Started
                   </ButtonComp>
                 </CardFooter>
               </Card>

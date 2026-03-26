@@ -2,14 +2,14 @@ import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
 import { EventType, SubscriptionTier } from '../../../generated/prisma/enums';
 import { ContactDetailsGetPayload } from '../../../generated/prisma/models';
 import { ChatIdsInfo } from '../../types/applicationTypes';
-import { UserWithOtherDetails } from '../../types/prismaTypes';
+import { UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
 import { getProjectByProjectName } from './getProjectByProjectName.helper.';
 
 type ChatIdsResult = ChatIdsInfo[];
 
 export const notificationChannelChatIdsCheckerAndGetter = (
   projectName: string,
-  user: UserWithOtherDetails,
+  user: UserWithBillingConfigurationProjectContactDetails,
   eventType: EventType,
 ): ChatIdsResult => {
   // Find project linked to the user by project name
@@ -45,11 +45,16 @@ export const notificationChannelChatIdsCheckerAndGetter = (
       maxRecepientsLimit,
       extractChatIdsFromContactDetails(contactDetails, userSubscriptionTier, eventType).telegramChatIds,
     ),
+    buildChatIdsInfo(
+      'email',
+      maxRecepientsLimit,
+      extractChatIdsFromContactDetails(contactDetails, userSubscriptionTier, eventType).emailIds,
+    ),
   ];
 };
 
 const buildChatIdsInfo = (
-  channel: 'discord' | 'telegram',
+  channel: 'discord' | 'telegram' | 'email',
   maxRecepientsLimit: number,
   chatIds?: string[],
 ): ChatIdsInfo => {
@@ -58,13 +63,13 @@ const buildChatIdsInfo = (
 
   // Return the chat ids info
   return {
-    channel,
+    channel: channel,
     present: ids.length > 0, // Set present according to the length of the chat ids
     chatIds: ids.slice(0, maxRecepientsLimit), // Select recepients according to users subscription limit
   };
 };
 
-type ExtractChatIdsResult = { telegramChatIds: string[]; discordChatIds: string[] };
+type ExtractChatIdsResult = { telegramChatIds: string[]; discordChatIds: string[]; emailIds: string[] };
 
 // Extract chat ids from contact details
 const extractChatIdsFromContactDetails = (
@@ -73,8 +78,16 @@ const extractChatIdsFromContactDetails = (
   eventType: EventType,
 ): ExtractChatIdsResult => {
   if (userSubscriptionTier !== 'pro' || (userSubscriptionTier === 'pro' && eventType === 'incident')) {
-    return { telegramChatIds: contactDetails.telegramChatIds, discordChatIds: contactDetails.discordChatIds };
+    return {
+      telegramChatIds: contactDetails.telegramChatIds,
+      discordChatIds: contactDetails.discordChatIds,
+      emailIds: contactDetails.emailIds,
+    };
   } else {
-    return { telegramChatIds: contactDetails.telegramChatIds2, discordChatIds: contactDetails.discordChatIds2 };
+    return {
+      telegramChatIds: contactDetails.telegramChatIds2,
+      discordChatIds: contactDetails.discordChatIds2,
+      emailIds: contactDetails.emailIds2,
+    };
   }
 };

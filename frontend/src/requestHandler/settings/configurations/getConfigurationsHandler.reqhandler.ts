@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { NotificationChannels } from '@/types/applicationTypes';
 import axios from 'axios';
 
@@ -13,9 +13,7 @@ export interface ConfigurationsResponse {
 
 export const getConfigurationsHandler = async (): Promise<ConfigurationsResponse> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/getConfigurations', {
-      withCredentials: true,
-    });
+    const res = await api.get('/user/getConfigurations');
 
     if (res.data.success) {
       console.log(res.data.data);

@@ -64,7 +64,6 @@ export const ProjectNameType = z.object({
 });
 
 export const ExportLogsType = z.object({
-  projectName: z.string(),
   exportType: z.enum(['csv', 'json']),
 });
 

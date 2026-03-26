@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { CurrentStatus, SubscriptionTier } from '@/types/applicationTypes';
 import axios from 'axios';
 
@@ -12,9 +12,7 @@ export interface BillingDetailsResponse {
 
 export const getBillingDetailsHandler = async (): Promise<BillingDetailsResponse> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/getBillingDetails', {
-      withCredentials: true,
-    });
+    const res = await api.get('/user/getBillingDetails');
 
     if (res.data.success) {
       console.log(res.data);

@@ -4,70 +4,34 @@ import { getOpenIssuesHandler } from '@/requestHandler/issues/getIssues/getOpenI
 import { updateIssuePriorityHandler } from '@/requestHandler/issues/updateIssues/updateIssuePriority.reqhandler';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence, motion } from 'framer-motion';
-import { CircleX } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import ButtonComp from '../../ButtonComp';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardFooter } from '../../ui/card';
 import CardAnimation from '../CardAnimation';
 import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
+import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
 
 export const OpenIssues = () => {
   return (
     <>
-      <FilterSection />
+      <FilterSection showEnvironment={true} showGroup={true} showPriority={true} />
       <IssueCardsSection />
     </>
   );
 };
 
-const filters_items = [
-  { title: 'Critical', color: 'bg-red-600' },
-  { title: 'High', color: 'bg-red-500' },
-  { title: 'Low', color: 'bg-yellow-600' },
-];
-
-const FilterSection = () => {
-  const [selected, setSelected] = useState<string>();
-  return (
-    <section className="w-full flex">
-      <div className="w-130 flex gap-2 p-5">
-        {filters_items.map((item) => (
-          <ButtonComp
-            variant={'outline'}
-            className={`flex-1 text-foreground w-full cursor-pointer p-0 h-8 ${item.title === selected ? 'w-48' : ''}`}
-            onClick={() => setSelected((prev) => (item.title === prev ? '' : item.title))}
-          >
-            <div className={`h-2 w-2 rounded-full ${item.color}`}></div>
-            {item.title}
-            {selected === item.title && (
-              <CircleX
-                className="ml-2 size-3.5"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelected('');
-                }}
-              />
-            )}
-          </ButtonComp>
-        ))}
-      </div>
-    </section>
-  );
-};
-
 const IssueCardsSection = () => {
   const queryClient = useQueryClient();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, refetch } = useInfiniteQuery(
-    {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
+    useInfiniteQuery({
       queryKey: ['openIssues'],
       queryFn: ({ pageParam }) => getOpenIssuesHandler(pageParam),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
+    });
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -85,19 +49,21 @@ const IssueCardsSection = () => {
   });
 
   const onClickToUpdatePriority = (issueId: number) => {
-    updateIssuePriority({ issuePriority: 'Closed', issueId });
+    updateIssuePriority({ issuePriority: 'closed', issueId });
   };
 
-  if (isError || isLoading || issue_card_items?.length === 0) {
+  if (isError || isLoading || isPending || issue_card_items?.length === 0) {
     return (
       <Fallback
         data={issue_card_items}
         error={error}
         isError={isError}
         isLoading={isLoading}
+        isPending={isPending}
         refetch={refetch}
         emptyTitle="Open Issues"
-        loadingTitle='Open Issues'
+        loadingTitle="open issues"
+        addNew={false}
       />
     );
   }

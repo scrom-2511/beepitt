@@ -11,6 +11,7 @@ const Billing = () => {
   const {
     data: billingDetails,
     isLoading,
+    isPending,
     isError,
     error,
     refetch,
@@ -19,15 +20,18 @@ const Billing = () => {
     queryFn: getBillingDetailsHandler,
   });
 
-  if (isError || isLoading || billingDetails === undefined) {
+  if (isError || isLoading || isPending || billingDetails === undefined) {
     return (
       <Fallback
         data={undefined}
         error={error}
         isError={isError}
         isLoading={isLoading}
+        isPending={isPending}
         refetch={refetch}
         emptyTitle="Unseen Issues"
+        addNew = {false}
+        loadingTitle='billing'
       />
     );
   }

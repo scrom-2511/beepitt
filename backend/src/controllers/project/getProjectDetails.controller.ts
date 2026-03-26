@@ -23,12 +23,15 @@ export const getProjectDetailsController = async (req: Request, res: Response) =
         projectName: true,
         projectDesc: true,
         identifierKey: true,
+        identifierKey2: true,
         contactDetails: {
           select: {
             telegramChatIds: true,
             telegramChatIds2: true,
             discordChatIds: true,
             discordChatIds2: true,
+            emailIds: true,
+            emailIds2: true,
           },
         },
         user: {
@@ -53,15 +56,18 @@ export const getProjectDetailsController = async (req: Request, res: Response) =
     const contactDetails = {
       telegramChatIds: project.contactDetails?.telegramChatIds || [],
       discordChatIds: project.contactDetails?.discordChatIds || [],
+      emailIds: project.contactDetails?.emailIds || [],
       telegramChatIds2:
         billing?.subscription_tier === 'pro' ? project.contactDetails?.telegramChatIds2 || [] : undefined,
       discordChatIds2: billing?.subscription_tier === 'pro' ? project.contactDetails?.discordChatIds2 || [] : undefined,
+      emailIds2: billing?.subscription_tier === 'pro' ? project.contactDetails?.emailIds2 || [] : undefined,
     };
 
     const response = {
       projectName: project.projectName,
       projectDesc: project.projectDesc,
       identifierKey: project.identifierKey,
+      identifierKey2: billing?.subscription_tier === 'pro' ? project.identifierKey2 : undefined,
       contactDetails,
     };
 

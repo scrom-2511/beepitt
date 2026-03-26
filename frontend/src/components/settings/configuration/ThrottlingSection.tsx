@@ -44,6 +44,7 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
       toast.success('Updated');
+      setInitialSeconds(currentSeconds);
     },
   });
 
@@ -69,14 +70,7 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
   const handleSave = () => {
     if (!currentSeconds) return;
 
-    mutate(
-      { globalThrottleWindow: currentSeconds },
-      {
-        onSuccess: () => {
-          setInitialSeconds(currentSeconds);
-        },
-      },
-    );
+    mutate({ globalThrottleWindow: currentSeconds });
   };
 
   return (

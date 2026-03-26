@@ -1,7 +1,7 @@
 import { Prisma } from '../../generated/prisma/client';
 import { ProjectGetPayload } from '../../generated/prisma/models';
 
-export type UserWithOtherDetails = Prisma.UserGetPayload<{
+export type UserWithBillingConfigurationProjectContactDetails = Prisma.UserGetPayload<{
   include: {
     billing: true;
     configuration: true;
@@ -11,6 +11,16 @@ export type UserWithOtherDetails = Prisma.UserGetPayload<{
   };
 }>;
 
-export type ProjectType = ProjectGetPayload<{ include: { contactDetails: true } }>;
+export type UserWithBillingConfigurationProject = Prisma.UserGetPayload<{
+  include: {
+    billing: true;
+    configuration: true;
+    project: true;
+  };
+}>;
+
+export type ProjectWithContactDetails = ProjectGetPayload<{ include: { contactDetails: true } }>;
+
+export type Project = ProjectGetPayload<{}>;
 
 export type Event = Prisma.EventGetPayload<{}>;

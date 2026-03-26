@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export interface TeamInfoResponse {
@@ -10,9 +10,7 @@ export interface TeamInfoResponse {
 export const getTeamInfoHandler = async (): Promise<TeamInfoResponse> => {
   try {
     console.log('bro i reached this part');
-    const res = await axios.get(BACKEND_URL + '/user/getTeamInfo', {
-      withCredentials: true,
-    });
+    const res = await api.get('/user/getTeamInfo');
 
     if (res.data.success) {
       return res.data.data as TeamInfoResponse;

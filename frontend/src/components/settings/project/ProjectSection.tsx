@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { createProjectHandler } from '@/requestHandler/settings/project/createProject.reqhandler';
 import { getAllProjects } from '@/requestHandler/settings/project/getAllProjects.reqhandler';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -35,18 +35,30 @@ const ProjectSection = () => {
 export default ProjectSection;
 
 const AddButton = () => {
+  const [open, setOpen] = useState(false);
   const [projectName, setProjectName] = useState('');
   const [projectDesc, setProjectDesc] = useState('');
-  const { mutate: createProject } = useMutation({
+  const queryClient = useQueryClient();
+
+  const { mutate: createProject, isPending } = useMutation({
     mutationFn: createProjectHandler,
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allProjects'] });
+      toast.success('Project created successfully');
+      setProjectName('');
+      setProjectDesc('');
+      setOpen(false);
+    },
     onError: (error) => {
+      setOpen(false);
+      console.log(error);
       toast.error(error.message);
     },
   });
+
   return (
     <div className="fixed bottom-20 right-20 min-[2000px]:right-[clamp(80px,calc(80px+((100vw-2000px)*0.5)),5000px)]">
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <ButtonComp className="px-10 py-7 font-semibold">+ Add</ButtonComp>
         </DialogTrigger>
@@ -74,6 +86,7 @@ const AddButton = () => {
               </Button>
             </DialogClose>
             <Button
+              disabled={isPending}
               onClick={() => {
                 if (!projectName || projectName.length === 0 || !projectDesc || projectDesc.length === 0) {
                   toast.error('Add a project name');

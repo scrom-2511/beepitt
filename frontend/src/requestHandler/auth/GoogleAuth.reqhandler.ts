@@ -1,15 +1,13 @@
-import { BACKEND_URL } from '@/config/app.config';
 import axios from 'axios';
+import api from '../api';
 
 interface GoogleAuthBody {
   token: string;
 }
 
-export const googleAuthHandler = async (data: GoogleAuthBody): Promise<void> => {
+export const googleAuthHandler = async (payload: GoogleAuthBody): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/googleAuth', data, {
-      withCredentials: true,
-    });
+    const res = await api.post('/user/googleAuth', data);
 
     if (res.data.success) {
       return;

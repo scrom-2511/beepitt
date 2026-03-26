@@ -19,9 +19,9 @@ const Dashboard = () => {
   return (
     <SidebarProvider className="h-full p-5">
       <AppSidebar />
-      <div className="bg-background w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5">
+      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background overflow-x-auto">
         <TopBar selected={selected} />
-        <div className="overflow-y-scroll">
+        <div className="">
           <Outlet />
         </div>
       </div>
@@ -43,14 +43,17 @@ const routeTitleMap: Record<string, string> = {
 
 export const TopBar = ({ selected }: { selected: string | undefined }) => {
   const displayTitle = selected ? routeTitleMap[selected] || selected.charAt(0).toUpperCase() + selected.slice(1) : '';
+  const formattedTitle = displayTitle.replace('-', ' ');
 
   return (
     <div>
       <div className="flex p-5 gap-5 items-center font-montserrat">
         <SidebarTrigger />
-        <h1 className="text-foreground font-medium text-xl">{displayTitle}</h1>
+        <h1 className="text-foreground font-medium text-xl">{formattedTitle}</h1>
       </div>
       <div className="border border-foreground opacity-25"></div>
     </div>
   );
 };
+
+// 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

@@ -161,6 +161,7 @@ model Event {
   @@index([userId])
   @@index([userId, type])
   @@index([userId, priority])
+  @@index([userId, group])
 }
 
 model ContactDetails {
@@ -169,6 +170,8 @@ model ContactDetails {
   telegramChatIds2 String[] @default([]) // For "pro" tier
   discordChatIds   String[] @default([])
   discordChatIds2  String[] @default([]) // For "pro" tier
+  emailIds         String[] @default([])
+  emailIds2        String[] @default([]) // For "pro" tier
   projectId        Int      @unique
 
   project Project @relation(fields: [projectId], references: [id])

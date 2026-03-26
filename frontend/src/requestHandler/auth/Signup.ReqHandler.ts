@@ -1,7 +1,7 @@
-import { BACKEND_URL } from '@/config/app.config';
 import { SignupType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
+import api from '../api';
 
 export interface SignupRequest {
   email: string;
@@ -9,11 +9,9 @@ export interface SignupRequest {
   password: string;
   timezone: string;
 }
-export const signupHandler = async (data: z.infer<typeof SignupType>): Promise<void> => {
+export const signupHandler = async (payload: z.infer<typeof SignupType>): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/signup', data, {
-      withCredentials: true,
-    });
+    const res = await api.post('/user/signup', data);
 
     if (res.data.success) {
       return;

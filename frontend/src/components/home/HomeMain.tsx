@@ -61,7 +61,7 @@ const HomeMain = () => {
                   {words[index]}
                 </motion.span>
               </AnimatePresence>{' '}
-              caught,
+              detected,
             </h1>
             <h1>
               <span className="text-8xl text-primary">Notification</span> sent!

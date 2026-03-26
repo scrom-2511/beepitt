@@ -1,18 +1,19 @@
 import { NotificationChannels } from '../../../generated/prisma/enums';
 import { enqueueDiscordNotifications } from '../../services/bullmq/producers/discordNotifications.producer';
+import { enqueueEmailNotifications } from '../../services/bullmq/producers/emailNotifications.producer';
 import { enqueueTelegramNotifications } from '../../services/bullmq/producers/telegramNotifications.producer';
 import { ChatIdsInfo, EventIdAndType, NotificationJob } from '../../types/applicationTypes';
-import { UserWithOtherDetails } from '../../types/prismaTypes';
+import { UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
 
 const enqueuerMap: Record<NotificationChannels, (args: NotificationJob) => Promise<void>> = {
   [NotificationChannels.discord]: enqueueDiscordNotifications,
   [NotificationChannels.telegram]: enqueueTelegramNotifications,
-  [NotificationChannels.email]: async (args) => {},
+  [NotificationChannels.email]: enqueueEmailNotifications,
   [NotificationChannels.slack]: async (args) => {},
 };
 
 export const enqueueNotificationsOnClientCall = async (
-  user: UserWithOtherDetails,
+  user: UserWithBillingConfigurationProjectContactDetails,
   event: EventIdAndType,
   notificationChannels: NotificationChannels[],
   allChatIdsInfo: ChatIdsInfo[],

@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export interface Project {
@@ -13,7 +13,7 @@ export interface ProjectsResponse {
 
 export const getAllProjects = async (): Promise<ProjectsResponse> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/getAllProjects', { withCredentials: true });
+    const res = await api.get('/user/getAllProjects');
 
     console.log(res);
 

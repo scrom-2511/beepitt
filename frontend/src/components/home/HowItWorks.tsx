@@ -118,6 +118,7 @@ const HowItWorks = () => {
                   >
                     <div className="text-center">
                       <VisualIcon className="w-16 h-16 md:w-24 md:h-24 text-primary mx-auto mb-4" />
+                      {/* {step} */}
                     </div>
                   </div>
 

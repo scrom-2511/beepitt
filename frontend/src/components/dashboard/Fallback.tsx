@@ -9,9 +9,10 @@ interface FallbackInterface<T> {
   isError: boolean;
   error: Error | null;
   isLoading: boolean;
+  isPending?: boolean;
   data: T[] | undefined;
   refetch: () => void;
-  emptyTitle: DashboardState;
+  emptyTitle: DashboardState | string;
   loadingTitle: string;
   addNew: boolean;
 }
@@ -20,13 +21,14 @@ const Fallback = <T,>({
   isError,
   error,
   isLoading,
+  isPending,
   data,
   refetch,
   emptyTitle,
   loadingTitle,
   addNew,
 }: FallbackInterface<T>) => {
-  if (!isError && !isLoading && data?.length !== 0) {
+  if (!isError && !isLoading && !isPending && data?.length !== 0) {
     return null;
   }
 
@@ -49,7 +51,7 @@ const Fallback = <T,>({
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="text-white flex justify-center h-full w-full">
         <Loading title={loadingTitle} />
@@ -70,7 +72,7 @@ const Fallback = <T,>({
           </EmptyMedia>
           <EmptyTitle className="text-muted-foreground">
             {!addNew
-              ? 'Woohoo, zero' + emptyTitle.toLowerCase()
+              ? 'Woohoo, zero ' + emptyTitle.toLowerCase()
               : 'Currently you have zero ' + loadingTitle.toLowerCase() + '!'}
           </EmptyTitle>
         </EmptyHeader>

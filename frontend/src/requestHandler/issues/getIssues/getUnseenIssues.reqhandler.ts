@@ -1,4 +1,4 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import axios from 'axios';
 
 export type IssuePriority = 'Undefined';
@@ -18,8 +18,7 @@ export interface IssuesResponse {
 
 export const getUnseenIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {
   try {
-    const res = await axios.get(BACKEND_URL + '/user/getUnseenIssues', {
-      withCredentials: true,
+    const res = await api.get('/user/getUnseenIssues', {
       params: { lastId },
     });
 

@@ -1,8 +1,8 @@
-import { BACKEND_URL } from '@/config/app.config';
 import type { SubscriptionTier } from '@/types/applicationTypes';
 import { LoginType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
+import api from '../api';
 
 export interface SigninRequest {
   email: string;
@@ -14,11 +14,9 @@ interface SigninResponse {
   userSubscriptionTier: SubscriptionTier;
 }
 
-export const signinHandler = async (data: z.infer<typeof LoginType>): Promise<SigninResponse> => {
+export const signinHandler = async (payload: z.infer<typeof LoginType>): Promise<SigninResponse> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/signin', data, {
-      withCredentials: true,
-    });
+    const res = await api.post('/user/signin', payload);
 
     if (res.data.success) {
       return res.data.data as SigninResponse;

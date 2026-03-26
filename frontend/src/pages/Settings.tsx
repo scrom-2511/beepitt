@@ -6,6 +6,7 @@ const tabItems = [
   { label: 'Team', value: 'team' },
   { label: 'Projects', value: 'projects' },
   { label: 'Configurations', value: 'configurations' },
+  { label: 'More Settings', value: 'more-settings' },
 ];
 
 const Settings = () => {
@@ -19,12 +20,12 @@ const Settings = () => {
   const hideTabs = /\d+$/.test(location.pathname);
 
   return (
-    <section className="relative w-full h-full">
+    <section className="relative w-full h-[calc(100vh-135px)] overflow-scroll">
       {!hideTabs && (
         <Tabs value={currentTab} onValueChange={(tabValue) => navigate(tabValue)} className="w-full p-0 sm:p-5">
-          <TabsList className="xl:w-1/2 w-full mt-5 overflow-scroll flex gap-5 justify-start items-center">
+          <TabsList className="w-full mt-5 flex gap-3 overflow-x-auto whitespace-nowrap snap-x snap-mandatory">
             {tabItems.map((item) => (
-              <TabsTrigger key={item.value} value={item.value}>
+              <TabsTrigger key={item.value} value={item.value} className="flex-shrink-0 snap-start">
                 {item.label}
               </TabsTrigger>
             ))}

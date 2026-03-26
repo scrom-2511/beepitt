@@ -1,11 +1,11 @@
-import { BACKEND_URL } from '@/config/app.config';
+import api from '@/requestHandler/api';
 import type { ProjectNameType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
 
-export const createProjectHandler = async (data: z.infer<typeof ProjectNameType>): Promise<void> => {
+export const createProjectHandler = async (payload: z.infer<typeof ProjectNameType>): Promise<void> => {
   try {
-    const res = await axios.post(BACKEND_URL + '/user/createProject', data, { withCredentials: true });
+    const res = await api.post('/user/createProject', payload);
 
     if (res.data.success) {
       return;

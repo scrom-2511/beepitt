@@ -1,8 +1,10 @@
 import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
 import { NotificationChannels } from '../../../generated/prisma/enums';
-import { UserWithOtherDetails } from '../../types/prismaTypes';
+import { UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
 
-export const getSelectedNotificationChannelsOfUser = (user: UserWithOtherDetails): NotificationChannels[] => {
+export const getSelectedNotificationChannelsOfUser = (
+  user: UserWithBillingConfigurationProjectContactDetails,
+): NotificationChannels[] => {
   // Get all selected notification channels of user
   const selectedNotificationChannels = user.notificationChannels;
 
@@ -13,5 +15,5 @@ export const getSelectedNotificationChannelsOfUser = (user: UserWithOtherDetails
   const maxNotificationChannels = SUBSCRIPTION_LIMITS[tier].maxNotificationChannels;
 
   // Get and return notification channels according to users subscription limit
-  return selectedNotificationChannels.slice(0, maxNotificationChannels);;
+  return selectedNotificationChannels.slice(0, maxNotificationChannels);
 };

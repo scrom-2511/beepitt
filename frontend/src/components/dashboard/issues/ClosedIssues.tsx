@@ -9,22 +9,27 @@ import { Card, CardContent, CardDescription, CardFooter } from '../../ui/card';
 import CardAnimation from '../CardAnimation';
 import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
+import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
 const ClosedIssues = () => {
-  return <ErrorCardsSection />;
+  return (
+    <>
+      <FilterSection showEnvironment={true} showGroup={true} showPriority={false} />
+      <IssueCardsSection />
+    </>
+  );
 };
 
 export default ClosedIssues;
 
-const ErrorCardsSection = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, refetch } = useInfiniteQuery(
-    {
+const IssueCardsSection = () => {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
+    useInfiniteQuery({
       queryKey: ['closedIssues'],
       queryFn: ({ pageParam }) => getClosedIssuesHandler(pageParam),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
-    },
-  );
+    });
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,15 +37,18 @@ const ErrorCardsSection = () => {
 
   const issue_card_items = data?.pages.flatMap((page) => page.issues) ?? [];
 
-  if (isError || isLoading || issue_card_items?.length === 0) {
+  if (isError || isLoading || isPending || issue_card_items?.length === 0) {
     return (
       <Fallback
         data={issue_card_items}
         error={error}
         isError={isError}
         isLoading={isLoading}
+        isPending={isPending}
         refetch={refetch}
         emptyTitle="Closed Issues"
+        loadingTitle="closed issues"
+        addNew={false}
       />
     );
   }
