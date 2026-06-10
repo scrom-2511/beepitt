@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Environment, EventType, IssuePriority, NotificationChannels } from './enums';
 
 export const LoginType = z.object({
   email: z.string().email(),
@@ -13,14 +14,14 @@ export const SignupType = z.object({
 });
 
 export const ClientCallType = z.object({
-  type: z.enum(['incident', 'issue']),
+  type: z.enum(EventType),
   projectName: z.string(),
   name: z.string(),
   description: z.string(),
   filePath: z.string().nullable(),
   lineNumber: z.number().nullable(),
   columnNumber: z.number().nullable(),
-  environment: z.enum(['production', 'staging', 'development', 'qa', 'uat', 'sandbox']),
+  environment: z.enum(Environment),
   group: z.string().nullable(),
 });
 
@@ -51,7 +52,7 @@ export const RazorPayCreateOrderType = z.object({
 
 export const UpdateIssuePriorityType = z.object({
   issueId: z.number(),
-  issuePriority: z.enum(['unseen', 'critical', 'high', 'low', 'closed']),
+  issuePriority: z.enum(IssuePriority),
 });
 
 export const UpdateIncidentSeenType = z.object({
@@ -67,8 +68,16 @@ export const ExportLogsType = z.object({
   exportType: z.enum(['csv', 'json']),
 });
 
+type ExportLogsInput = z.infer<typeof ExportLogsType>['exportType'];
+
+const something: ExportLogsInput = 'csv';
+
 export const AddNotificationChannel = z.object({
-  channels: z.array(z.enum(['telegram', 'discord', 'slack', 'email'])).min(1),
+  channels: z.array(z.enum(NotificationChannels)).min(1),
+});
+
+export const UpdateNotificationChannelsType = z.object({
+  channels: z.array(z.enum(NotificationChannels)),
 });
 
 export const UpdateGlobalThrottleWindowType = z.object({
@@ -84,4 +93,11 @@ export const UpdateProThrottleType = z.object({
 export const UpdateRetryConfigType = z.object({
   maxRetries: z.number(),
   retryOffset: z.number(),
+});
+
+export const UpdateContactDetailsType = z.object({
+  projectId: z.number(),
+  emailIds: z.array(z.string().email()).optional(),
+  telegramChatIds: z.array(z.string()).optional(),
+  discordChatIds: z.array(z.string()).optional(),
 });

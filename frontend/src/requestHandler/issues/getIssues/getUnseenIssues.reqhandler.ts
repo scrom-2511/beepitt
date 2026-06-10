@@ -1,14 +1,14 @@
 import api from '@/requestHandler/api';
 import axios from 'axios';
 
-export type IssuePriority = 'Undefined';
+import { IssuePriority } from '@/types/enums';
 
 export interface Issue {
   id: number;
-  issueName: string;
-  issueDesc: string;
-  issuePriority?: IssuePriority | null;
-  issueDateAndTime: Date;
+  name: string;
+  description: string;
+  priority: IssuePriority | null;
+  createdAt: string;
 }
 
 export interface IssuesResponse {
@@ -23,6 +23,7 @@ export const getUnseenIssuesHandler = async (lastId: number): Promise<IssuesResp
     });
 
     if (res.data.success) {
+      console.log(res.data.data);
       return res.data.data as IssuesResponse;
     }
 

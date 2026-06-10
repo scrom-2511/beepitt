@@ -13,13 +13,13 @@ export const updateIssuePriorityController = async (req: Request, res: Response)
       return;
     }
 
-    const isIssueClosed = validateData.data.issuePriority === 'Closed';
+    const isIssueClosed = validateData.data.issuePriority === 'closed';
 
-    await prisma.issue.update({
+    await prisma.event.update({
       where: { id: validateData.data.issueId },
       data: {
-        issuePriority: validateData.data.issuePriority,
-        issueResolveDateAndTime: isIssueClosed ? new Date() : null,
+        priority: validateData.data.issuePriority,
+        resolvedAt: isIssueClosed ? new Date() : null,
       },
     });
 

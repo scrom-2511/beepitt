@@ -49,8 +49,15 @@ const IssueCardsSection = () => {
   const { mutate: updateIssuePriority } = useMutation({
     mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(['unseenIssues'], (oldData: Issue[]) => {
-        return oldData.filter((issue) => issue.id !== variables.issueId);
+      queryClient.setQueryData(['unseenIssues'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            issues: page.issues.filter((issue: Issue) => issue.id !== variables.issueId),
+          })),
+        };
       });
     },
   });
@@ -79,17 +86,20 @@ const IssueCardsSection = () => {
 
   return (
     <AnimatePresence>
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5 bg-amber-300">
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
         {issue_card_items?.map((item, i) => (
           <CardAnimation i={i} key={item.id}>
             <Card className="bg-card p-5 sm:p-10">
-              <CardHeaderComp title={item.issueName} desc={item.issueDesc} />
+              <CardHeaderComp title={item.name} desc={item.description} />
               <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
                 <Button variant={'outline'} className="flex-1">
-                  Date
+                  {new Date(item.createdAt).toLocaleDateString()}
                 </Button>
                 <Button variant={'outline'} className="flex-1">
-                  Time
+                  {new Date(item.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </Button>
               </CardContent>
               <CardFooter className="p-0 flex flex-col items-start gap-5">

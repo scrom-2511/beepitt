@@ -3,11 +3,13 @@ import type { UpdateIssuePriorityType } from '@/types/dataTypes';
 import axios from 'axios';
 import type z from 'zod';
 
-export type UpdateIssuePriorityEnum = 'Low' | 'Critical' | 'High' | 'Closed';
+import { IssuePriority } from '@/types/enums';
+
+export type UpdateIssuePriorityEnum = IssuePriority;
 
 export const updateIssuePriorityHandler = async (payload: z.infer<typeof UpdateIssuePriorityType>): Promise<void> => {
   try {
-    const res = await api.post('/user/updateIssuePriority', data);
+    const res = await api.post('/user/updateIssuePriority', payload);
 
     if (res.data.success) {
       return;
