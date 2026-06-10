@@ -12,17 +12,17 @@ const app: Express = express();
 app.use(cookieParser());
 app.use(express.json());
 
-app.use((req, res, next) => {
-  console.log(`[${req.method}] ${req.url} - Origin: ${req.headers.origin}`);
-  if (req.headers['access-control-request-private-network']) {
-    res.setHeader('Access-Control-Allow-Private-Network', 'true');
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`[${req.method}] ${req.url} - Origin: ${req.headers.origin}`);
+//   if (req.headers['access-control-request-private-network']) {
+//     res.setHeader('Access-Control-Allow-Private-Network', 'true');
+//   }
+//   next();
+// });
 
 app.use(
   cors({
-    origin: [FRONTEND_URL, 'http://localhost:5173', 'https://linear-proposed-made-followed.trycloudflare.com'],
+    origin: [FRONTEND_URL, 'http://localhost:5173', 'https://kills-johns-ericsson-faqs.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

@@ -145,7 +145,7 @@ model Event {
 
   filePath                                String?
   occurrences                             Int       @default(1)
-  occurrencesFromLastNotificationSent     Int
+  occurrencesFromLastNotificationSent     Int       @default(0)
   firstOccurenceAfterLastNotificationSent DateTime?
   lineNumber                              Int?
   columnNumber                            Int?

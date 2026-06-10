@@ -12,8 +12,17 @@ export default defineConfig({
     },
   },
   server: {
-    host: "0.0.0.0",
-    port: 5173,
-    allowedHosts: true,
+    allowedHosts: ["kills-johns-ericsson-faqs.trycloudflare.com"],
+    proxy: {
+      '/api': {
+        target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: true,
+        headers: {
+          'ngrok-skip-browser-warning': 'true',
+        }
+      }
+    }
   },
 });

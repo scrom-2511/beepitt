@@ -7,6 +7,7 @@ import { LoginType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
 export const signinController = async (req: Request, res: Response) => {
+  console.log(req.body);
   try {
     const validateData = LoginType.safeParse(req.body);
     if (!validateData.success) {
@@ -54,6 +55,7 @@ export const signinController = async (req: Request, res: Response) => {
 
     return;
   } catch (error) {
+    console.log(error);
     errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }

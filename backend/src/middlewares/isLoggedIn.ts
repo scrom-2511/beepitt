@@ -14,7 +14,7 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
   console.log("i am in isloggedin")
   console.log("i am in isloggedin")
   if (!jwtSecret) {
-    jwtSecret = 'something';
+    jwtSecret = 'somethingboi';
   }
 
   let { authToken } = req.cookies;
