@@ -42,8 +42,15 @@ const IssueCardsSection = () => {
   const { mutate: updateIssuePriority } = useMutation({
     mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(['openIssues'], (oldData: Issue[]) => {
-        return oldData.filter((issue) => issue.id !== variables.issueId);
+      queryClient.setQueryData(['openIssues'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            issues: page.issues.filter((issue: Issue) => issue.id !== variables.issueId),
+          })),
+        };
       });
     },
   });
@@ -74,13 +81,16 @@ const IssueCardsSection = () => {
         {issue_card_items?.map((item, i) => (
           <CardAnimation i={i} key={item.id}>
             <Card key={item.id} className="bg-card p-10">
-              <CardHeaderComp title={item.issueName} desc={item.issueDesc} />
+              <CardHeaderComp title={item.name} desc={item.description} />
               <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
                 <Button variant={'outline'} className="flex-1">
-                  {item.issueDateAndTime.toString()}
+                  {new Date(item.createdAt).toLocaleDateString()}
                 </Button>
                 <Button variant={'outline'} className="flex-1">
-                  {item.issueDateAndTime.toString()}
+                  {new Date(item.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
                 </Button>
               </CardContent>
               <CardFooter className="p-0 flex flex-col items-start gap-5">
@@ -96,14 +106,14 @@ const IssueCardsSection = () => {
                     }}
                     transition={{ duration: 1.2, repeat: Infinity }}
                     className={`h-2.5 w-2.5  mr-3 rounded-full ${
-                      item.issuePriority === 'Critical'
+                      item.priority === 'critical'
                         ? 'bg-red-600'
-                        : item.issuePriority === 'High'
+                        : item.priority === 'high'
                           ? 'bg-red-500'
                           : 'bg-yellow-600'
                     }`}
                   ></motion.div>
-                  {item.issuePriority}
+                  <span className="capitalize">{item.priority}</span>
                 </div>
                 <ButtonComp
                   className="h-10 w-full font-semibold cursor-pointer"

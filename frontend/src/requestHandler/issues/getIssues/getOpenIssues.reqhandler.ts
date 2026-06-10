@@ -1,18 +1,19 @@
 import api from '@/requestHandler/api';
 import axios from 'axios';
 
-export type IssuePriority = 'Low' | 'Critical' | 'High' | 'Closed';
+import { IssuePriority } from '@/types/enums';
+
 export interface Issue {
   id: number;
-  issueName: string;
-  issueDesc: string;
-  issuePriority?: IssuePriority | null;
-  issueDateAndTime: Date;
+  name: string;
+  description: string;
+  priority: IssuePriority | null;
+  createdAt: string;
 }
 
-interface IssuesResponse {
+export interface IssuesResponse {
   issues: Issue[];
-  nextCursor: number;
+  nextCursor: number | null;
 }
 
 export const getOpenIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {

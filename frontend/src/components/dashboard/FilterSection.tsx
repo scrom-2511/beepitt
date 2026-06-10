@@ -10,18 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-// ── Types derived from Prisma schema ──────────────────────────────────────────
-type Priority = 'Critical' | 'High' | 'Low';
-type Environment = 'production' | 'staging' | 'development' | 'qa' | 'uat' | 'sandbox';
+import { Environment, IssuePriority } from '@/types/enums';
 
-const PRIORITY_OPTIONS: { label: Priority; color: string }[] = [
-  { label: 'Critical', color: 'bg-red-600' },
-  { label: 'High', color: 'bg-red-400' },
-  { label: 'Low', color: 'bg-yellow-500' },
+const PRIORITY_OPTIONS: { label: IssuePriority; color: string }[] = [
+  { label: 'critical', color: 'bg-red-600' },
+  { label: 'high', color: 'bg-red-400' },
+  { label: 'low', color: 'bg-yellow-500' },
 ];
 
-// Mirrors the Environment enum in schema.prisma
-const ENVIRONMENT_OPTIONS: Environment[] = ['production', 'staging', 'development', 'qa', 'uat', 'sandbox'];
+const ENVIRONMENT_OPTIONS = Environment;
 
 const FilterSection = ({
   showPriority,
@@ -32,7 +29,7 @@ const FilterSection = ({
   showEnvironment: boolean;
   showGroup: boolean;
 }) => {
-  const [priority, setPriority] = useState<Priority | null>(null);
+  const [priority, setPriority] = useState<IssuePriority | null>(null);
   const [environment, setEnvironment] = useState<Environment | null>(null);
   // group is dynamic at runtime; null means "all groups"
   const [group, setGroup] = useState<string | null>(null);
@@ -69,10 +66,10 @@ const FilterSection = ({
                   <>
                     <span
                       className={`h-2 w-2 rounded-full ${
-                        priority === 'Critical' ? 'bg-red-600' : priority === 'High' ? 'bg-red-400' : 'bg-yellow-500'
+                        priority === 'critical' ? 'bg-red-600' : priority === 'high' ? 'bg-red-400' : 'bg-yellow-500'
                       }`}
                     />
-                    {priority}
+                    <span className="capitalize">{priority}</span>
                     <X
                       className="ml-1 size-3.5 text-muted-foreground"
                       onClick={(e) => {
@@ -95,7 +92,7 @@ const FilterSection = ({
                 <DropdownMenuItem
                   key={label}
                   onClick={() => setPriority(label)}
-                  className={priority === label ? 'bg-accent' : ''}
+                  className={`capitalize ${priority === label ? 'bg-accent' : ''}`}
                 >
                   <span className={`h-2 w-2 rounded-full ${color}`} />
                   {label}
