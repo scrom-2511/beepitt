@@ -10,14 +10,21 @@ export const getAllOpenIssuesController = async (req: Request, res: Response) =>
 
     const PAGE_SIZE = 10;
     const lastId = Number(req.query.lastId);
+    const priority = req.query.priority as string;
+    const environment = req.query.environment as string;
+    const group = req.query.group as string;
 
     const issues = await prisma.event.findMany({
       where: {
         userId,
-        priority: {
-          notIn: ['unseen', 'closed'],
-        },
+        priority: priority
+          ? (priority as any)
+          : {
+              notIn: ['unseen', 'closed'],
+            },
         type: 'issue',
+        ...(environment && { environment: environment as any }),
+        ...(group && { group }),
       },
       orderBy: [{ id: 'desc' }],
       ...(lastId && {

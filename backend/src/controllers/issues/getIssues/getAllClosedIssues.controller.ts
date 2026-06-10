@@ -10,6 +10,8 @@ export const getAllClosedIssuesController = async (req: Request, res: Response) 
 
     const PAGE_SIZE = 10;
     const lastId = Number(req.query.lastId);
+    const environment = req.query.environment as string;
+    const group = req.query.group as string;
 
     const issues = await prisma.event.findMany({
       where: {
@@ -18,6 +20,8 @@ export const getAllClosedIssuesController = async (req: Request, res: Response) 
           in: ['closed'],
         },
         type: 'issue',
+        ...(environment && { environment: environment as any }),
+        ...(group && { group }),
       },
       orderBy: [{ id: 'desc' }],
       ...(lastId && {

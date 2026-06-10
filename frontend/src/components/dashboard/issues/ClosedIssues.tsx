@@ -13,22 +13,45 @@ import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
 import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
+import { Environment, IssuePriority } from '@/types/enums';
+import { useState } from 'react';
+
 const ClosedIssues = () => {
+  const [priority, setPriority] = useState<IssuePriority | null>(null);
+  const [environment, setEnvironment] = useState<Environment | null>(null);
+  const [group, setGroup] = useState<string | null>(null);
+
   return (
     <>
-      <FilterSection showEnvironment={true} showGroup={true} showPriority={false} />
-      <IssueCardsSection />
+      <FilterSection
+        showEnvironment={true}
+        showGroup={true}
+        showPriority={false}
+        priority={priority}
+        setPriority={setPriority}
+        environment={environment}
+        setEnvironment={setEnvironment}
+        group={group}
+        setGroup={setGroup}
+      />
+      <IssueCardsSection environment={environment} group={group} />
     </>
   );
 };
 
 export default ClosedIssues;
 
-const IssueCardsSection = () => {
+const IssueCardsSection = ({
+  environment,
+  group,
+}: {
+  environment: Environment | null;
+  group: string | null;
+}) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
     useInfiniteQuery({
-      queryKey: ['closedIssues'],
-      queryFn: ({ pageParam }) => getClosedIssuesHandler(pageParam),
+      queryKey: ['closedIssues', environment, group],
+      queryFn: ({ pageParam }) => getClosedIssuesHandler(pageParam, environment, group),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });

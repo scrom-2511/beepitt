@@ -23,10 +23,14 @@ export interface IssuesResponse {
   nextCursor: number | null;
 }
 
-export const getUnseenIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {
+export const getUnseenIssuesHandler = async (
+  lastId: number,
+  environment: Environment | null,
+  group: string | null
+): Promise<IssuesResponse> => {
   try {
     const res = await api.get('/user/getUnseenIssues', {
-      params: { lastId },
+      params: { lastId, environment, group },
     });
 
     if (res.data.success) {

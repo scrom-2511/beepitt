@@ -1,7 +1,6 @@
 import { getAllGroupsHandler } from '@/requestHandler/settings/project/getAllGroups.reqhandler';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, X } from 'lucide-react';
-import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,16 +23,23 @@ const FilterSection = ({
   showPriority,
   showEnvironment,
   showGroup,
+  priority,
+  setPriority,
+  environment,
+  setEnvironment,
+  group,
+  setGroup,
 }: {
   showPriority: boolean;
   showEnvironment: boolean;
   showGroup: boolean;
+  priority: IssuePriority | null;
+  setPriority: (priority: IssuePriority | null) => void;
+  environment: Environment | null;
+  setEnvironment: (environment: Environment | null) => void;
+  group: string | null;
+  setGroup: (group: string | null) => void;
 }) => {
-  const [priority, setPriority] = useState<IssuePriority | null>(null);
-  const [environment, setEnvironment] = useState<Environment | null>(null);
-  // group is dynamic at runtime; null means "all groups"
-  const [group, setGroup] = useState<string | null>(null);
-
   const { data: groupsData, isLoading: isGroupsLoading } = useQuery({
     queryKey: ['groups'],
     queryFn: getAllGroupsHandler,

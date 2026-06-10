@@ -16,21 +16,46 @@ import Fallback from '../Fallback';
 import FilterSection from '../FilterSection';
 import LoadMoreDiv from '../LoadMoreDiv';
 
+import { Environment, IssuePriority } from '@/types/enums';
+import { useState } from 'react';
+
 export const OpenIssues = () => {
+  const [priority, setPriority] = useState<IssuePriority | null>(null);
+  const [environment, setEnvironment] = useState<Environment | null>(null);
+  const [group, setGroup] = useState<string | null>(null);
+
   return (
     <>
-      <FilterSection showEnvironment={true} showGroup={true} showPriority={true} />
-      <IssueCardsSection />
+      <FilterSection
+        showEnvironment={true}
+        showGroup={true}
+        showPriority={true}
+        priority={priority}
+        setPriority={setPriority}
+        environment={environment}
+        setEnvironment={setEnvironment}
+        group={group}
+        setGroup={setGroup}
+      />
+      <IssueCardsSection priority={priority} environment={environment} group={group} />
     </>
   );
 };
 
-const IssueCardsSection = () => {
+const IssueCardsSection = ({
+  priority,
+  environment,
+  group,
+}: {
+  priority: IssuePriority | null;
+  environment: Environment | null;
+  group: string | null;
+}) => {
   const queryClient = useQueryClient();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, isError, isLoading, isPending, refetch } =
     useInfiniteQuery({
-      queryKey: ['openIssues'],
-      queryFn: ({ pageParam }) => getOpenIssuesHandler(pageParam),
+      queryKey: ['openIssues', priority, environment, group],
+      queryFn: ({ pageParam }) => getOpenIssuesHandler(pageParam, priority, environment, group),
       initialPageParam: 0,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
     });

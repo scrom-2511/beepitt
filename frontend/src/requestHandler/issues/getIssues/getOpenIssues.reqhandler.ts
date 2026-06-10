@@ -23,10 +23,15 @@ export interface IssuesResponse {
   nextCursor: number | null;
 }
 
-export const getOpenIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {
+export const getOpenIssuesHandler = async (
+  lastId: number,
+  priority: IssuePriority | null,
+  environment: Environment | null,
+  group: string | null
+): Promise<IssuesResponse> => {
   try {
     const res = await api.get('/user/getOpenIssues', {
-      params: { lastId },
+      params: { lastId, priority, environment, group },
     });
 
     if (res.data.success) {

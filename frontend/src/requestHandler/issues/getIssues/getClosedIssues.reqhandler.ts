@@ -24,10 +24,14 @@ interface IssuesResponse {
   nextCursor: number | null;
 }
 
-export const getClosedIssuesHandler = async (lastId: number): Promise<IssuesResponse> => {
+export const getClosedIssuesHandler = async (
+  lastId: number,
+  environment: Environment | null,
+  group: string | null
+): Promise<IssuesResponse> => {
   try {
     const res = await api.get('/user/getClosedIssues', {
-      params: { lastId },
+      params: { lastId, environment, group },
     });
 
     if (res.data.success) {
