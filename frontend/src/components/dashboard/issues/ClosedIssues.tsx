@@ -59,26 +59,38 @@ const IssueCardsSection = () => {
         {issue_card_items?.map((item, i) => (
           <CardAnimation i={i} key={item.id}>
             <Card className="bg-card p-10">
-              <CardHeaderComp title={item.issueName} desc={item.issueDesc} />
+              <CardHeaderComp title={item.name} desc={item.description} />
               <div>
-                <CardDescription className="text-foreground p-0 m-0">Error Occured At: </CardDescription>
+                <CardDescription className="text-foreground p-0 m-0 text-xs font-semibold">
+                  Error Occured At:{' '}
+                </CardDescription>
                 <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-2">
                   <Button variant={'outline'} className="flex-1">
-                    Date
+                    {new Date(item.createdAt).toLocaleDateString()}
                   </Button>
                   <Button variant={'outline'} className="flex-1">
-                    Date
+                    {new Date(item.createdAt).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </Button>
                 </CardContent>
               </div>
               <div>
-                <CardDescription className="text-foreground p-0 m-0">Error Fixed At: </CardDescription>
+                <CardDescription className="text-foreground p-0 m-0 text-xs font-semibold">
+                  Error Fixed At:{' '}
+                </CardDescription>
                 <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-2 mb-6">
                   <Button variant={'outline'} className="flex-1">
-                    Date
+                    {item.resolvedAt ? new Date(item.resolvedAt).toLocaleDateString() : 'N/A'}
                   </Button>
                   <Button variant={'outline'} className="flex-1">
-                    Time
+                    {item.resolvedAt
+                      ? new Date(item.resolvedAt).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : 'N/A'}
                   </Button>
                 </CardContent>
               </div>
@@ -88,9 +100,9 @@ const IssueCardsSection = () => {
                     animate={{
                       scale: [1, 1.1, 1],
                       boxShadow: [
-                        '0 0px 2px rgba(255, 0, 0, 0.2)',
-                        '0 0px 8px rgba(255, 0, 0, 0.6)',
-                        '0 0px 2px rgba(255, 0, 0, 0.2)',
+                        '0 0px 2px rgba(34, 197, 94, 0.2)',
+                        '0 0px 8px rgba(34, 197, 94, 0.6)',
+                        '0 0px 2px rgba(34, 197, 94, 0.2)',
                       ],
                     }}
                     transition={{ duration: 1.2, repeat: Infinity }}

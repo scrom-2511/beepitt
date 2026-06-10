@@ -65,9 +65,8 @@ const FilterSection = ({
                 {priority ? (
                   <>
                     <span
-                      className={`h-2 w-2 rounded-full ${
-                        priority === 'critical' ? 'bg-red-600' : priority === 'high' ? 'bg-red-400' : 'bg-yellow-500'
-                      }`}
+                      className={`h-2 w-2 rounded-full ${priority === 'critical' ? 'bg-red-600' : priority === 'high' ? 'bg-red-400' : 'bg-yellow-500'
+                        }`}
                     />
                     <span className="capitalize">{priority}</span>
                     <X

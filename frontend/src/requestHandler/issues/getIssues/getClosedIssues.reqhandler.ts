@@ -1,14 +1,15 @@
 import api from '@/requestHandler/api';
 import axios from 'axios';
 
-export type IssuePriority = 'Fixed';
+import { IssuePriority } from '@/types/enums';
+
 export interface Issue {
   id: number;
-  issueName: string;
-  issueDesc: string;
-  issuePriority?: IssuePriority;
-  issueDateAndTime: Date;
-  issueResolveDateAndTime: Date;
+  name: string;
+  description: string;
+  priority: IssuePriority | null;
+  createdAt: string;
+  resolvedAt: string | null;
 }
 
 interface IssuesResponse {
