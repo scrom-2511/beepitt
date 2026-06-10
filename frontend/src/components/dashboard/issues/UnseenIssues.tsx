@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getUnseenIssuesHandler, type Issue } from '@/requestHandler/issues/getIssues/getUnseenIssues.reqhandler';
@@ -8,6 +9,7 @@ import {
 import type { UpdateIssuePriorityType } from '@/types/dataTypes';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnimatePresence } from 'framer-motion';
+import { Hash, Terminal } from 'lucide-react';
 import { useRef, useState } from 'react';
 import type z from 'zod';
 import ButtonComp from '../../ButtonComp';
@@ -89,8 +91,42 @@ const IssueCardsSection = () => {
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
         {issue_card_items?.map((item, i) => (
           <CardAnimation i={i} key={item.id}>
-            <Card className="bg-card p-5 sm:p-10">
+            <Card className="bg-card p-5 sm:p-10 flex flex-col h-full">
+              <div className="flex justify-between items-start mb-2">
+                <Badge variant="outline" className="capitalize">
+                  {item.projectName}
+                </Badge>
+                <div className="flex gap-2">
+                  <Badge className="capitalize">{item.environment}</Badge>
+                  {item.group && <Badge variant="secondary">{item.group}</Badge>}
+                </div>
+              </div>
+
               <CardHeaderComp title={item.name} desc={item.description} />
+
+              <div className="flex-1">
+                {item.filePath && (
+                  <div className="mt-4 p-3 bg-muted rounded-md border border-border">
+                    <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground mb-1">
+                      <Terminal size={14} /> Source
+                    </div>
+                    <div className="text-sm font-mono break-all text-foreground">
+                      {item.filePath}
+                      {item.lineNumber && (
+                        <span className="text-primary font-bold">
+                          :{item.lineNumber}
+                          {item.columnNumber && `:${item.columnNumber}`}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <Hash size={14} /> Occurrences: <span className="font-bold text-foreground">{item.occurrences}</span>
+                </div>
+              </div>
+
               <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
                 <Button variant={'outline'} className="flex-1">
                   {new Date(item.createdAt).toLocaleDateString()}

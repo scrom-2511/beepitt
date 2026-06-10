@@ -1,7 +1,7 @@
 import api from '@/requestHandler/api';
 import axios from 'axios';
 
-import { IssuePriority } from '@/types/enums';
+import { Environment, IssuePriority } from '@/types/enums';
 
 export interface Issue {
   id: number;
@@ -10,6 +10,13 @@ export interface Issue {
   priority: IssuePriority | null;
   createdAt: string;
   resolvedAt: string | null;
+  projectName: string;
+  environment: Environment;
+  occurrences: number;
+  filePath: string | null;
+  lineNumber: number | null;
+  columnNumber: number | null;
+  group: string | null;
 }
 
 interface IssuesResponse {
