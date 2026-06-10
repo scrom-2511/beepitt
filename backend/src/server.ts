@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [FRONTEND_URL, 'http://localhost:5173', 'https://kills-johns-ericsson-faqs.trycloudflare.com'],
+    origin: ['https://comments-atom-puts-focuses.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["kills-johns-ericsson-faqs.trycloudflare.com"],
+    allowedHosts: ["comments-atom-puts-focuses.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
