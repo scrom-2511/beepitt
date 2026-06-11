@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ['https://drums-acute-default-going.trycloudflare.com'],
+    origin: ['https://recipe-fda-stood-rebates.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

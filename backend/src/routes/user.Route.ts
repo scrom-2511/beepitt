@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { aiChatController } from '../controllers/ai/chat.controller';
+import { getChatHistoryController } from '../controllers/ai/getChatHistory.controller';
 import { getAnalyticsDataController } from '../controllers/analytics/getAnalyticsData.controller';
 import { checkLoggedIn } from '../controllers/auth/checkLoggedIn';
 import { googleAuthController } from '../controllers/auth/googleAuth.controller';
@@ -83,3 +84,4 @@ userRouter.get('/getAllGroups', isLoggedIn, getAllGroupsController);
 
 // AI Chat
 userRouter.post('/aiChat', isLoggedIn, aiChatController);
+userRouter.get('/getChatHistory/:chatID', isLoggedIn, getChatHistoryController);

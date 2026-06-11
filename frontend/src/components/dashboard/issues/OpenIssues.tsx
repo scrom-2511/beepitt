@@ -7,6 +7,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { AnimatePresence, motion } from 'framer-motion';
 import { Hash, Terminal, Calendar } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ButtonComp from '../../ButtonComp';
 import { Button } from '../../ui/button';
 import { Card, CardContent, CardFooter } from '../../ui/card';
@@ -77,7 +78,7 @@ const IssueCardsSection = ({
   const { mutate: updateIssuePriority } = useMutation({
     mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(['openIssues'], (oldData: any) => {
+      queryClient.setQueriesData({ queryKey: ['openIssues'] }, (oldData: any) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
@@ -114,7 +115,7 @@ const IssueCardsSection = ({
     <AnimatePresence>
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-5 gap-5">
         {issue_card_items?.map((item, i) => (
-          <IssueCard key={item.id} item={item} i={i} onClickToUpdatePriority={onClickToUpdatePriority} />
+          <IssueCard key={`${item.id}-${i}`} item={item} i={i} onClickToUpdatePriority={onClickToUpdatePriority} />
         ))}
       </section>
       <LoadMoreDiv hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} loadMoreRef={loadMoreRef} />
@@ -132,6 +133,7 @@ const IssueCard = ({
   onClickToUpdatePriority: (id: number) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <CardAnimation i={i}>
@@ -269,8 +271,7 @@ const IssueCard = ({
                   <Button
                     className="h-12 px-8 font-bold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm w-full"
                     onClick={() => {
-                      onClickToUpdatePriority(item.id);
-                      setIsOpen(false);
+                      navigate(`ai-chat/${item.id}`, { state: { issue: item } });
                     }}
                   >
                     Find solution with AI

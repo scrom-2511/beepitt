@@ -15,6 +15,7 @@ import ProjectSection from './components/settings/project/ProjectSection';
 import TeamSection from './components/settings/team/TeamSection';
 import { ThemeProvider } from './components/theme-provider';
 import Authentication from './pages/Authentication';
+import ChatSolutionPage from './pages/ChatSolutionPage';
 import Dashboard from './pages/Dashboard';
 import Getip from './pages/Getip';
 import Home from './pages/Home';
@@ -72,6 +73,7 @@ function AppLayout() {
             <Route path="seen-incidents" element={<SeenIncidents />} />
             <Route path="unseen-issues" element={<UnseenIssues />} />
             <Route path="open-issues" element={<OpenIssues />} />
+            <Route path="open-issues/ai-chat/:issueId" element={<ChatSolutionPage />} />
             <Route path="closed-issues" element={<ClosedIssues />} />
 
             {/* Settings with nested tabs */}

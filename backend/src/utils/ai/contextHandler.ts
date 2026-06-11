@@ -1,15 +1,31 @@
-
+import { z } from 'zod';
 import { prisma } from '../../database/prismaClient';
 import { redis } from '../../services/redis/redisClient';
 import { Message } from '../../types/ai.types';
+
+const ContextProviderSchema = z.object({
+  userID: z.number().positive(),
+  chatID: z.string().min(1),
+});
+
+const ConversationSchema = z.object({
+  prompt: z.string().min(1),
+  response: z.string(),
+});
+
+const ContextSetterSchema = z.object({
+  userID: z.number().positive(),
+  chatID: z.string().min(1),
+  conversation: ConversationSchema,
+});
 
 export const contextProvider = async (
   userID: number,
   chatID: string
 ): Promise<string | null> => {
-  if (!userID || !chatID) {
-    throw new Error("Invalid parameters: userID and chatID are required");
-  }
+  ContextProviderSchema.parse({ userID, chatID });
+
+  console.log(userID, chatID);
 
   const cacheKey = `chat_context:${userID}:${chatID}`;
 
@@ -27,6 +43,7 @@ export const contextProvider = async (
   });
 
   if (!data || data.length === 0) {
+    console.log("No data found");
     return null;
   }
 
@@ -40,6 +57,8 @@ export const contextProvider = async (
   const serialized = JSON.stringify(contextArr);
   await redis.set(cacheKey, serialized, 'EX', 3600);
 
+  console.log(serialized);
+
   return serialized;
 };
 
@@ -49,12 +68,7 @@ export const contextSetter = async (
   conversation: Message,
   chatID: string
 ): Promise<void> => {
-  if (!userID || !chatID) {
-    throw new Error("Invalid parameters: userID and chatID are required");
-  }
-  if (!conversation || typeof conversation !== "object") {
-    throw new Error("Invalid conversation parameter");
-  }
+  ContextSetterSchema.parse({ userID, chatID, conversation });
 
   const cacheKey = `chat_context:${userID}:${chatID}`;
 

@@ -28,7 +28,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 
 import { Environment, IssuePriority } from '@/types/enums';
 
@@ -82,7 +81,7 @@ const IssueCardsSection = ({
   const { mutate: updateIssuePriority } = useMutation({
     mutationFn: updateIssuePriorityHandler,
     onSuccess: (_, variables) => {
-      queryClient.setQueryData(['unseenIssues'], (oldData: any) => {
+      queryClient.setQueriesData({ queryKey: ['unseenIssues'] }, (oldData: any) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
@@ -95,7 +94,7 @@ const IssueCardsSection = ({
     },
   });
 
-  const onSumitSetPriority = (issueId: number) => {
+  const onSubmitSetPriority = (issueId: number) => {
     const priority = priorities[issueId];
     if (!priority) return;
     updateIssuePriority({ issuePriority: priority, issueId });
@@ -122,10 +121,10 @@ const IssueCardsSection = ({
       <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
         {issue_card_items?.map((item, i) => (
           <IssueCard
-            key={item.id}
+            key={`${item.id}-${i}`}
             item={item}
             i={i}
-            onSumitSetPriority={onSumitSetPriority}
+            onSubmitSetPriority={onSubmitSetPriority}
             priorities={priorities}
             setPriorities={setPriorities}
           />
@@ -139,13 +138,13 @@ const IssueCardsSection = ({
 const IssueCard = ({
   item,
   i,
-  onSumitSetPriority,
+  onSubmitSetPriority,
   priorities,
   setPriorities,
 }: {
   item: Issue;
   i: number;
-  onSumitSetPriority: (id: number) => void;
+  onSubmitSetPriority: (id: number) => void;
   priorities: Record<string, UpdateIssuePriorityEnum>;
   setPriorities: React.Dispatch<React.SetStateAction<Record<string, UpdateIssuePriorityEnum>>>;
 }) => {
@@ -215,7 +214,7 @@ const IssueCard = ({
                 className="h-10 w-full font-semibold cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onSumitSetPriority(item.id);
+                  onSubmitSetPriority(item.id);
                 }}
               >
                 Set Priority

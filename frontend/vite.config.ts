@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["drums-acute-default-going.trycloudflare.com"],
+    allowedHosts: ["recipe-fda-stood-rebates.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
