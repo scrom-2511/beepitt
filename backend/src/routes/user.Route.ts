@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { aiChatController } from '../controllers/ai/chat.controller';
 import { getAnalyticsDataController } from '../controllers/analytics/getAnalyticsData.controller';
 import { checkLoggedIn } from '../controllers/auth/checkLoggedIn';
 import { googleAuthController } from '../controllers/auth/googleAuth.controller';
@@ -15,6 +16,7 @@ import { getAllUnseenIncidentsController } from '../controllers/incidents/getInc
 import { updateIncidentSeenController } from '../controllers/incidents/updateIncidents/updateIncidentSeen.controller';
 import { getAllClosedIssuesController } from '../controllers/issues/getIssues/getAllClosedIssues.controller';
 import { getAllOpenIssuesController } from '../controllers/issues/getIssues/getAllOpenIssues.controller';
+import { getIssueByIdController } from '../controllers/issues/getIssues/getIssueById.controller';
 import { getAllUnseenIssuesController } from '../controllers/issues/getIssues/getAllUnseenIssues.controller';
 import { updateIssuePriorityController } from '../controllers/issues/updateIssues/updateIssuePriority.controller';
 import { razorpayCreateOrderController } from '../controllers/payment/razorpayCreateOrder.controller';
@@ -59,6 +61,7 @@ userRouter.post('/razorPayCreateOrder', isLoggedIn, razorpayCreateOrderControlle
 userRouter.get('/getUnseenIssues', isLoggedIn, checkLastId, getAllUnseenIssuesController);
 userRouter.get('/getOpenIssues', isLoggedIn, checkLastId, getAllOpenIssuesController);
 userRouter.get('/getClosedIssues', isLoggedIn, checkLastId, getAllClosedIssuesController);
+userRouter.get('/getIssueById/:issueId', isLoggedIn, getIssueByIdController);
 userRouter.post('/updateIssuePriority', isLoggedIn, updateIssuePriorityController);
 
 // Incidents
@@ -77,3 +80,6 @@ userRouter.get('/getAnalyticsData', isLoggedIn, getAnalyticsDataController);
 
 // Groups
 userRouter.get('/getAllGroups', isLoggedIn, getAllGroupsController);
+
+// AI Chat
+userRouter.post('/aiChat', isLoggedIn, aiChatController);
