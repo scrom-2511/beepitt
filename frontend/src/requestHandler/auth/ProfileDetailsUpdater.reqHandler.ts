@@ -5,7 +5,7 @@ import api from '../api';
 
 export const profileDetailsUpdateHandler = async (payload: z.infer<typeof ProfileUpdateType>): Promise<void> => {
   try {
-    const res = await api.post('/user/updateProfileDetails', data);
+    const res = await api.post('/user/updateProfileDetails', payload);
     if (res.data.success) return;
 
     throw new Error(res.data.error?.message);

@@ -47,6 +47,7 @@ export default SigninCardComponent;
 const SigninCardForm = () => {
   const navigate = useNavigate();
   const hiddenGoogleBtnRef = useRef<HTMLDivElement | null>(null);
+  const { setStep } = useAuthState();
 
   useGoogleButton({
     buttonRef: hiddenGoogleBtnRef,
@@ -72,6 +73,10 @@ const SigninCardForm = () => {
       navigate('/dashboard/unseen-incidents');
     },
     onError: (error) => {
+      if (error.message === 'Verify otp from your email.') {
+        setStep('otp');
+        return;
+      }
       toast.error(error.message);
     },
   });

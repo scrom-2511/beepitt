@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ['https://recipe-fda-stood-rebates.trycloudflare.com'],
+    origin: ['https://spreading-amsterdam-vacations-what.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

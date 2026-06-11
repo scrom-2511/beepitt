@@ -73,9 +73,9 @@ export const getProAnalytics = async (req: Request, res: Response, userId: numbe
            SUM(CASE WHEN "type" = 'incident' THEN 1 ELSE 0 END) as "incident_count",
            SUM(CASE WHEN "type" = 'issue' THEN 1 ELSE 0 END) as "issue_count"
     FROM "Event"
-    WHERE "userId" = ${userId} AND "createdAt" >= ${thirtyDaysAgo.toISOString()}::timestamp
+    WHERE "userId" = ${userId} AND "createdAt" >= ${thirtyDaysAgo}
     GROUP BY DATE("createdAt")
-    ORDER BY "date" DESC
+    ORDER BY "date" ASC
   `;
   response.trends = {
     last30Days: trendsResult.map(item => ({ 

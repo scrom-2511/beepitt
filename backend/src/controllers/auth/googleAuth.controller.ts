@@ -26,6 +26,10 @@ export const googleAuthController = async (req: Request, res: Response) => {
       })) || undefined;
 
     if (user) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { emailVerified: true },
+      });
       await prisma.authAccount.create({
         data: {
           provider: 'google',
@@ -56,7 +60,17 @@ export const googleAuthController = async (req: Request, res: Response) => {
         },
         password: '',
         emailVerified: true,
-        eventsUsed: 0,
+        configuration: {
+          create: {
+            eventsUsed: 0,
+            eventTriggerCount: 0,
+            eventTriggerWindow: 0,
+            globalThrottleWindow: 0,
+            maxRetries: 0,
+            retryOffset: 0,
+            notificationChannels: [],
+          },
+        },
       },
     });
   }

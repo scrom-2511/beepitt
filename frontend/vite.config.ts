@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["recipe-fda-stood-rebates.trycloudflare.com"],
+    allowedHosts: ["spreading-amsterdam-vacations-what.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

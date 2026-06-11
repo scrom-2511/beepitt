@@ -4,6 +4,7 @@ import { getChatHistoryController } from '../controllers/ai/getChatHistory.contr
 import { getAnalyticsDataController } from '../controllers/analytics/getAnalyticsData.controller';
 import { checkLoggedIn } from '../controllers/auth/checkLoggedIn';
 import { googleAuthController } from '../controllers/auth/googleAuth.controller';
+import { otpSenderController } from '../controllers/auth/otpSender.controller';
 import { otpValidateController } from '../controllers/auth/otpValidator.controller';
 import { signinController } from '../controllers/auth/Signin.Controller';
 import { signupController } from '../controllers/auth/Signup.Controller';
@@ -32,56 +33,58 @@ import { updateContactDetailsController } from '../controllers/project/updateCon
 import { getTeamInfoController } from '../controllers/team/getTeamInfo.controller';
 import { checkLastId } from '../middlewares/checkLastId';
 import { isLoggedIn } from '../middlewares/isLoggedIn';
+import { isVerified } from '../middlewares/isVerified';
 
 export const userRouter = Router();
 
 // Auth
-userRouter.get('/checkLoggedIn', isLoggedIn, checkLoggedIn);
+userRouter.get('/checkLoggedIn', isLoggedIn, isVerified, checkLoggedIn);
 userRouter.post('/signup', signupController);
 userRouter.post('/signin', signinController);
 userRouter.post('/otpValidator', isLoggedIn, otpValidateController);
+userRouter.get('/otpSender', isLoggedIn, otpSenderController);
 userRouter.post('/googleAuth', googleAuthController);
 
 // Profile
-userRouter.post('/updateProfileDetails', isLoggedIn, updateProfileDetailsController);
-userRouter.post('/updateTimeZoneAndPreferences', isLoggedIn, updateTimeZoneAndPreferencesController);
-userRouter.get('/getProfileDetailsAndPreferences', isLoggedIn, getProfileDetailsAndPreferncesController);
+userRouter.post('/updateProfileDetails', isLoggedIn, isVerified, updateProfileDetailsController);
+userRouter.post('/updateTimeZoneAndPreferences', isLoggedIn, isVerified, updateTimeZoneAndPreferencesController);
+userRouter.get('/getProfileDetailsAndPreferences', isLoggedIn, isVerified, getProfileDetailsAndPreferncesController);
 
 // Projects
-userRouter.get('/getProjectDetails/:projectId', isLoggedIn, getProjectDetailsController);
-userRouter.get('/getTeamInfo', isLoggedIn, getTeamInfoController);
-userRouter.get('/getAllProjects', isLoggedIn, getAllProjectsController);
-userRouter.post('/createProject', isLoggedIn, createProjectController);
-userRouter.post('/updateContactDetails', isLoggedIn, updateContactDetailsController);
+userRouter.get('/getProjectDetails/:projectId', isLoggedIn, isVerified, getProjectDetailsController);
+userRouter.get('/getTeamInfo', isLoggedIn, isVerified, getTeamInfoController);
+userRouter.get('/getAllProjects', isLoggedIn, isVerified, getAllProjectsController);
+userRouter.post('/createProject', isLoggedIn, isVerified, createProjectController);
+userRouter.post('/updateContactDetails', isLoggedIn, isVerified, updateContactDetailsController);
 
 // Billing & Payment
-userRouter.get('/getBillingDetails', isLoggedIn, getBillingDetailsController);
-userRouter.post('/razorPayCreateOrder', isLoggedIn, razorpayCreateOrderController);
+userRouter.get('/getBillingDetails', isLoggedIn, isVerified, getBillingDetailsController);
+userRouter.post('/razorPayCreateOrder', isLoggedIn, isVerified, razorpayCreateOrderController);
 
 // Issues
-userRouter.get('/getUnseenIssues', isLoggedIn, checkLastId, getAllUnseenIssuesController);
-userRouter.get('/getOpenIssues', isLoggedIn, checkLastId, getAllOpenIssuesController);
-userRouter.get('/getClosedIssues', isLoggedIn, checkLastId, getAllClosedIssuesController);
-userRouter.get('/getIssueById/:issueId', isLoggedIn, getIssueByIdController);
-userRouter.post('/updateIssuePriority', isLoggedIn, updateIssuePriorityController);
+userRouter.get('/getUnseenIssues', isLoggedIn, isVerified, checkLastId, getAllUnseenIssuesController);
+userRouter.get('/getOpenIssues', isLoggedIn, isVerified, checkLastId, getAllOpenIssuesController);
+userRouter.get('/getClosedIssues', isLoggedIn, isVerified, checkLastId, getAllClosedIssuesController);
+userRouter.get('/getIssueById/:issueId', isLoggedIn, isVerified, getIssueByIdController);
+userRouter.post('/updateIssuePriority', isLoggedIn, isVerified, updateIssuePriorityController);
 
 // Incidents
-userRouter.get('/getUnseenIncidents', isLoggedIn, checkLastId, getAllUnseenIncidentsController);
-userRouter.get('/getSeenIncidents', isLoggedIn, checkLastId, getAllSeenIncidentsController);
-userRouter.post('/updateIncidentSeen', isLoggedIn, updateIncidentSeenController);
+userRouter.get('/getUnseenIncidents', isLoggedIn, isVerified, checkLastId, getAllUnseenIncidentsController);
+userRouter.get('/getSeenIncidents', isLoggedIn, isVerified, checkLastId, getAllSeenIncidentsController);
+userRouter.post('/updateIncidentSeen', isLoggedIn, isVerified, updateIncidentSeenController);
 
 // Configurations
-userRouter.get('/getConfigurations', isLoggedIn, getConfigurationsController);
-userRouter.post('/updateNotificationChannels', isLoggedIn, updateNotificationChannelsController);
-userRouter.post('/updateGlobalThrottleWindow', isLoggedIn, updateGlobalThrottleWindowController);
-userRouter.post('/updateRetryConfig', isLoggedIn, updateRetryConfigController);
+userRouter.get('/getConfigurations', isLoggedIn, isVerified, getConfigurationsController);
+userRouter.post('/updateNotificationChannels', isLoggedIn, isVerified, updateNotificationChannelsController);
+userRouter.post('/updateGlobalThrottleWindow', isLoggedIn, isVerified, updateGlobalThrottleWindowController);
+userRouter.post('/updateRetryConfig', isLoggedIn, isVerified, updateRetryConfigController);
 
 // Analytics (new)
-userRouter.get('/getAnalyticsData', isLoggedIn, getAnalyticsDataController);
+userRouter.get('/getAnalyticsData', isLoggedIn, isVerified, getAnalyticsDataController);
 
 // Groups
-userRouter.get('/getAllGroups', isLoggedIn, getAllGroupsController);
+userRouter.get('/getAllGroups', isLoggedIn, isVerified, getAllGroupsController);
 
 // AI Chat
-userRouter.post('/aiChat', isLoggedIn, aiChatController);
-userRouter.get('/getChatHistory/:chatID', isLoggedIn, getChatHistoryController);
+userRouter.post('/aiChat', isLoggedIn, isVerified, aiChatController);
+userRouter.get('/getChatHistory/:chatID', isLoggedIn, isVerified, getChatHistoryController);

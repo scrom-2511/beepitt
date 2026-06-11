@@ -9,7 +9,7 @@ export interface OtpValidatorRequest {
 
 export const otpValidatorHandler = async (payload: z.infer<typeof OtpValidateType>): Promise<void> => {
   try {
-    const res = await api.post('/user/otpValidator', data);
+    const res = await api.post('/user/otpValidator', payload);
 
     if (res.data.success) {
       return;

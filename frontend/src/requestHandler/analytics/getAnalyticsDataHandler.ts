@@ -47,7 +47,8 @@ export interface AnalyticsData {
   trends?: {
     last30Days: Array<{
       date: string;
-      count: number;
+      incidentCount: number;
+      issueCount: number;
     }>;
   };
   mostFrequentEvent?: {

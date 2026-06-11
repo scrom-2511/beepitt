@@ -29,7 +29,7 @@ interface DailyEvent {
 }
 
 const AnalyticsSection = () => {
-  const USE_MOCK_DATA = true;
+  const USE_MOCK_DATA = false;
 
   const mockData: any = {
     tier: 'pro',
@@ -116,7 +116,7 @@ const AnalyticsSection = () => {
               />
             </div>
             <div className="flex justify-between">
-              <p className="text-xs text-muted-foreground mt-2 text-right">{234} Used</p>
+              <p className="text-xs text-muted-foreground mt-2 text-right">{used.toLocaleString()} Used</p>
               <p className="text-xs text-muted-foreground mt-2 text-right">
                 {((used / limit) * 100).toFixed(1)}% of limit
               </p>

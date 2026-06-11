@@ -1,20 +1,29 @@
 import { useAuthState } from '@/hooks/useAuthState';
+import { otpSenderHandler } from '@/requestHandler/auth/OtpSender.ReqHandler';
 import { otpValidatorHandler } from '@/requestHandler/auth/OtpValidator.ReqHandler';
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ButtonComp from '../ButtonComp';
 import { Card, CardContent, CardFooter } from '../ui/card';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp';
 import AuthHeader from './AuthHeader';
+import { toast } from 'sonner';
 
 const OtpComponent = () => {
   const [otpValue, setOtpValue] = useState<string>('');
   const maxLength = 4;
   const { setStep } = useAuthState();
+
+  useEffect(() => {
+    otpSenderHandler().catch((err) => toast.error(err.message));
+  }, []);
   const { mutate: otpValidator, isPending } = useMutation({
     mutationFn: otpValidatorHandler,
     onSuccess: (res) => {
       setStep('profile');
+    },
+    onError: (error) => {
+      toast.error(error.message);
     },
   });
   return (

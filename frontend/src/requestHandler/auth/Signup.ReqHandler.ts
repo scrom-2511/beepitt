@@ -11,7 +11,7 @@ export interface SignupRequest {
 }
 export const signupHandler = async (payload: z.infer<typeof SignupType>): Promise<void> => {
   try {
-    const res = await api.post('/user/signup', data);
+    const res = await api.post('/user/signup', payload);
 
     if (res.data.success) {
       return;

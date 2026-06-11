@@ -39,16 +39,20 @@ export const signinController = async (req: Request, res: Response) => {
 
     const authToken = jwt.sign(jwtPayload, jwtSecret!, { expiresIn: '30d' });
 
-    res
-      .cookie('authToken', authToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000,
-        path: '/',
-      })
-      .status(HttpStatus.CREATED)
-      .json({
+    res.cookie('authToken', authToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+    });
+
+    if (!data.emailVerified) {
+      errorReturnCall(res, HttpStatus.FORBIDDEN, ErrorCode.OTP_VERIFICATION_NEEDED);
+      return;
+    }
+
+    res.status(HttpStatus.CREATED).json({
         success: true,
         data: { timeZone: data.timezone, userSubscriptionTier: data.billing?.subscription_tier },
       });

@@ -1,11 +1,8 @@
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../../database/prismaClient';
 import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
-import { sendOTPEmail } from '../../services/mailgun/sendOtpMail';
-import { setOtp } from '../../services/redis/otpManager.redis';
 import { SignupType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 
@@ -57,12 +54,6 @@ export const signupController = async (req: Request, res: Response) => {
         },
       },
     });
-
-    const newOtp = crypto.randomInt(1000, 10000);
-
-    await setOtp(newOtp.toString(), newUser.id);
-
-    await sendOTPEmail(validateData.data.email, newOtp);
 
     const jwtPayload = { id: newUser.id, email: newUser.email };
 
