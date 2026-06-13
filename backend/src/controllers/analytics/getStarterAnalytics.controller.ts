@@ -2,13 +2,14 @@ import { Request, Response } from 'express';
 import { prisma } from '../../database/prismaClient';
 import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { HttpStatus } from '../../types/errorCodes';
+import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
 
 export const getStarterAnalytics = async (req: Request, res: Response, userId: number, tier: string) => {
   const configuration = await prisma.configuration.findUnique({
     where: { userId },
   });
   const used = configuration?.eventsUsed ?? 0;
-  const limit = configuration?.globalThrottleWindow ?? 10000;
+  const limit = SUBSCRIPTION_LIMITS.starter.maxEvents;
 
   const incidentsCount = await prisma.event.count({
     where: { userId, type: 'incident' },
