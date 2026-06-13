@@ -45,6 +45,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Get project name from the req body
     const projectName = validateData.data.projectName;
 
+    console.log(projectName)
+
     // Check if the project with project name exists or not
     const projectExists = getProjectByProjectName(projectName, user);
 
@@ -62,13 +64,16 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
       return errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.EVENTS_LIMIT_REACHED);
     }
 
+    console.log('i am here')
+
     // Event throttling
     const throttlingResult = await eventThrottlingChecker(user, validateData.data);
-    let event!: Event;
+    console.log(throttlingResult);
+    let event: Event;
 
-    // If event exists and we dont have to send the notification, udpate the event
+    // If event exists and we don't have to send the notification, update the event
     if (throttlingResult.hasActiveEvent && !throttlingResult.sendNotification) {
-      await prisma.event.update({
+      event = await prisma.event.update({
         where: { id: throttlingResult.event.id },
         data: {
           occurrences: { increment: 1 },
@@ -78,12 +83,11 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           }),
         },
       });
-      event = throttlingResult.event;
 
       res.status(HttpStatus.OK).json({ message: 'Notification throttled' });
       return;
     } else if (throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
-      await prisma.event.update({
+      event = await prisma.event.update({
         where: { id: throttlingResult.event.id },
         data: {
           occurrences: { increment: 1 },
@@ -92,9 +96,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           firstOccurenceAfterLastNotificationSent: null,
         },
       });
-      event = throttlingResult.event;
-    } else if (!throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
-      // Gemerate hash key for the event
+    } else {
+      // Generate hash key for the event
       const eventHashKey = generateHashKey(validateData.data);
       // Create an incident in the db
       event = await prisma.event.create({
@@ -103,12 +106,16 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           lastNotificationSent: new Date(),
           userId,
           eventHashKey,
-          throttlingWindow: user.configuration?.globalThrottleWindow!,
+          throttlingWindow: user.configuration?.globalThrottleWindow ?? 0,
           occurrencesFromLastNotificationSent: 0,
           firstOccurenceAfterLastNotificationSent: new Date(),
         },
       });
+
+      console.log(event);
     }
+
+    console.log("i am here 2")
 
     // Check and get the notification channel's chat ids
     const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user, event.type);
@@ -116,6 +123,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Get selected notification channels of user
     const channels = getSelectedNotificationChannelsOfUser(user);
 
+    console.log("i am here 3")
     // Extract event id and type
     const eventIdAndType: EventIdAndType = { id: event.id, type: event.type };
 
@@ -123,7 +131,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     await enqueueNotificationsOnClientCall(user, eventIdAndType, channels, allChatIdsInfo);
 
     // Increase events used of user by 1
-    await prisma.configuration.update({ where: { id: userId }, data: { eventsUsed: { increment: 1 } } });
+    await prisma.configuration.update({ where: { userId: userId }, data: { eventsUsed: { increment: 1 } } });
 
     // Return to user
     returnCallOnClientCall(res, allChatIdsInfo);
@@ -133,5 +141,3 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     return;
   }
 };
-
-// event comes -> event throttling -> if event exists -> increase the occurrences if its not resolved previously -> if resolved, continue ->

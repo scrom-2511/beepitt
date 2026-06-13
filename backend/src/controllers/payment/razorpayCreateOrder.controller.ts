@@ -9,6 +9,7 @@ import { ErrorCode, HttpStatus } from '../../types/errorCodes';
 enum Tier {
   free = 'free',
   starter = 'starter',
+  pro = 'pro',
 }
 
 export const razorpayCreateOrderController = async (req: Request, res: Response) => {
@@ -26,16 +27,20 @@ export const razorpayCreateOrderController = async (req: Request, res: Response)
       return;
     }
 
-    const variant = validateData.data.id === Tier.free ? 0 : 5;
-
-    console.log("variant is", variant);
+    let amount = 0;
+    if (validateData.data.id === Tier.starter) {
+      amount = 450 * 100; // 450 INR
+    } else if (validateData.data.id === Tier.pro) {
+      amount = 1200 * 100; // 1200 INR (example pro price)
+    }
 
     const order = await razorpay.orders.create({
-      amount: 90 * variant * 100,
+      amount: amount,
       currency: 'INR',
       receipt: `receipt-${Date.now()}`,
       notes: {
         userId: req.userId?.toString() || '',
+        tier: validateData.data.id,
       },
     });
 

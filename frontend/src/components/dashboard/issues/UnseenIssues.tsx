@@ -223,7 +223,7 @@ const IssueCard = ({
           </Card>
         </DialogTrigger>
 
-        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl rounded-xl">
+        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden shadow-2xl rounded-xl">
           <div className="bg-primary/5 p-6 border-b">
             <DialogHeader className="text-left">
               <DialogTitle className="text-xl sm:text-2xl font-bold leading-tight text-foreground">{item.name}</DialogTitle>

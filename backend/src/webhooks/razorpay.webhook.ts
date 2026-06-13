@@ -24,7 +24,7 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
           razorPayOrderId: entity.order_id,
         },
         data: {
-          status: 'Failed',
+          status: 'failed',
           razorPayPaymentId: entity.id,
         },
       });
@@ -32,39 +32,57 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
     }
 
     if (req.body.event === 'order.paid') {
-      await prisma.orders.update({
+      const updateResult = await prisma.orders.updateMany({
         where: {
           razorPayOrderId: entity.order_id,
+          status: 'pending',
         },
         data: {
-          status: 'Successful',
+          status: 'successful',
           razorPayPaymentId: entity.id,
         },
       });
 
-      const userData = await prisma.user.findUnique({
-        where: { id: Number(entity.notes.userId) },
-        include: { billing: true },
-      });
+      // Only perform billing update if we were the first to mark the order as successful
+      if (updateResult.count === 1) {
+        const notes = entity.notes || {};
+        const userId = Number(notes.userId);
+        const tier = notes.tier || 'starter';
 
-      const now = new Date();
-      const baseDate = userData?.billing?.validTill! > now ? userData?.billing?.validTill! : now;
+        if (!userId) {
+          res.json({ success: false, message: 'No userId in notes' });
+          return;
+        }
 
-      const updatedValidTill = new Date(baseDate);
-      updatedValidTill.setUTCDate(updatedValidTill.getUTCDate() + 30);
+        const userData = await prisma.user.findUnique({
+          where: { id: userId },
+          include: { billing: true },
+        });
 
-      await prisma.user.update({
-        where: { id: Number(entity.notes.userId) },
-        data: {
-          billing: {
-            update: {
-              subscription_tier: 'Starter',
-              currentStatus: 'Active',
-              validTill: updatedValidTill,
-            },
+        const now = new Date();
+        const baseDate = userData?.billing?.validTill && userData.billing.validTill > now 
+          ? userData.billing.validTill 
+          : now;
+
+        const updatedValidTill = new Date(baseDate);
+        updatedValidTill.setDate(updatedValidTill.getDate() + 30);
+
+        await prisma.billing.upsert({
+          where: { userId },
+          update: {
+            subscription_tier: tier,
+            currentStatus: 'active',
+            validTill: updatedValidTill,
           },
-        },
-      });
+          create: {
+            userId,
+            subscription_tier: tier,
+            currentStatus: 'active',
+            validTill: updatedValidTill,
+          },
+        });
+      }
+
       res.json({ success: true });
       return;
     }

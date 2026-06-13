@@ -22,6 +22,7 @@ import { getIssueByIdController } from '../controllers/issues/getIssues/getIssue
 import { getAllUnseenIssuesController } from '../controllers/issues/getIssues/getAllUnseenIssues.controller';
 import { updateIssuePriorityController } from '../controllers/issues/updateIssues/updateIssuePriority.controller';
 import { razorpayCreateOrderController } from '../controllers/payment/razorpayCreateOrder.controller';
+import { razorpayVerifyPaymentController } from '../controllers/payment/razorpayVerifyPayment.controller';
 import { getProfileDetailsAndPreferncesController } from '../controllers/profile/getProfileDetailsAndPrefernces.controller';
 import { updateProfileDetailsController } from '../controllers/profile/updateProfileDetails.controller';
 import { updateTimeZoneAndPreferencesController } from '../controllers/profile/updateTimeZoneAndPreferences.controller';
@@ -60,6 +61,7 @@ userRouter.post('/updateContactDetails', isLoggedIn, isVerified, updateContactDe
 // Billing & Payment
 userRouter.get('/getBillingDetails', isLoggedIn, isVerified, getBillingDetailsController);
 userRouter.post('/razorPayCreateOrder', isLoggedIn, isVerified, razorpayCreateOrderController);
+userRouter.post('/razorPayVerifyPayment', isLoggedIn, isVerified, razorpayVerifyPaymentController);
 
 // Issues
 userRouter.get('/getUnseenIssues', isLoggedIn, isVerified, checkLastId, getAllUnseenIssuesController);

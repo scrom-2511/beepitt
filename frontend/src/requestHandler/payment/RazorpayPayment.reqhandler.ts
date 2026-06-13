@@ -8,6 +8,8 @@ export interface RazorPayCreateOrderResponse {
   currency: string;
   amount: string;
   dbOrderId: string;
+  name: string;
+  email: string;
 }
 
 export const razorPayCreateOrderHandler = async (

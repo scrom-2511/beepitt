@@ -2,6 +2,7 @@ import ButtonComp from '@/components/ButtonComp';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { razorPayCreateOrderHandler } from '@/requestHandler/payment/RazorpayPayment.reqhandler';
+import { razorPayVerifyPaymentHandler } from '@/requestHandler/payment/RazorpayVerifyPayment.reqhandler';
 import { useMutation } from '@tanstack/react-query';
 import { CircleCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -71,6 +72,16 @@ const items: PriceCardItems[] = [
 
 const Pricing = () => {
   const navigate = useNavigate();
+  const { mutate: razorPayVerifyPayment } = useMutation({
+    mutationFn: razorPayVerifyPaymentHandler,
+    onSuccess: () => {
+      navigate('/paymentconfirmation');
+    },
+    onError: (err: any) => {
+      console.error('Verification failed', err);
+    },
+  });
+
   const { mutate: razorPayCreateOrder, isPending } = useMutation({
     mutationFn: razorPayCreateOrderHandler,
     onSuccess: (res) => {
@@ -100,8 +111,12 @@ const Pricing = () => {
           paylater: true,
         },
 
-        handler: function async(response: any) {
-          navigate('/paymentconfirmation');
+        handler: function (response: any) {
+          razorPayVerifyPayment({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+          });
         },
       };
 

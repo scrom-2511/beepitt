@@ -3,8 +3,8 @@ import cors from 'cors';
 import express, { Express } from 'express';
 import { appWebhook } from './routes/app.webhooks';
 import { userRouter } from './routes/user.Route';
-// import './services/bullmq/workers/discordNotifications.worker';
-// import './services/bullmq/workers/telegramNotifications.worker';
+import './services/bullmq/workers/discordNotifications.worker';
+import './services/bullmq/workers/telegramNotifications.worker';
 import { FRONTEND_URL } from '../config/app.config';
 import { discordClient } from './utils/discordBeep.util';
 const app: Express = express();
@@ -22,7 +22,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: ['https://spreading-amsterdam-vacations-what.trycloudflare.com'],
+    origin: ['https://executive-menus-gamecube-mtv.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

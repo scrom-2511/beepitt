@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { Environment, EventType, IssuePriority, NotificationChannels } from '../../generated/prisma/enums';
 
 export const LoginType = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string(),
 });
 
 export const SignupType = z.object({
-  email: z.string().email(),
+  email: z.email(),
   username: z.string(),
   password: z.string(),
   timezone: z.string(),
@@ -47,7 +47,13 @@ export const OtpValidateType = z.object({
 });
 
 export const RazorPayCreateOrderType = z.object({
-  id: z.string(),
+  id: z.enum(["free", "starter", "pro"]),
+});
+
+export const RazorPayVerifyPaymentType = z.object({
+  razorpay_payment_id: z.string(),
+  razorpay_order_id: z.string(),
+  razorpay_signature: z.string(),
 });
 
 export const UpdateIssuePriorityType = z.object({

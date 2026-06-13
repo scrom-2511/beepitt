@@ -19,7 +19,7 @@ export type UserWithBillingConfigurationProject = Prisma.UserGetPayload<{
   };
 }>;
 
-export type ProjectWithContactDetails = ProjectGetPayload<{ include: { contactDetails: true } }>;
+export type ProjectWithContactDetails = Prisma.ProjectGetPayload<{ include: { contactDetails: true } }>;
 
 export type Project = ProjectGetPayload<{}>;
 

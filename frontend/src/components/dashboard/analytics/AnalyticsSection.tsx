@@ -29,40 +29,6 @@ interface DailyEvent {
 }
 
 const AnalyticsSection = () => {
-  const USE_MOCK_DATA = false;
-
-  const mockData: any = {
-    tier: 'pro',
-    used: 7500,
-    limit: 10000,
-    incidents: 412,
-    issues: 289,
-    topProject: {
-      topIncidentProject: 'payment-service',
-      topIncidentCount: 184,
-      topIssuesProject: 'user-auth',
-      topIssuesCount: 112,
-    },
-    trends: {
-      last30Days: Array.from({ length: 30 }, (_, i) => {
-        const date = new Date();
-        date.setUTCDate(date.getUTCDate() - (29 - i));
-        return {
-          date: date.toISOString().split('T')[0],
-          incidentCount: Math.floor(Math.random() * 80) + 30,
-          issueCount: Math.floor(Math.random() * 40) + 10,
-        };
-      }),
-    },
-    mostFrequentEvent: {
-      name: 'ConnectionTimeoutException',
-      type: 'issue',
-      occurrences: 512,
-      projectName: 'payment-service',
-    },
-    avgResolutionTimeMinutes: 48,
-  };
-
   const {
     data: analyticsData,
     isLoading,
@@ -74,18 +40,16 @@ const AnalyticsSection = () => {
     queryFn: getAnalyticsDataHandler,
   });
 
-  const dataToUse = USE_MOCK_DATA ? mockData : analyticsData;
-
   const trendEvents: DailyEvent[] = useMemo(() => {
-    if (!dataToUse?.trends?.last30Days) return [];
-    return dataToUse.trends.last30Days.map((item: any) => ({
+    if (!analyticsData?.trends?.last30Days) return [];
+    return analyticsData.trends.last30Days.map((item: any) => ({
       date: item.date,
       incidentCount: item.incidentCount || 0,
       issueCount: item.issueCount || 0,
     }));
-  }, [dataToUse?.trends?.last30Days]);
+  }, [analyticsData?.trends?.last30Days]);
 
-  if (!USE_MOCK_DATA && (isLoading || isError || analyticsData === undefined)) {
+  if (isLoading || isError || analyticsData === undefined) {
     return (
       <Fallback
         data={undefined}
@@ -100,7 +64,9 @@ const AnalyticsSection = () => {
     );
   }
 
-  const { tier, used, limit, incidents, issues, topProject } = dataToUse;
+  const { tier, used, limit, incidents, issues, topProject } = analyticsData;
+
+  console.log(analyticsData);
 
   return (
     <div className="h-[calc(100vh-135px)] w-full overflow-y-auto scrollbar-hide">
@@ -144,11 +110,11 @@ const AnalyticsSection = () => {
             </>
           )}
 
-          {tier === 'pro' && dataToUse.avgResolutionTimeMinutes !== undefined && (
+          {tier === 'pro' && analyticsData.avgResolutionTimeMinutes !== undefined && (
             <Card className="bg-card p-6 h-full flex flex-col justify-between">
               <CardHeaderComp title="Resolution Time" desc="Average resolution" />
               <CardContent className="p-0 mt-6">
-                <h3 className="text-4xl font-bold text-primary">{dataToUse.avgResolutionTimeMinutes}m</h3>
+                <h3 className="text-4xl font-bold text-primary">{analyticsData.avgResolutionTimeMinutes}m</h3>
               </CardContent>
             </Card>
           )}
@@ -212,20 +178,20 @@ const AnalyticsSection = () => {
               </CardContent>
             </Card>
 
-            {tier === 'pro' && dataToUse.mostFrequentEvent && (
+            {tier === 'pro' && analyticsData.mostFrequentEvent && (
               <Card className="bg-card p-6 h-full flex flex-col overflow-hidden">
                 <CardHeaderComp title="Highest Recurrence" desc="Most frequent unique event" />
                 <CardContent className="p-0 mt-6 flex-1 flex flex-col justify-center min-w-0">
                   <p className="text-sm font-semibold text-muted-foreground bg-secondary/30 inline-flex px-2 py-0.5 rounded uppercase tracking-wider mb-2 w-fit max-w-full border border-border/40 truncate">
-                    {dataToUse.mostFrequentEvent.type} - {dataToUse.mostFrequentEvent.projectName}
+                    {analyticsData.mostFrequentEvent.type} - {analyticsData.mostFrequentEvent.projectName}
                   </p>
                   <p className="text-xl font-bold text-foreground line-clamp-3 break-words">
-                    {dataToUse.mostFrequentEvent.name}
+                    {analyticsData.mostFrequentEvent.name}
                   </p>
                   <div className="mt-6 border-t border-border/50 pt-4 flex justify-between items-center gap-2">
                     <span className="text-muted-foreground truncate">Lifetime Occurrences</span>
                     <span className="text-2xl font-bold text-destructive shrink-0">
-                      {dataToUse.mostFrequentEvent.occurrences}
+                      {analyticsData.mostFrequentEvent.occurrences}
                     </span>
                   </div>
                 </CardContent>

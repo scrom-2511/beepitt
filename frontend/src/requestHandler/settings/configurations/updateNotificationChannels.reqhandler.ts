@@ -8,7 +8,7 @@ type UpdateNotificationChannelsPayload = {
 
 export const updateNotificationChannelsHandler = async (payload: UpdateNotificationChannelsPayload): Promise<void> => {
   try {
-    const res = await api.post('/user/updateNotificationChannels', data);
+    const res = await api.post('/user/updateNotificationChannels', payload);
 
     if (res.data.success) {
       return;

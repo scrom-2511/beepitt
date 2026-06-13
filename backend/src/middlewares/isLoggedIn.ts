@@ -38,6 +38,9 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
+  console.log("jwtSecret is: ");
+  console.log(jwtSecret);
+
   try {
     const decoded = jwt.verify(authToken, jwtSecret) as JwtPayload;
 
@@ -54,6 +57,9 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     }
 
     req.userId = decoded.id;
+
+    console.log("req.userId is: ");
+    console.log(req.userId);
     next();
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

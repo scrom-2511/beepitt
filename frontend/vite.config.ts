@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["spreading-amsterdam-vacations-what.trycloudflare.com"],
+    allowedHosts: ["executive-menus-gamecube-mtv.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
