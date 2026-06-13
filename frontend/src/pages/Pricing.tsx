@@ -7,9 +7,9 @@ import { CircleCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 enum Tier {
-  Free = 'Free',
-  Starter = 'Starter',
-  Pro = 'Pro',
+  Free = 'free',
+  Starter = 'starter',
+  Pro = 'pro',
 }
 
 interface PriceCardItems {
@@ -78,14 +78,15 @@ const Pricing = () => {
       if (typeof window === 'undefined') return;
 
       const options = {
-        key: 'rzp_test_S5dfQBnwZhdrTq',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: res.amount,
         currency: 'INR',
         name: 'Beepitt',
         description: 'Test Transaction',
         order_id: res.orderId,
         prefill: {
-          name: 'user2',
+          name: res.name,
+          email: res.email,
         },
         theme: {
           color: '#6366f1',
@@ -93,10 +94,10 @@ const Pricing = () => {
         method: {
           card: true,
           upi: true,
-          netbanking: false,
-          wallet: false,
-          emi: false,
-          paylater: false,
+          netbanking: true,
+          wallet: true,
+          emi: true,
+          paylater: true,
         },
 
         handler: function async(response: any) {
@@ -162,7 +163,7 @@ const Pricing = () => {
                         <div className="bg-accent px-2 sm:px-3 py-1 rounded-xl text-xs sm:text-sm">
                           {Math.round(
                             ((Number(item.lineThroughPrice) - Number(item.price)) / Number(item.lineThroughPrice)) *
-                              100,
+                            100,
                           )}
                           % Off
                         </div>
