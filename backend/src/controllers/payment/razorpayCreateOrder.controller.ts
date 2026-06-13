@@ -13,7 +13,13 @@ enum Tier {
 
 export const razorpayCreateOrderController = async (req: Request, res: Response) => {
   try {
-    console.log(req.userId);
+    const user = await prisma.user.findUnique({ where: { id: req.userId } });
+
+    if (!user) {
+      errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
+      return;
+    }
+
     const validateData = RazorPayCreateOrderType.safeParse(req.body);
     if (!validateData.success) {
       errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
@@ -21,6 +27,8 @@ export const razorpayCreateOrderController = async (req: Request, res: Response)
     }
 
     const variant = validateData.data.id === Tier.free ? 0 : 5;
+
+    console.log("variant is", variant);
 
     const order = await razorpay.orders.create({
       amount: 90 * variant * 100,
@@ -31,12 +39,14 @@ export const razorpayCreateOrderController = async (req: Request, res: Response)
       },
     });
 
+    console.log(order);
+
     const newOrder = await prisma.orders.create({
       data: {
         amount: Number(order.amount),
         note: JSON.stringify(order.notes),
         razorPayOrderId: order.id,
-        status: 'Pending',
+        status: 'pending',
         userId: req.userId!,
       },
     });
@@ -46,6 +56,8 @@ export const razorpayCreateOrderController = async (req: Request, res: Response)
       currency: order.currency,
       amount: order.amount,
       dbOrderId: newOrder.id,
+      name: user.username,
+      email: user.email,
     };
 
     successReturnCall(res, HttpStatus.OK, dataToReturn);
