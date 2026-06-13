@@ -3,7 +3,7 @@ import { EventType, SubscriptionTier } from '../../../generated/prisma/enums';
 import { ContactDetailsGetPayload } from '../../../generated/prisma/models';
 import { ChatIdsInfo } from '../../types/applicationTypes';
 import { UserWithBillingConfigurationProjectContactDetails } from '../../types/prismaTypes';
-import { getProjectByProjectName } from './getProjectByProjectName.helper.';
+import { getProjectByProjectName, hasProjectContactDetails } from './getProjectByProjectName.helper.';
 
 type ChatIdsResult = ChatIdsInfo[];
 
@@ -18,6 +18,10 @@ export const notificationChannelChatIdsCheckerAndGetter = (
   // If project does not exists return
   if (!project) {
     throw new Error('Project not found');
+  }
+
+  if (!hasProjectContactDetails(project)) {
+    throw new Error('Contact details not found');
   }
 
   // Get the contact details of the project

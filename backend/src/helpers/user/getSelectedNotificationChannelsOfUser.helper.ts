@@ -6,7 +6,7 @@ export const getSelectedNotificationChannelsOfUser = (
   user: UserWithBillingConfigurationProjectContactDetails,
 ): NotificationChannels[] => {
   // Get all selected notification channels of user
-  const selectedNotificationChannels = user.notificationChannels;
+  const selectedNotificationChannels = user.configuration?.notificationChannels;
 
   // Get users subscription tier
   const tier = user.billing?.subscription_tier!;
@@ -15,5 +15,5 @@ export const getSelectedNotificationChannelsOfUser = (
   const maxNotificationChannels = SUBSCRIPTION_LIMITS[tier].maxNotificationChannels;
 
   // Get and return notification channels according to users subscription limit
-  return selectedNotificationChannels.slice(0, maxNotificationChannels);
+  return selectedNotificationChannels?.slice(0, maxNotificationChannels) || [];
 };
