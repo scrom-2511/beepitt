@@ -1,6 +1,5 @@
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getSeenIncidentsHandler } from '@/requestHandler/incidents/getIncidents/getSeenIncidents.reqhandler';
-import { type Incident } from '@/requestHandler/incidents/getIncidents/getUnseenIncidents.reqhandler';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import { Button } from '../../ui/button';
@@ -82,6 +81,7 @@ const IncidentCardsSection = ({
           key={`${item.id}-${i}`}
           entity={item as BaseEntity}
           index={i}
+          showDefaultDates={false}
           cardExtraContent={
             <div className="mt-6 space-y-4">
               <div>

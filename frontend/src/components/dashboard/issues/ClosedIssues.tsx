@@ -86,6 +86,7 @@ const IssueCardsSection = ({
           key={`${item.id}-${i}`}
           entity={item as BaseEntity}
           index={i}
+          showDefaultDates={false}
           cardExtraContent={
             <div className="mt-6 space-y-4">
               <div>

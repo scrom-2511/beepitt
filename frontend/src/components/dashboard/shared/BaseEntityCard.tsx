@@ -21,6 +21,7 @@ interface BaseEntityCardProps {
   footer?: React.ReactNode;
   dialogExtraContent?: React.ReactNode;
   cardExtraContent?: React.ReactNode;
+  showDefaultDates?: boolean;
 }
 
 export const BaseEntityCard = ({
@@ -29,6 +30,7 @@ export const BaseEntityCard = ({
   footer,
   dialogExtraContent,
   cardExtraContent,
+  showDefaultDates = true,
 }: BaseEntityCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -49,17 +51,19 @@ export const BaseEntityCard = ({
 
             <CardHeaderComp title={entity.name} desc={entity.description} />
 
-            <CardContent className="p-0 font-semibold text-sm flex flex-col sm:flex-row gap-2 w-full my-5">
-              <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
-                {new Date(entity.createdAt).toLocaleDateString()}
-              </Button>
-              <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
-                {new Date(entity.createdAt).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </Button>
-            </CardContent>
+            {showDefaultDates && (
+              <CardContent className="p-0 font-semibold text-sm flex flex-col sm:flex-row gap-2 w-full my-5">
+                <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                  {new Date(entity.createdAt).toLocaleDateString()}
+                </Button>
+                <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                  {new Date(entity.createdAt).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Button>
+              </CardContent>
+            )}
 
             {cardExtraContent}
 
