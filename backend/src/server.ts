@@ -1,6 +1,6 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import express, { Express } from 'express';
+import express, { Express, Request } from 'express';
 import { appWebhook } from './routes/app.webhooks';
 import { userRouter } from './routes/user.Route';
 import './services/bullmq/workers/discordNotifications.worker';
@@ -10,19 +10,15 @@ import { discordClient } from './utils/discordBeep.util';
 const app: Express = express();
 
 app.use(cookieParser());
-app.use(express.json());
-
-// app.use((req, res, next) => {
-//   console.log(`[${req.method}] ${req.url} - Origin: ${req.headers.origin}`);
-//   if (req.headers['access-control-request-private-network']) {
-//     res.setHeader('Access-Control-Allow-Private-Network', 'true');
-//   }
-//   next();
-// });
+app.use(express.json({
+  verify: (req: Request, _, buf: Buffer) => {
+    req.rawBody = buf;
+  }
+}));
 
 app.use(
   cors({
-    origin: ['https://executive-menus-gamecube-mtv.trycloudflare.com'],
+    origin: ['https://kate-pacific-phentermine-ordinary.trycloudflare.com'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'ngrok-skip-browser-warning'],

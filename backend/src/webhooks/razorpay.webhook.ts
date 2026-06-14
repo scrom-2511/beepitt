@@ -4,12 +4,13 @@ import { prisma } from '../database/prismaClient';
 export const razorPayWebhook = async (req: Request, res: Response) => {
   try {
     const signature = req.get('x-razorpay-signature')!;
-    const body = JSON.stringify(req.body);
 
+    const body = (req as any).rawBody.toString();
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET!)
       .update(body)
       .digest('hex');
+
 
     if (signature !== expectedSignature) {
       res.status(400).json({ success: false });
@@ -60,8 +61,8 @@ export const razorPayWebhook = async (req: Request, res: Response) => {
         });
 
         const now = new Date();
-        const baseDate = userData?.billing?.validTill && userData.billing.validTill > now 
-          ? userData.billing.validTill 
+        const baseDate = userData?.billing?.validTill && userData.billing.validTill > now
+          ? userData.billing.validTill
           : now;
 
         const updatedValidTill = new Date(baseDate);
