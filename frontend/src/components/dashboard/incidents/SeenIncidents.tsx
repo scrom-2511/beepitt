@@ -86,7 +86,7 @@ const IncidentCardsSection = ({
 
   return (
     <AnimatePresence>
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-5">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4 sm:p-6 gap-6">
         {incident_card_items?.map((item, i) => (
           <IncidentCard
             key={`${item.id}-${i}`}
@@ -113,10 +113,10 @@ const IncidentCard = ({
     <CardAnimation i={i}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Card className="bg-card p-5 sm:p-10 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
-            <div className="flex justify-between items-start mb-2">
-              <div className="capitalize font-semibold text-md ">{item.projectName}</div>
-              <div className="flex gap-2">
+          <Card className="bg-card p-4 sm:p-6 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
+            <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
+              <div className="capitalize font-semibold text-md truncate pr-2">{item.projectName}</div>
+              <div className="flex flex-wrap gap-2 shrink-0">
                 <Badge className="capitalize rounded-[8px] font-semibold">{item.environment}</Badge>
                 {item.group && <Badge variant="secondary">{item.group}</Badge>}
               </div>
@@ -129,7 +129,7 @@ const IncidentCard = ({
                 <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
                   Occurred At
                 </p>
-                <div className="flex gap-2 mt-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-col sm:flex-row gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
                   <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
                     {new Date(item.createdAt).toLocaleDateString()}
                   </Button>
@@ -145,7 +145,7 @@ const IncidentCard = ({
                 <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
                   Marked as seen
                 </p>
-                <div className="flex gap-2 mt-1.5" onClick={(e) => e.stopPropagation()}>
+                <div className="flex flex-col sm:flex-row gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
                   <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
                     {item.seenAt ? new Date(item.seenAt).toLocaleDateString() : 'N/A'}
                   </Button>
