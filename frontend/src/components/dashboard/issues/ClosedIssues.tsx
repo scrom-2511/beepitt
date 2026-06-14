@@ -1,27 +1,17 @@
-import { Badge } from '@/components/ui/badge';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getClosedIssuesHandler } from '@/requestHandler/issues/getIssues/getClosedIssues.reqhandler';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Clock, Terminal, Calendar, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Clock, CheckCircle } from 'lucide-react';
 import { useRef, useState } from 'react';
 import ButtonComp from '../../ButtonComp';
-import { Card, CardDescription, CardFooter } from '../../ui/card';
-import CardAnimation from '../CardAnimation';
-import CardHeaderComp from '../CardHeader';
+import { Button } from '@/components/ui/button';
 import Fallback from '../Fallback';
 import FilterSection from '../FilterSection';
-import LoadMoreDiv from '../LoadMoreDiv';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import type { BaseEntity } from '@/types/entities';
+import { BaseEntityCard } from '../shared/BaseEntityCard';
+import { EntityGrid } from '../shared/EntityGrid';
 import { Environment, IssuePriority } from '@/types/enums';
-import { Button } from '@/components/ui/button';
 
 const ClosedIssues = () => {
   const [priority, setPriority] = useState<IssuePriority | null>(null);
@@ -86,40 +76,22 @@ const IssueCardsSection = ({
   }
 
   return (
-    <AnimatePresence>
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4 sm:p-6 gap-6">
-        {issue_card_items?.map((item, i) => (
-          <IssueCard key={item.id} item={item} i={i} />
-        ))}
-      </section>
-      <LoadMoreDiv hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} loadMoreRef={loadMoreRef} />
-    </AnimatePresence>
-  );
-};
-
-const IssueCard = ({ item, i }: { item: any; i: number }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <CardAnimation i={i}>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Card className="bg-card p-4 sm:p-6 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
-            <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
-              <div className="capitalize font-semibold text-md truncate pr-2 text-foreground">{item.projectName}</div>
-              <div className="flex flex-wrap gap-2 shrink-0">
-                <Badge className="capitalize rounded-[8px] font-semibold">{item.environment}</Badge>
-                {item.group && <Badge variant="secondary">{item.group}</Badge>}
-              </div>
-            </div>
-
-            <CardHeaderComp title={item.name} desc={item.description} />
-
+    <EntityGrid
+      items={issue_card_items}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      loadMoreRef={loadMoreRef}
+      renderCard={(item, i) => (
+        <BaseEntityCard
+          key={`${item.id}-${i}`}
+          entity={item as BaseEntity}
+          index={i}
+          cardExtraContent={
             <div className="mt-6 space-y-4">
               <div>
-                <CardDescription className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
+                <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
                   Occurred At
-                </CardDescription>
+                </p>
                 <div className="flex flex-col sm:flex-row gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
                   <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
                     {new Date(item.createdAt).toLocaleDateString()}
@@ -130,9 +102,9 @@ const IssueCard = ({ item, i }: { item: any; i: number }) => {
                 </div>
               </div>
               <div>
-                <CardDescription className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
+                <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
                   Fixed At
-                </CardDescription>
+                </p>
                 <div className="flex flex-col sm:flex-row gap-2 mt-2" onClick={(e) => e.stopPropagation()}>
                   <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
                     {item.resolvedAt ? new Date(item.resolvedAt).toLocaleDateString() : 'N/A'}
@@ -145,7 +117,9 @@ const IssueCard = ({ item, i }: { item: any; i: number }) => {
                 </div>
               </div>
             </div>
-            <CardFooter className="p-0 flex flex-col items-start gap-5">
+          }
+          footer={
+            <>
               <div className="flex flex-row items-center group">
                 <motion.div
                   animate={{
@@ -162,68 +136,13 @@ const IssueCard = ({ item, i }: { item: any; i: number }) => {
                 <span className="text-sm tracking-tighter">Fixed</span>
               </div>
 
-              <ButtonComp
-                className="h-10 w-full font-semibold cursor-pointer"
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              //   (item.id);
-              // }}
-              >
+              <ButtonComp className="h-10 w-full font-semibold cursor-pointer">
                 Mark as not fixed
               </ButtonComp>
-            </CardFooter>
-          </Card>
-        </DialogTrigger>
-
-        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden border-none shadow-2xl rounded-xl">
-          <div className="bg-primary/5 p-6 border-b">
-            <DialogHeader className="text-left">
-              <DialogTitle className="text-xl sm:text-2xl font-bold leading-tight text-foreground">
-                {item.name}
-              </DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-wrap gap-2 mt-6">
-              <Badge variant="outline" className="capitalize">
-                {item.environment}
-              </Badge>
-              {item.group && <Badge variant="secondary">{item.group}</Badge>}
-            </div>
-          </div>
-
-          <ScrollArea className="max-h-[70vh]">
-            <div className="p-4 sm:p-6 space-y-6">
-              <section>
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Project Name</h4>
-                <p className="text-base leading-relaxed text-foreground/90">{item.projectName}</p>
-              </section>
-
-              <section>
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Description</h4>
-                <p className="text-base leading-relaxed text-foreground/90">
-                  {item.description || 'No description provided for this issue.'}
-                </p>
-              </section>
-
-              {item.filePath && (
-                <section>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
-                    <Terminal size={14} /> Source Location
-                  </h4>
-                  <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm border border-border/50 group relative">
-                    <div className="break-all leading-normal text-foreground">
-                      <span className="text-muted-foreground mr-1">Path:</span>
-                      {item.filePath}
-                      {item.lineNumber && (
-                        <span className="text-primary font-bold ml-1">
-                          :{item.lineNumber}
-                          {item.columnNumber && `:${item.columnNumber}`}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </section>
-              )}
-
+            </>
+          }
+          dialogExtraContent={
+            <>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-muted/30 p-3 rounded-lg border border-border/40">
                   <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
@@ -233,34 +152,22 @@ const IssueCard = ({ item, i }: { item: any; i: number }) => {
                 </div>
                 <div className="bg-muted/30 p-3 rounded-lg border border-border/40">
                   <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                    <Calendar size={14} /> First Occurrence
+                    <CheckCircle size={14} /> Resolution Date
                   </div>
                   <div className="text-sm font-semibold text-foreground">
-                    {new Date(item.createdAt).toLocaleString(undefined, {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })}
+                    {item.resolvedAt
+                      ? new Date(item.resolvedAt).toLocaleString(undefined, {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                      })
+                      : 'N/A'}
                   </div>
                 </div>
               </div>
-
-              <div className=" p-4 rounded-lg border border-border/40">
-                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                  <CheckCircle size={14} /> Resolution Date
-                </div>
-                <div className="text-sm font-semibold text-foreground">
-                  {item.resolvedAt
-                    ? new Date(item.resolvedAt).toLocaleString(undefined, {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })
-                    : 'N/A'}
-                </div>
-              </div>
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    </CardAnimation>
+            </>
+          }
+        />
+      )}
+    />
   );
 };

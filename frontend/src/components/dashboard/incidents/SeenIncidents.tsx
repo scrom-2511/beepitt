@@ -1,27 +1,14 @@
-import { Badge } from '@/components/ui/badge';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getSeenIncidentsHandler } from '@/requestHandler/incidents/getIncidents/getSeenIncidents.reqhandler';
 import { type Incident } from '@/requestHandler/incidents/getIncidents/getUnseenIncidents.reqhandler';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { AnimatePresence } from 'framer-motion';
-import { Calendar, Hash, Terminal } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button } from '../../ui/button';
-import { Card } from '../../ui/card';
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import CardAnimation from '../CardAnimation';
-import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
 import FilterSection from '../FilterSection';
-import LoadMoreDiv from '../LoadMoreDiv';
+import type { BaseEntity } from '@/types/entities';
+import { BaseEntityCard } from '../shared/BaseEntityCard';
+import { EntityGrid } from '../shared/EntityGrid';
 import { Environment, IssuePriority } from '@/types/enums';
 
 export const SeenIncidents = () => {
@@ -85,45 +72,17 @@ const IncidentCardsSection = ({
   }
 
   return (
-    <AnimatePresence>
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4 sm:p-6 gap-6">
-        {incident_card_items?.map((item, i) => (
-          <IncidentCard
-            key={`${item.id}-${i}`}
-            item={item}
-            i={i}
-          />
-        ))}
-      </section>
-      <LoadMoreDiv hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} loadMoreRef={loadMoreRef} />
-    </AnimatePresence>
-  );
-};
-
-const IncidentCard = ({
-  item,
-  i,
-}: {
-  item: Incident;
-  i: number;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <CardAnimation i={i}>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Card className="bg-card p-4 sm:p-6 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
-            <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
-              <div className="capitalize font-semibold text-md truncate pr-2">{item.projectName}</div>
-              <div className="flex flex-wrap gap-2 shrink-0">
-                <Badge className="capitalize rounded-[8px] font-semibold">{item.environment}</Badge>
-                {item.group && <Badge variant="secondary">{item.group}</Badge>}
-              </div>
-            </div>
-
-            <CardHeaderComp title={item.name} desc={item.description} />
-
+    <EntityGrid
+      items={incident_card_items}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      loadMoreRef={loadMoreRef}
+      renderCard={(item, i) => (
+        <BaseEntityCard
+          key={`${item.id}-${i}`}
+          entity={item as BaseEntity}
+          index={i}
+          cardExtraContent={
             <div className="mt-6 space-y-4">
               <div>
                 <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
@@ -138,7 +97,7 @@ const IncidentCard = ({
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
-                  </Button>
+                   </Button>
                 </div>
               </div>
               <div>
@@ -157,96 +116,24 @@ const IncidentCard = ({
                 </div>
               </div>
             </div>
-          </Card>
-        </DialogTrigger>
-
-        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden shadow-2xl rounded-xl border-none">
-          <div className="bg-primary/5 p-6 border-b">
-            <DialogHeader className="text-left">
-              <DialogTitle className="text-xl sm:text-2xl font-bold leading-tight text-foreground">{item.name}</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-wrap gap-2 mt-6">
-              <Badge variant="outline" className="capitalize">
-                {item.environment}
-              </Badge>
-              {item.group && <Badge variant="secondary">{item.group}</Badge>}
-            </div>
-          </div>
-          <ScrollArea className="max-h-[70vh]">
-            <div className="p-4 sm:p-6 space-y-6">
-              <section>
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Project Name</h4>
-                <p className="text-base leading-relaxed text-foreground/90">
-                  {item.projectName}
-                </p>
-              </section>
-
-              <section>
-                <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2">Description</h4>
-                <p className="text-base leading-relaxed text-foreground/90">
-                  {item.description || 'No description provided for this incident.'}
-                </p>
-              </section>
-
-              {item.filePath && (
-                <section>
-                  <h4 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
-                    <Terminal size={14} /> Source Location
-                  </h4>
-                  <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm border border-border/50 group relative">
-                    <div className="break-all leading-normal text-foreground">
-                      <span className="text-muted-foreground mr-1">Path:</span>
-                      {item.filePath}
-                      {item.lineNumber && (
-                        <span className="text-primary font-bold ml-1">
-                          :{item.lineNumber}
-                          {item.columnNumber && `:${item.columnNumber}`}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-muted/30 p-3 rounded-lg border border-border/40">
-                  <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                    <Hash size={14} /> Total Events
-                  </div>
-                  <div className="text-xl font-bold text-foreground">{item.occurrences}</div>
-                </div>
-                <div className="bg-muted/30 p-3 rounded-lg border border-border/40">
-                  <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                    <Calendar size={14} /> First Occurrence
-                  </div>
-                  <div className="text-sm font-semibold text-foreground">
-                    {new Date(item.createdAt).toLocaleString(undefined, {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })}
-                  </div>
-                </div>
+          }
+          dialogExtraContent={
+            <div className="p-4 rounded-lg border border-border/40 bg-muted/20">
+              <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
+                Marked as Seen
               </div>
-
-              <div className="p-4 rounded-lg border border-border/40 bg-muted/20">
-                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                  <Calendar size={14} /> Marked as Seen
-                </div>
-                <div className="text-sm font-semibold text-foreground">
-                  {item.seenAt
-                    ? new Date(item.seenAt).toLocaleString(undefined, {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                    })
-                    : 'N/A'}
-                </div>
+              <div className="text-sm font-semibold text-foreground">
+                {item.seenAt
+                  ? new Date(item.seenAt).toLocaleString(undefined, {
+                    dateStyle: 'medium',
+                    timeStyle: 'short',
+                  })
+                  : 'N/A'}
               </div>
             </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    </CardAnimation>
+          }
+        />
+      )}
+    />
   );
 };
-
-
