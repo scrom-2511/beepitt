@@ -90,31 +90,35 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
     toast.success('Identifier key copied to clipboard');
   };
   return (
-    <section className="flex flex-col gap-6 text-muted-foreground text-sm">
-      <div className="flex w-full gap-5">
+    <section className="flex flex-col gap-4 sm:gap-6 text-muted-foreground text-xs sm:text-sm">
+      <div className="flex flex-col sm:flex-row w-full gap-4 sm:gap-5">
         <div className="flex-1">
-          <Label htmlFor="projectName">Project Name</Label>
+          <Label htmlFor="projectName" className="text-xs sm:text-sm">
+            Project Name
+          </Label>
           <Input
             id="projectName"
             value={projectDetails.projectName}
             readOnly
-            className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
+            className="h-10 sm:h-12 text-sm sm:text-base text-foreground mt-1.5 sm:mt-2 px-3 sm:px-4 bg-muted/30"
           />
         </div>
 
         <div className="flex-1">
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="text-xs sm:text-sm">
+            Description
+          </Label>
           <Input
             id="description"
             value={projectDetails.projectDesc}
             readOnly
-            className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
+            className="h-10 sm:h-12 text-sm sm:text-base text-foreground mt-1.5 sm:mt-2 px-3 sm:px-4 bg-muted/30"
           />
         </div>
       </div>
 
-      <div className="cursor-pointer" onClick={() => copyToClipboard(projectDetails.identifierKey)}>
-        <Label htmlFor="identifierKey" className="cursor-pointer">
+      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey)}>
+        <Label htmlFor="identifierKey" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
           Identifier Key
         </Label>
         <Input
@@ -122,21 +126,21 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
           type="text"
           value={projectDetails.identifierKey}
           readOnly
-          className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2 cursor-pointer"
+          className="h-10 sm:h-12 text-sm sm:text-base text-foreground mt-1.5 sm:mt-2 px-3 sm:px-4 cursor-pointer bg-muted/30 group-hover:border-accent/50 transition-all"
         />
       </div>
 
       {localStorage.getItem('userSubscriptionTier') === 'PRO' && (
-        <div className="cursor-pointer" onClick={() => copyToClipboard(projectDetails.identifierKey2 || '')}>
-          <Label htmlFor="identifierKey" className="cursor-pointer">
+        <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey2 || '')}>
+          <Label htmlFor="identifierKey2" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
             Identifier Key 2
           </Label>
           <Input
-            id="identifierKey"
+            id="identifierKey2"
             type="text"
             value={projectDetails.identifierKey2}
             readOnly
-            className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2 cursor-pointer"
+            className="h-10 sm:h-12 text-sm sm:text-base text-foreground mt-1.5 sm:mt-2 px-3 sm:px-4 cursor-pointer bg-muted/30 group-hover:border-accent/50 transition-all"
           />
         </div>
       )}

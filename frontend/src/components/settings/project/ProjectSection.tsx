@@ -141,7 +141,7 @@ const ProjectCardsSection = () => {
         {projects?.allUserProjects?.map((item, i) => (
           <CardAnimation i={i} key={item.id}>
             <Card
-              className="bg-card w-full h-32 p-5 flex flex-col justify-center sm:p-10 cursor-pointer hover:shadow-lg transition"
+              className="bg-card w-full min-h-[120px] p-5 sm:p-8 flex flex-col justify-center cursor-pointer hover:shadow-lg transition-all active:scale-[0.98]"
               onClick={() => navigate(`${item.id}`)}
             >
               <CardHeaderComp title={item.projectName} desc={item.projectDesc} />
