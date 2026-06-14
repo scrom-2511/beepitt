@@ -62,7 +62,7 @@ const FilterSection = ({
 
   return (
     <section className="w-full flex">
-      <div className="flex flex-wrap gap-2 p-5">
+      <div className="flex flex-wrap gap-2 p-4 sm:p-5">
         {/* ── Priority dropdown ── */}
         {canShowPriority && (
           <DropdownMenu>

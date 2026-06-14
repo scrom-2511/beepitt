@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["kate-pacific-phentermine-ordinary.trycloudflare.com"],
+    allowedHosts: ["utilities-lottery-portsmouth-tasks.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
