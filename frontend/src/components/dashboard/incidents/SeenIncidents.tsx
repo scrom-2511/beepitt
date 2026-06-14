@@ -7,7 +7,8 @@ import { AnimatePresence } from 'framer-motion';
 import { Calendar, Hash, Terminal } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button } from '../../ui/button';
-import { Card, CardContent } from '../../ui/card';
+import { Card } from '../../ui/card';
+
 import {
   Dialog,
   DialogContent,
@@ -123,33 +124,43 @@ const IncidentCard = ({
 
             <CardHeaderComp title={item.name} desc={item.description} />
 
-            <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
-              <Button
-                variant={'outline'}
-                className="flex-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                {new Date(item.createdAt).toLocaleDateString()}
-              </Button>
-              <Button
-                variant={'outline'}
-                className="flex-1"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                {new Date(item.createdAt).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </Button>
-            </CardContent>
+            <div className="mt-6 space-y-4">
+              <div>
+                <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
+                  Occurred At
+                </p>
+                <div className="flex gap-2 mt-1.5" onClick={(e) => e.stopPropagation()}>
+                  <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    {new Date(item.createdAt).toLocaleDateString()}
+                  </Button>
+                  <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    {new Date(item.createdAt).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </Button>
+                </div>
+              </div>
+              <div>
+                <p className="text-foreground/70 p-0 m-0 text-xs font-bold uppercase tracking-wider">
+                  Marked as seen
+                </p>
+                <div className="flex gap-2 mt-1.5" onClick={(e) => e.stopPropagation()}>
+                  <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    {item.seenAt ? new Date(item.seenAt).toLocaleDateString() : 'N/A'}
+                  </Button>
+                  <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                    {item.seenAt
+                      ? new Date(item.seenAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                      : 'N/A'}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Card>
         </DialogTrigger>
 
-        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden shadow-2xl rounded-xl">
+        <DialogContent className="w-[95vw] sm:max-w-2xl p-0 overflow-hidden shadow-2xl rounded-xl border-none">
           <div className="bg-primary/5 p-6 border-b">
             <DialogHeader className="text-left">
               <DialogTitle className="text-xl sm:text-2xl font-bold leading-tight text-foreground">{item.name}</DialogTitle>
@@ -183,9 +194,9 @@ const IncidentCard = ({
                     <Terminal size={14} /> Source Location
                   </h4>
                   <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm border border-border/50 group relative">
-                    <div className="break-all leading-normal">
+                    <div className="break-all leading-normal text-foreground">
                       <span className="text-muted-foreground mr-1">Path:</span>
-                      <span className="text-foreground">{item.filePath}</span>
+                      {item.filePath}
                       {item.lineNumber && (
                         <span className="text-primary font-bold ml-1">
                           :{item.lineNumber}
@@ -206,7 +217,7 @@ const IncidentCard = ({
                 </div>
                 <div className="bg-muted/30 p-3 rounded-lg border border-border/40">
                   <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
-                    <Calendar size={14} /> Occurred On
+                    <Calendar size={14} /> First Occurrence
                   </div>
                   <div className="text-sm font-semibold text-foreground">
                     {new Date(item.createdAt).toLocaleString(undefined, {
@@ -216,6 +227,20 @@ const IncidentCard = ({
                   </div>
                 </div>
               </div>
+
+              <div className="p-4 rounded-lg border border-border/40 bg-muted/20">
+                <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground uppercase tracking-tight mb-1">
+                  <Calendar size={14} /> Marked as Seen
+                </div>
+                <div className="text-sm font-semibold text-foreground">
+                  {item.seenAt
+                    ? new Date(item.seenAt).toLocaleString(undefined, {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })
+                    : 'N/A'}
+                </div>
+              </div>
             </div>
           </ScrollArea>
         </DialogContent>
@@ -223,4 +248,5 @@ const IncidentCard = ({
     </CardAnimation>
   );
 };
+
 

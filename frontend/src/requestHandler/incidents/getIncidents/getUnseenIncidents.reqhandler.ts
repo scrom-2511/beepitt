@@ -15,7 +15,9 @@ export interface Incident {
   lineNumber: number | null;
   columnNumber: number | null;
   group: string | null;
+  seenAt: string | null;
 }
+
 
 export interface IncidentsResponse {
   incidents: Incident[];
