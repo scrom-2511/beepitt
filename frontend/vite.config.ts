@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["executive-menus-gamecube-mtv.trycloudflare.com"],
+    allowedHosts: ["kate-pacific-phentermine-ordinary.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

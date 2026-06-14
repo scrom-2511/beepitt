@@ -1,10 +1,16 @@
 import api from '@/requestHandler/api';
 import axios from 'axios';
 import type { IncidentsResponse } from './getUnseenIncidents.reqhandler';
-export const getSeenIncidentsHandler = async (lastId: number): Promise<IncidentsResponse> => {
+import { Environment } from '@/types/enums';
+
+export const getSeenIncidentsHandler = async (
+  lastId: number,
+  environment: Environment | null,
+  group: string | null
+): Promise<IncidentsResponse> => {
   try {
     const res = await api.get('/user/getSeenIncidents', {
-      params: { lastId },
+      params: { lastId, environment, group },
     });
 
     if (res.data.success) {
@@ -19,3 +25,4 @@ export const getSeenIncidentsHandler = async (lastId: number): Promise<Incidents
     throw new Error('There was an unknown error, please try again.');
   }
 };
+

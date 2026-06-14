@@ -5,14 +5,6 @@ import { ERROR_CODES, HttpStatus } from '../types/errorCodes';
 let jwtSecret = process.env.JWT_SECRET;
 
 export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
-  console.log("i am in isloggedin")
   if (!jwtSecret) {
     jwtSecret = 'somethingboi';
   }
@@ -37,9 +29,6 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     });
     return;
   }
-
-  console.log("jwtSecret is: ");
-  console.log(jwtSecret);
 
   try {
     const decoded = jwt.verify(authToken, jwtSecret) as JwtPayload;

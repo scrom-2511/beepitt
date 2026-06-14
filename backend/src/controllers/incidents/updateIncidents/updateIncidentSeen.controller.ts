@@ -24,20 +24,24 @@ export const updateIncidentSeenController = async (req: Request, res: Response) 
 
     const user = await prisma.user.findFirst({
       where: { id: req.userId },
-      include: { billing: true, projectSettings: true },
+      include: { billing: true, configuration: true },
     });
 
     if (!user) {
       return;
     }
 
-    let maxRetries = user.projectSettings?.maxRetries!;
+    let maxRetries = user.configuration?.maxRetries || 0;
 
     const removeItems: Promise<number>[] = [];
 
     if (user.billing?.subscription_tier === 'pro') {
+      const initialJobId = `${validateData.data.incidentId}`;
+      removeItems.push(discordNotificationsQueue.remove(initialJobId));
+      removeItems.push(telegramNotificationsQueue.remove(initialJobId));
+
       for (let retry = 1; retry <= maxRetries; retry++) {
-        const jobId = `${validateData.data.eventId}-retry-${retry}`;
+        const jobId = `${validateData.data.incidentId}-retry-${retry}`;
         removeItems.push(discordNotificationsQueue.remove(jobId));
         removeItems.push(telegramNotificationsQueue.remove(jobId));
       }

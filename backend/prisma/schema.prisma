@@ -162,7 +162,7 @@ model Event {
   projectName String
   name        String
   description String
-  priority    IssuePriority? @default(unseen)
+  priority    IssuePriority? @default(unseen) //For issue
 
   throttlingWindow Int
   environment      Environment @default(production)

@@ -5,14 +5,15 @@ import type z from 'zod';
 
 export const updateIncidentSeenHandler = async (payload: z.infer<typeof UpdateIncidentSeenType>): Promise<void> => {
   try {
-    const res = await api.post('/user/updateIncidentSeen', data);
+    const res = await api.post('/user/updateIncidentSeen', payload);
 
     if (res.data.success) {
       return;
     }
 
-    throw new Error(res.data.error?.message || 'Failed to fetch incidents');
+    throw new Error(res.data.error?.message || 'Failed to update incident');
   } catch (err: any) {
+
     if (axios.isAxiosError(err)) {
       throw new Error(err.response?.data?.error?.message || err.message);
     }

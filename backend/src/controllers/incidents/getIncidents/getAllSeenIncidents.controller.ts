@@ -10,9 +10,17 @@ export const getAllSeenIncidentsController = async (req: Request, res: Response)
 
     const PAGE_SIZE = 10;
     const lastId = Number(req.query.lastId);
+    const environment = req.query.environment as string;
+    const group = req.query.group as string;
 
     const incidents = await prisma.event.findMany({
-      where: { userId, seenAt: { not: null }, type: 'incident' },
+      where: {
+        userId,
+        seenAt: { not: null },
+        type: 'incident',
+        ...(environment && { environment: environment as any }),
+        ...(group && { group }),
+      },
       orderBy: { id: 'desc' },
       ...(lastId && {
         cursor: { id: lastId },
@@ -31,3 +39,4 @@ export const getAllSeenIncidentsController = async (req: Request, res: Response)
     return;
   }
 };
+
