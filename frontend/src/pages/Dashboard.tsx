@@ -19,9 +19,9 @@ const Dashboard = () => {
   return (
     <SidebarProvider className="h-full p-5">
       <AppSidebar />
-      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background overflow-x-auto">
+      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background overflow-hidden">
         <TopBar selected={selected} />
-        <div className="">
+        <div className="min-w-0">
           <Outlet />
         </div>
       </div>

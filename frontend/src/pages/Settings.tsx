@@ -20,16 +20,22 @@ const Settings = () => {
   const hideTabs = /\d+$/.test(location.pathname);
 
   return (
-    <section className="relative w-full h-[calc(100vh-135px)] overflow-scroll">
+    <section className="relative h-[calc(100vh-135px)] w-full overflow-x-hidden overflow-y-auto">
       {!hideTabs && (
-        <Tabs value={currentTab} onValueChange={(tabValue) => navigate(tabValue)} className="w-full p-0 sm:p-5">
-          <TabsList className="w-full mt-5 flex gap-3 overflow-x-auto whitespace-nowrap snap-x snap-mandatory">
-            {tabItems.map((item) => (
-              <TabsTrigger key={item.value} value={item.value} className="flex-shrink-0 snap-start">
-                {item.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+        <Tabs value={currentTab} onValueChange={(tabValue) => navigate(tabValue)} className="w-full min-w-0">
+          <div className="w-full min-w-0 border-b px-4 sm:px-6">
+            <TabsList className="scrollbar-none mt-5 flex h-12 w-full min-w-0 max-w-full justify-start gap-6 overflow-x-auto bg-transparent p-0 snap-x">
+              {tabItems.map((item) => (
+                <TabsTrigger
+                  key={item.value}
+                  value={item.value}
+                  className="data-[state=active]:border-primary data-[state=active]:text-foreground data-[state=active]:bg-transparent relative h-12 shrink-0 snap-start rounded-none border-b-2 border-transparent bg-transparent px-2 pb-3 pt-4 text-sm font-medium text-muted-foreground shadow-none transition-none focus-visible:ring-0 data-[state=active]:shadow-none"
+                >
+                  {item.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
         </Tabs>
       )}
 
