@@ -113,7 +113,7 @@ const IssueCardsSection = ({
 
   return (
     <AnimatePresence>
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-5 gap-5">
+      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 p-4 sm:p-6 gap-6">
         {issue_card_items?.map((item, i) => (
           <IssueCard key={`${item.id}-${i}`} item={item} i={i} onClickToUpdatePriority={onClickToUpdatePriority} />
         ))}
@@ -139,10 +139,10 @@ const IssueCard = ({
     <CardAnimation i={i}>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Card className="bg-card p-5 sm:p-10 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
-            <div className="flex justify-between items-start mb-2">
-              <div className="capitalize font-semibold text-md text-foreground">{item.projectName}</div>
-              <div className="flex gap-2">
+          <Card className="bg-card p-4 sm:p-6 flex flex-col h-full cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all duration-300">
+            <div className="flex flex-wrap justify-between items-start gap-2 mb-4">
+              <div className="capitalize font-semibold text-md truncate pr-2 text-foreground">{item.projectName}</div>
+              <div className="flex flex-wrap gap-2 shrink-0">
                 <Badge className="capitalize rounded-[8px] font-semibold">{item.environment}</Badge>
                 {item.group && <Badge variant="secondary">{item.group}</Badge>}
               </div>
@@ -150,7 +150,7 @@ const IssueCard = ({
 
             <CardHeaderComp title={item.name} desc={item.description} />
 
-            <CardContent className="p-0 font-semibold text-sm flex flex-row gap-2 w-full my-5">
+            <CardContent className="p-0 font-semibold text-sm flex flex-col sm:flex-row gap-2 w-full my-5">
               <Button variant={'outline'} className="flex-1" onClick={(e) => e.stopPropagation()}>
                 {new Date(item.createdAt).toLocaleDateString()}
               </Button>
