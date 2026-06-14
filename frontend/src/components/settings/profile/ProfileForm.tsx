@@ -51,42 +51,53 @@ const ProfileForm = ({ profile }: { profile?: ProfileDetailsAndPrefernces }) => 
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col gap-6 text-muted-foreground text-sm">
-        <div className="flex w-full gap-5">
-          <div className=" flex-1">
-            <Label htmlFor="firstName">First Name</Label>
+      <div className="flex flex-col gap-4 sm:gap-6 text-muted-foreground text-xs sm:text-sm">
+        <div className="flex flex-col sm:flex-row w-full gap-4 sm:gap-5">
+          <div className="flex-1">
+            <Label htmlFor="firstName" className="text-xs sm:text-sm">
+              First Name
+            </Label>
             <Input
               id="firstName"
-              className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
+              className="h-10 sm:h-12 text-sm sm:text-base text-foreground placeholder:text-xs sm:placeholder:text-sm mt-1.5 sm:mt-2 px-3 sm:px-4"
               {...register('firstName', { required: true })}
             />
           </div>
 
-          <div className=" flex-1">
-            <Label htmlFor="lastName">Last Name</Label>
+          <div className="flex-1">
+            <Label htmlFor="lastName" className="text-xs sm:text-sm">
+              Last Name
+            </Label>
             <Input
               id="lastName"
-              className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
+              className="h-10 sm:h-12 text-sm sm:text-base text-foreground placeholder:text-xs sm:placeholder:text-sm mt-1.5 sm:mt-2 px-3 sm:px-4"
               {...register('lastName', { required: true })}
             />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-xs sm:text-sm">
+            Email
+          </Label>
           <Input
             id="email"
             type="email"
             readOnly
-            className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm mt-2"
+            className="h-10 sm:h-12 text-sm sm:text-base text-foreground placeholder:text-xs sm:placeholder:text-sm mt-1.5 sm:mt-2 px-3 sm:px-4 bg-muted/30"
             {...register('email', { required: true })}
           />
         </div>
 
         {isDirty && (
-          <div className="w-full flex justify-center pt-4">
-            <ButtonComp variant={isPending ? 'ghost' : 'default'} type="submit" disabled={isPending}>
-              Save
+          <div className="w-full flex justify-center sm:justify-end pt-4 sm:pt-6">
+            <ButtonComp
+              variant={isPending ? 'ghost' : 'default'}
+              type="submit"
+              disabled={isPending}
+              className="w-full sm:w-auto min-w-[120px]"
+            >
+              {isPending ? 'Saving...' : 'Save Changes'}
             </ButtonComp>
           </div>
         )}
