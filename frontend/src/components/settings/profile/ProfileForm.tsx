@@ -1,4 +1,5 @@
 import ButtonComp from '@/components/ButtonComp';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { profileDetailsUpdateHandler } from '@/requestHandler/auth/ProfileDetailsUpdater.reqHandler';
@@ -90,16 +91,14 @@ const ProfileForm = ({ profile }: { profile?: ProfileDetailsAndPrefernces }) => 
         </div>
 
         {isDirty && (
-          <div className="w-full flex justify-center sm:justify-end pt-4 sm:pt-6">
-            <ButtonComp
-              variant={isPending ? 'ghost' : 'default'}
-              type="submit"
-              disabled={isPending}
-              className="w-full sm:w-auto min-w-[120px]"
-            >
-              {isPending ? 'Saving...' : 'Save Changes'}
-            </ButtonComp>
-          </div>
+          <Button
+            variant={isPending ? 'ghost' : 'default'}
+            type="submit"
+            disabled={isPending}
+            className="w-full sm:w-auto min-w-30 h-12 font-bold mt-10"
+          >
+            {isPending ? 'Saving...' : 'Save Changes'}
+          </Button>
         )}
       </div>
     </form>

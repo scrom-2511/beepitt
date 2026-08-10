@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["node-code-organised-father.trycloudflare.com"],
+    allowedHosts: ["class-biz-leon-tribes.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

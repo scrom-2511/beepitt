@@ -1,4 +1,4 @@
-import ButtonComp from '@/components/ButtonComp';
+import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { type ConfigurationsResponse } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
@@ -25,11 +25,16 @@ const NotificationChannelsSection = ({ configurations }: { configurations: Confi
     reset,
     watch,
     setValue,
+    getValues,
     formState: { isDirty },
   } = useForm<FormValues>();
 
   const { mutate, isPending } = useMutation({
     mutationFn: updateNotificationChannelsHandler,
+    onSuccess: () => {
+      reset(getValues());
+      toast.success('Notification channels updated successfully');
+    },
     onError: (error) => {
       toast.error(error.message);
     },
@@ -85,9 +90,9 @@ const NotificationChannelsSection = ({ configurations }: { configurations: Confi
 
         {isDirty && (
           <div className="w-full flex justify-center pt-4">
-            <ButtonComp variant={isPending ? 'ghost' : 'default'} type="submit" disabled={isPending}>
+            <Button className=' w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} type="submit" disabled={isPending}>
               Save
-            </ButtonComp>
+            </Button>
           </div>
         )}
       </section>

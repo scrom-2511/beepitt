@@ -1,13 +1,14 @@
-import ButtonComp from '@/components/ButtonComp';
+
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectLabel,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import type { ConfigurationsResponse } from '@/requestHandler/settings/configurations/getConfigurationsHandler.reqhandler';
 import { updateRetryConfigHandler } from '@/requestHandler/settings/configurations/updateRetryConfigHandler.reqhandler';
@@ -61,7 +62,7 @@ const RetryOffsetSection = ({ configurations }: { configurations: Configurations
     (currentCount !== initialState.count || currentOffset !== initialState.offset);
 
   const handleSave = () => {
-    if (!currentCount || !currentOffset) return;
+    if (currentCount === null || currentOffset === null) return;
 
     updateRetryConfig(
       {
@@ -110,9 +111,9 @@ const RetryOffsetSection = ({ configurations }: { configurations: Configurations
 
       {isDirty && (
         <div className="w-full flex justify-center">
-          <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
+          <Button className='mt-10 w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
             Save
-          </ButtonComp>
+          </Button>
         </div>
       )}
     </section>

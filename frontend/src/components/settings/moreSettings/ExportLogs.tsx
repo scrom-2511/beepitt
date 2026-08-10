@@ -1,4 +1,4 @@
-import ButtonComp from '@/components/ButtonComp';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -57,9 +57,9 @@ const ExportLogs = () => {
       </div>
 
       <div className="w-full flex justify-center">
-        <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
+        <Button className='mt-10 w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
           Export Logs
-        </ButtonComp>
+        </Button>
       </div>
     </section>
   );

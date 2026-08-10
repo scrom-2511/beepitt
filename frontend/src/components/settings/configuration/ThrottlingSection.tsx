@@ -1,4 +1,4 @@
-import ButtonComp from '@/components/ButtonComp';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -42,10 +42,7 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
   const { mutate, isPending } = useMutation({
     mutationFn: updateGlobalThrottleWindowHandler,
     onError: (error) => toast.error(error.message),
-    onSuccess: () => {
-      toast.success('Updated');
-      setInitialSeconds(currentSeconds);
-    },
+    onSuccess: () => toast.success('Updated'),
   });
 
   // Set initial values from backend
@@ -68,9 +65,16 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
   const isDirty = initialSeconds !== null && currentSeconds !== null && currentSeconds !== initialSeconds;
 
   const handleSave = () => {
-    if (!currentSeconds) return;
+    if (currentSeconds === null) return;
 
-    mutate({ globalThrottleWindow: currentSeconds });
+    mutate(
+      { globalThrottleWindow: currentSeconds },
+      {
+        onSuccess: () => {
+          setInitialSeconds(currentSeconds);
+        },
+      },
+    );
   };
 
   return (
@@ -98,9 +102,9 @@ const ThrottlingSectionStarter = ({ configurations }: { configurations: Configur
 
       {isDirty && (
         <div className="w-full flex justify-center">
-          <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
+          <Button className='mt-10 w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
             Save
-          </ButtonComp>
+          </Button>
         </div>
       )}
     </section>
@@ -165,7 +169,7 @@ const ThrottlingSectionPro = ({ configurations }: { configurations: Configuratio
       currentCooldown !== initialState.cooldown);
 
   const handleSave = () => {
-    if (!currentCount || !currentWindow || !currentCooldown) return;
+    if (currentCount === null || currentWindow === null || currentCooldown === null) return;
 
     updateGlobalThrottleWindow(
       {
@@ -236,9 +240,9 @@ const ThrottlingSectionPro = ({ configurations }: { configurations: Configuratio
 
       {isDirty && (
         <div className="w-full flex justify-center">
-          <ButtonComp variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
+          <Button className='mt-10 w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
             Save
-          </ButtonComp>
+          </Button>
         </div>
       )}
     </section>
