@@ -85,6 +85,8 @@ const AnalyticsSection = () => {
 
   const { tier, used, limit, incidents, issues, topProject } = analyticsData;
 
+  const hasRecentEvents = trendEvents.some(event => event.incidentCount > 0 || event.issueCount > 0);
+
   console.log(analyticsData);
 
   return (
@@ -109,18 +111,18 @@ const AnalyticsSection = () => {
           </CardContent>
         </Card>
         {/* ROW 3: Graphical Data */}
-        {tier === 'pro' && <EventsOverTimeGraph events={trendEvents} />}
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-2 gap-5">
+        {tier === 'pro' && hasRecentEvents && <EventsOverTimeGraph events={trendEvents} />}
+        <div className="flex flex-col md:flex-row gap-5 w-full">
           {tier !== 'free' && (
             <>
-              <Card className="bg-card p-6 h-full flex flex-col justify-between">
+              <Card className="bg-card p-6 h-full flex flex-col justify-between flex-1 w-full">
                 <CardHeaderComp title="Incidents" desc="Incidents this month" />
                 <CardContent className="p-0 mt-6">
                   <h3 className="text-4xl font-bold text-primary">{incidents.toLocaleString()}</h3>
                 </CardContent>
               </Card>
 
-              <Card className="bg-card p-6 h-full flex flex-col justify-between">
+              <Card className="bg-card p-6 h-full flex flex-col justify-between flex-1 w-full">
                 <CardHeaderComp title="Issues" desc="Issues this month" />
                 <CardContent className="p-0 mt-6">
                   <h3 className="text-4xl font-bold text-primary">{issues.toLocaleString()}</h3>
@@ -130,7 +132,7 @@ const AnalyticsSection = () => {
           )}
 
           {tier === 'pro' && analyticsData.avgResolutionTimeMinutes !== undefined && (
-            <Card className="bg-card p-6 h-full flex flex-col justify-between">
+            <Card className="bg-card p-6 h-full flex flex-col justify-between flex-1 w-full">
               <CardHeaderComp title="Resolution Time" desc="Average resolution" />
               <CardContent className="p-0 mt-6">
                 <h3 className="text-4xl font-bold text-primary">{analyticsData.avgResolutionTimeMinutes}m</h3>
@@ -141,8 +143,8 @@ const AnalyticsSection = () => {
 
         {/* ROW 2: Distributions and Projects */}
         {tier !== 'free' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <Card className="bg-card p-6 h-full flex flex-col overflow-hidden">
+          <div className="flex flex-col md:flex-row gap-5 w-full">
+            <Card className="bg-card p-6 h-full flex flex-col overflow-hidden flex-1 w-full">
               <CardHeaderComp title="Top Affected Projects" desc="Projects with the highest event rates" />
               <CardContent className="p-0 mt-6 space-y-4">
                 <div className="bg-background/50 p-4 rounded-xl border border-border/50">
@@ -173,7 +175,7 @@ const AnalyticsSection = () => {
             </Card>
 
             {tier === 'pro' && analyticsData.mostFrequentEvent && (
-              <Card className="bg-card p-6 h-full flex flex-col overflow-hidden">
+              <Card className="bg-card p-6 h-full flex flex-col overflow-hidden flex-1 w-full">
                 <CardHeaderComp title="Highest Recurrence" desc="Most frequent unique event" />
                 <CardContent className="p-0 mt-6 flex-1 flex flex-col justify-center min-w-0">
                   <p className="text-sm font-semibold text-muted-foreground bg-secondary/30 inline-flex px-2 py-0.5 rounded uppercase tracking-wider mb-2 w-fit max-w-full border border-border/40 truncate">
