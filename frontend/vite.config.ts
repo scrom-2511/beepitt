@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["utilities-lottery-portsmouth-tasks.trycloudflare.com"],
+    allowedHosts: ["node-code-organised-father.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

@@ -84,14 +84,14 @@ const AnalyticsSection = () => {
             <div className="flex justify-between">
               <p className="text-xs text-muted-foreground mt-2 text-right">{used.toLocaleString()} Used</p>
               <p className="text-xs text-muted-foreground mt-2 text-right">
-                {((used / limit) * 100).toFixed(1)}% of limit
+                {((used / limit) * 100).toFixed(2)}% of limit
               </p>
             </div>
           </CardContent>
         </Card>
         {/* ROW 3: Graphical Data */}
         {tier === 'pro' && trendEvents.length > 0 && <EventsOverTimeGraph events={trendEvents} />}
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-2 gap-5">
           {tier !== 'free' && (
             <>
               <Card className="bg-card p-6 h-full flex flex-col justify-between">
@@ -123,31 +123,6 @@ const AnalyticsSection = () => {
         {/* ROW 2: Distributions and Projects */}
         {tier !== 'free' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <Card className="bg-card p-6 h-full flex flex-col">
-              <CardHeaderComp title="Event Distribution" desc="Total Issues vs Incidents" />
-              <CardContent className="p-0 flex-1 flex flex-col items-center justify-center mt-6">
-                <div className="w-40 h-40 relative">
-                  <Doughnut
-                    key={Math.random()}
-                    data={{
-                      labels: ['Incidents', 'Issues'],
-                      datasets: [
-                        {
-                          data: [incidents, issues],
-                          backgroundColor: ['#818cf8', '#6366f1'],
-                          borderWidth: 0,
-                        },
-                      ],
-                    }}
-                    options={{ cutout: '70%', plugins: { legend: { display: false } } }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <span className="text-2xl font-bold text-foreground">{incidents + issues}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
             <Card className="bg-card p-6 h-full flex flex-col overflow-hidden">
               <CardHeaderComp title="Top Affected Projects" desc="Projects with the highest event rates" />
               <CardContent className="p-0 mt-6 space-y-4">
@@ -159,7 +134,7 @@ const AnalyticsSection = () => {
                     <span className="text-md font-medium text-foreground truncate">
                       {topProject.topIncidentProject || 'N/A'}
                     </span>
-                    <span className="text-2xl font-bold text-[var(--color-chart-1)] shrink-0">
+                    <span className="text-2xl font-bold text-(--color-chart-1) shrink-0">
                       {topProject.topIncidentCount}
                     </span>
                   </div>
