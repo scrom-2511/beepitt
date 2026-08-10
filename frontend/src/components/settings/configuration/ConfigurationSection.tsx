@@ -41,15 +41,15 @@ const ConfigurationSection = () => {
       content: <NotificationChannelsSection configurations={configurations} />,
       display: true,
     },
-    {
-      title: 'Throttling',
-      description: 'Configure throttling. Throttling will take effect after at least one notification is sent',
-      content: <ThrottlingSection configurations={configurations} />,
-      display: userSubscriptionTier !== 'free',
-    },
+    // {
+    //   title: 'Throttling',
+    //   description: 'Configure throttling. Throttling will take effect after at least one notification is sent',
+    //   content: <ThrottlingSection configurations={configurations} />,
+    //   display: userSubscriptionTier !== 'free',
+    // },
     {
       title: 'Retry Policy',
-      description: 'Retry sending notifications up to a limit when no response is received',
+      description: 'Retry sending notifications exponentially after a base interval',
       content: <RetryOffsetSection configurations={configurations} />,
       display: userSubscriptionTier !== 'free',
     },

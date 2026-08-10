@@ -6,6 +6,8 @@ export const enqueueEmailNotifications = async (data: NotificationJob) => {
     await emailNotificationsQueue.add('enqueue-email-notifications', data, {
       attempts: 5,
       backoff: { type: 'exponential', delay: 10000 }, // Slower backoff for email
+      jobId: data.jobId,
+      delay: data.delay
     });
   } catch (error) {
     console.error(`Error enqueuing email notification: ${error}`);

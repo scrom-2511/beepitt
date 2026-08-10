@@ -15,8 +15,8 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     authToken = req.get('Authorization');
   }
 
-  console.log("authToken is: ");
-  console.log(authToken);
+  // console.log("authToken is: ");
+  // console.log(authToken);
 
   if (!authToken) {
     res.status(HttpStatus.UNAUTHORIZED).json({
@@ -47,8 +47,8 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
 
     req.userId = decoded.id;
 
-    console.log("req.userId is: ");
-    console.log(req.userId);
+    // console.log("req.userId is: ");
+    // console.log(req.userId);
     next();
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({

@@ -17,6 +17,8 @@ import { Event } from '../types/prismaTypes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
+    console.log("i reached here")
+
     const validateData = ClientCallType.safeParse(req.body);
 
     // Validate the req body
@@ -27,6 +29,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
 
     // Get user's id
     const userId = req.userId!;
+
+    console.log("i reached here 2")
 
     // Check the billing of user, basically it checks whether users paid plan has expired or not
     await billingChecker(userId);
@@ -44,6 +48,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
 
     // Get project name from the req body
     const projectName = validateData.data.projectName;
+
+    console.log("i reached here 3")
 
     console.log(projectName)
 
@@ -64,11 +70,12 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
       return errorReturnCall(res, HttpStatus.CONFLICT, ErrorCode.EVENTS_LIMIT_REACHED);
     }
 
-    console.log('i am here')
+    console.log("i reached here 4")
 
     // Event throttling
     const throttlingResult = await eventThrottlingChecker(user, validateData.data);
-    console.log(throttlingResult);
+    console.log(throttlingResult.hasActiveEvent);
+    console.log(throttlingResult.sendNotification);
     let event: Event;
 
     // If event exists and we don't have to send the notification, update the event
@@ -86,16 +93,6 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
 
       res.status(HttpStatus.OK).json({ message: 'Notification throttled' });
       return;
-    } else if (throttlingResult.hasActiveEvent && throttlingResult.sendNotification) {
-      event = await prisma.event.update({
-        where: { id: throttlingResult.event.id },
-        data: {
-          occurrences: { increment: 1 },
-          occurrencesFromLastNotificationSent: 0,
-          lastNotificationSent: new Date(),
-          firstOccurenceAfterLastNotificationSent: null,
-        },
-      });
     } else {
       // Generate hash key for the event
       const eventHashKey = generateHashKey(validateData.data);
@@ -111,17 +108,17 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           firstOccurenceAfterLastNotificationSent: new Date(),
         },
       });
-
-      console.log(event);
     }
 
-    console.log("i am here 2")
+    console.log("i reached here 5")
 
     // Check and get the notification channel's chat ids
     const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user, event.type);
 
     // Get selected notification channels of user
     const channels = getSelectedNotificationChannelsOfUser(user);
+
+    console.log(channels)
 
     console.log("i am here 3")
     // Extract event id and type
@@ -136,7 +133,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     // Return to user
     returnCallOnClientCall(res, allChatIdsInfo);
     return;
-  } catch (error) {
+  } catch (error: any) {
     errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
     return;
   }

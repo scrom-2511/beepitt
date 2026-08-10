@@ -9,7 +9,7 @@ const enqueuerMap: Record<NotificationChannels, (args: NotificationJob) => Promi
   [NotificationChannels.discord]: enqueueDiscordNotifications,
   [NotificationChannels.telegram]: enqueueTelegramNotifications,
   [NotificationChannels.email]: enqueueEmailNotifications,
-  [NotificationChannels.slack]: async (args) => {},
+  [NotificationChannels.slack]: async (args) => { },
 };
 
 export const enqueueNotificationsOnClientCall = async (
@@ -41,24 +41,28 @@ export const enqueueNotificationsOnClientCall = async (
         userId: user.id,
         data: channelInfo.chatIds,
         type: event.type,
-        jobId: `${event.id}`,
+        jobId: `event-${event.id}`,
         delay: 0,
       }),
     );
 
     const projectSettings = user.configuration;
     let maxRetries = projectSettings?.maxRetries!;
+    console.log(maxRetries)
     const retryOffset = projectSettings?.retryOffset!;
+    console.log(retryOffset)
 
     if (user.billing?.subscription_tier === 'pro') {
       for (let retry = 1; retry <= maxRetries; retry++) {
+
+        console.log("delay is: ", retryOffset * 1000 * Math.pow(2, retry - 1))
         jobs.push(
           enqueuer({
             userId: user.id,
             data: channelInfo.chatIds,
             type: event.type,
             jobId: `${event.id}-retry-${retry}`,
-            delay: retryOffset * retry,
+            delay: retryOffset * 1000 * Math.pow(2, retry - 1),
           }),
         );
       }

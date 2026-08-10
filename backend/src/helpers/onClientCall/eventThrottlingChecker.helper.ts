@@ -33,19 +33,6 @@ export const eventThrottlingChecker = async (
     return { hasActiveEvent: false, sendNotification: true };
   }
 
-  // Get users throttling time in milliseconds
-  const userThrottlingWindow = user.configuration?.globalThrottleWindow! * 60 * 1000;
-
-  // Get last notification sent time in milliseconds
-  const lastNotificationSentTimeMs = event.lastNotificationSent.getTime();
-
-  // Get current time in milliseconds
-  const currentTimeMs = Date.now();
-
-  // Determine whether the notification should be sent again based on the user-defined throttling time
-  const cooldownExpired = currentTimeMs - lastNotificationSentTimeMs > userThrottlingWindow;
-
-  // Return for "starter" and "pro"
-  return { hasActiveEvent: true, sendNotification: cooldownExpired, event };
-
+  // Since all the same future events should be throttled indefinitely for an active incident
+  return { hasActiveEvent: true, sendNotification: false, event };
 };

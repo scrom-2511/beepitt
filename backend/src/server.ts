@@ -5,6 +5,7 @@ import { appWebhook } from './routes/app.webhooks';
 import { userRouter } from './routes/user.Route';
 import './services/bullmq/workers/discordNotifications.worker';
 import './services/bullmq/workers/telegramNotifications.worker';
+import './services/bullmq/workers/emailNotifications.worker';
 import { FRONTEND_URL } from '../config/app.config';
 import { discordClient } from './utils/discordBeep.util';
 const app: Express = express();

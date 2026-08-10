@@ -146,6 +146,7 @@ discordClient.on('messageCreate', async (msg) => {
 
 export const discordBeep = async (discordChatIds: string[], type: EventType) => {
   try {
+    console.log("hi there i am here inside discord beep")
     await Promise.allSettled(
       discordChatIds.map(async (chatId) => {
         const user = await discordClient.users.fetch(chatId);

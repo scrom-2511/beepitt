@@ -6,6 +6,8 @@ export const enqueueTelegramNotifications = async (data: NotificationJob) => {
     await telegramNotificationsQueue.add('enqueue-telegram-notifications', data, {
       attempts: 7,
       backoff: { type: 'exponential', delay: 5000 },
+      jobId: data.jobId,
+      delay: data.delay
     });
   } catch (error) {
     console.error(error);

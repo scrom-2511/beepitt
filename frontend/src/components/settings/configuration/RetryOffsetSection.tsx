@@ -88,7 +88,7 @@ const RetryOffsetSection = ({ configurations }: { configurations: Configurations
         {/* X */}
         <Input className="w-20 text-center" value={count} onChange={(e) => setCount(e.target.value)} />
 
-        <span>times every</span>
+        <span>times, with base interval as</span>
 
         {/* Y value */}
         <Input className="w-20 text-center" value={value} onChange={(e) => setValue(e.target.value)} />

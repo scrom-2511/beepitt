@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["class-biz-leon-tribes.trycloudflare.com"],
+    allowedHosts: ["triangle-delight-filed-wishlist.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
