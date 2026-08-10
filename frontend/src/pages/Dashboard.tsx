@@ -9,7 +9,6 @@ export type DashboardState =
   | 'Unseen Incidents'
   | 'Seen Incidents'
   | 'Settings'
-  | 'Billing';
 
 const Dashboard = () => {
   const location = useLocation();
@@ -38,7 +37,6 @@ const routeTitleMap: Record<string, string> = {
   'open-issues': 'Open Issues',
   'closed-issues': 'Closed Issues',
   settings: 'Settings',
-  billing: 'Billing',
 };
 
 export const TopBar = ({ selected }: { selected: string | undefined }) => {

@@ -6,6 +6,7 @@ import { UnseenIssues } from '@/components/dashboard/issues/UnseenIssues';
 import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import AnalyticsSection from './components/dashboard/analytics/AnalyticsSection';
+import Billing from './components/dashboard/Billing';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfigurationSection from './components/settings/configuration/ConfigurationSection';
 import MoreSettingsSection from './components/settings/moreSettings/MoreSettingsSection';
@@ -85,9 +86,11 @@ function AppLayout() {
               <Route path="projects/:id" element={<ProjectDetail />} />
               <Route path="configurations" element={<ConfigurationSection />} />
               <Route path="more-settings" element={<MoreSettingsSection />} />
+              <Route path="billing" element={<Billing />} />
             </Route>
 
             <Route path="analytics" element={<AnalyticsSection />} />
+            <Route path="billing" element={<Billing />} />
           </Route>
         </Routes>
       </div>

@@ -6,7 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { ChartArea, CircleCheckBigIcon, CircleXIcon, EyeOffIcon, LogOut, Settings } from 'lucide-react';
+import { ChartArea, CircleCheckBigIcon, CircleXIcon, CreditCard, EyeOffIcon, LogOut, Settings } from 'lucide-react';
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import ButtonComp from '../ButtonComp';
@@ -26,7 +26,6 @@ const moreItems = [{ title: 'Analytics', url: '/dashboard/analytics', icon: Char
 
 const items_footer = [
   { title: 'Settings', url: '/dashboard/settings', icon: Settings },
-  // { title: 'Billing', url: '/dashboard/billing', icon: DollarSign },
   { title: 'Log Out', url: '/auth', icon: LogOut },
 ];
 
@@ -44,7 +43,7 @@ export function AppSidebar() {
   return (
     <Sidebar variant="inset" className="p-5 bg-sidebar">
       <SidebarContent className="overflow-hidden">
-        <SidebarHeader className="mb-4">logo aayega</SidebarHeader>
+        <SidebarHeader className="mb-6"></SidebarHeader>
 
         {/* Incidents Section */}
         <SidebarSectionLabel>Incidents</SidebarSectionLabel>
@@ -106,15 +105,6 @@ export function AppSidebar() {
         <SidebarMenu className="gap-2.5">
           {moreItems.map((item) => (
             <SidebarMenuItem key={item.title}>
-              {/* <NavLink
-                to={item.url}
-                className={`flex w-full justify-start gap-5 text-md p-2 rounded-md ${
-                  isActive(item.url) ? 'bg-primary text-background' : 'text-foreground hover:bg-foreground/10'
-                }`}
-              >
-                <item.icon className="size-4.5" />
-                {item.title}
-              </NavLink> */}
               <ButtonComp
                 variant={isActive(item.url) ? 'default' : 'ghost'}
                 className="flex flex-row w-full justify-start gap-5 text-md cursor-pointer"

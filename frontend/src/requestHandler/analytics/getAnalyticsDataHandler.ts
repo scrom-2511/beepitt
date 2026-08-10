@@ -45,7 +45,7 @@ export interface AnalyticsData {
     utilizationPercentage: number;
   };
   trends?: {
-    last30Days: Array<{
+    last7Days: Array<{
       date: string;
       incidentCount: number;
       issueCount: number;

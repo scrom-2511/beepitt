@@ -14,7 +14,6 @@ import {
   Tooltip,
 } from 'chart.js';
 import { useMemo } from 'react';
-import { Doughnut } from 'react-chartjs-2';
 
 import CardHeaderComp from '../CardHeader';
 import Fallback from '../Fallback';
@@ -41,13 +40,33 @@ const AnalyticsSection = () => {
   });
 
   const trendEvents: DailyEvent[] = useMemo(() => {
-    if (!analyticsData?.trends?.last30Days) return [];
-    return analyticsData.trends.last30Days.map((item: any) => ({
-      date: item.date,
-      incidentCount: item.incidentCount || 0,
-      issueCount: item.issueCount || 0,
-    }));
-  }, [analyticsData?.trends?.last30Days]);
+    const eventMap = new Map<string, { incidentCount: number; issueCount: number }>();
+    if (analyticsData?.trends?.last7Days) {
+      analyticsData.trends.last7Days.forEach((item: any) => {
+        const dStr = new Date(item.date).toISOString().split('T')[0];
+        eventMap.set(dStr, {
+          incidentCount: item.incidentCount || 0,
+          issueCount: item.issueCount || 0,
+        });
+      });
+    }
+
+    const days: DailyEvent[] = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dStr = d.toISOString().split('T')[0];
+      const existing = eventMap.get(dStr);
+      days.push({
+        date: dStr,
+        incidentCount: existing ? existing.incidentCount : 0,
+        issueCount: existing ? existing.issueCount : 0,
+      });
+    }
+
+    return days;
+  }, [analyticsData?.trends?.last7Days]);
 
   if (isLoading || isError || analyticsData === undefined) {
     return (
@@ -90,7 +109,7 @@ const AnalyticsSection = () => {
           </CardContent>
         </Card>
         {/* ROW 3: Graphical Data */}
-        {tier === 'pro' && trendEvents.length > 0 && <EventsOverTimeGraph events={trendEvents} />}
+        {tier === 'pro' && <EventsOverTimeGraph events={trendEvents} />}
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-2 gap-5">
           {tier !== 'free' && (
             <>

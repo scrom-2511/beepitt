@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../../database/prismaClient';
 import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { HttpStatus } from '../../types/errorCodes';
+import { SUBSCRIPTION_LIMITS } from '../../../config/subscriptionLimits.config';
 
 export const getProAnalytics = async (req: Request, res: Response, userId: number, tier: string) => {
   const [configuration, incidentsCount, issuesCount] = await Promise.all([
@@ -11,7 +12,7 @@ export const getProAnalytics = async (req: Request, res: Response, userId: numbe
   ]);
 
   const used = configuration?.eventsUsed ?? 0;
-  const limit = configuration?.globalThrottleWindow ?? 10000;
+  const limit = SUBSCRIPTION_LIMITS.pro.maxEvents;
 
   const topIncidentProjectResult = await prisma.event.groupBy({
     by: ['projectName'],
@@ -65,20 +66,20 @@ export const getProAnalytics = async (req: Request, res: Response, userId: numbe
     count: item._count.environment,
   }));
 
-  // 3. Trends: last 30 days
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setUTCDate(thirtyDaysAgo.getUTCDate() - 30);
+  // 3. Trends: last 7 days
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setUTCDate(sevenDaysAgo.getUTCDate() - 7);
   const trendsResult = await prisma.$queryRaw<[{ date: string; incident_count: bigint; issue_count: bigint }]>`
     SELECT DATE("createdAt") as "date",
            SUM(CASE WHEN "type" = 'incident' THEN 1 ELSE 0 END) as "incident_count",
            SUM(CASE WHEN "type" = 'issue' THEN 1 ELSE 0 END) as "issue_count"
     FROM "Event"
-    WHERE "userId" = ${userId} AND "createdAt" >= ${thirtyDaysAgo}
+    WHERE "userId" = ${userId} AND "createdAt" >= ${sevenDaysAgo}
     GROUP BY DATE("createdAt")
     ORDER BY "date" ASC
   `;
   response.trends = {
-    last30Days: trendsResult.map(item => ({ 
+    last7Days: trendsResult.map(item => ({ 
       date: item.date, 
       incidentCount: Number(item.incident_count),
       issueCount: Number(item.issue_count)

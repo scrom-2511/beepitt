@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 const tabItems = [
   { label: 'Profile', value: 'profile' },
-  // { label: 'Team', value: 'team' },
+  { label: 'Billing', value: 'billing' },
   { label: 'Projects', value: 'projects' },
   { label: 'Configurations', value: 'configurations' },
   { label: 'More Settings', value: 'more-settings' },

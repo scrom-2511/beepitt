@@ -252,7 +252,7 @@ const Pricing = () => {
                   `}
                     onClick={() => onSubmit(item.tier)}
                   >
-                    Get Started
+                    {window.localStorage.getItem("userSubscriptionTier") ? "Upgrade" : "Get Started"}
                   </ButtonComp>
                 </CardFooter>
               </Card>
