@@ -17,8 +17,6 @@ import { Event } from '../types/prismaTypes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
-    console.log("i reached here")
-
     const validateData = ClientCallType.safeParse(req.body);
 
     // Validate the req body
