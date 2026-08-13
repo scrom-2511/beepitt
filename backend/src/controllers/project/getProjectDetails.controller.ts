@@ -3,6 +3,7 @@ import { prisma } from '../../database/prismaClient';
 import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
 import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
+import jwt from 'jsonwebtoken';
 
 export const getProjectDetailsController = async (req: Request, res: Response) => {
   try {
@@ -63,11 +64,17 @@ export const getProjectDetailsController = async (req: Request, res: Response) =
       emailIds2: billing?.subscription_tier === 'pro' ? project.contactDetails?.emailIds2 || [] : undefined,
     };
 
+    const connectionStringPayload = { id: userId, projectName: project.projectName };
+    const jwtSecret = process.env.JWT_SECRET;
+
+    const connectionString = jwt.sign(connectionStringPayload, jwtSecret!);
+
     const response = {
       projectName: project.projectName,
       projectDesc: project.projectDesc,
       identifierKey: project.identifierKey,
       identifierKey2: billing?.subscription_tier === 'pro' ? project.identifierKey2 : undefined,
+      connectionString: connectionString,
       contactDetails,
     };
 

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import HowItWorks from './HowItWorks';
 import Navbar from './Navbar';
+import "@fontsource/poppins"
 
 const HomeMain = () => {
   const words = ['Incident', 'Issue'];
@@ -23,12 +24,6 @@ const HomeMain = () => {
       {/* Hero section */}
       <div
         className="relative w-full min-h-screen bg-[#0d0b0e] overflow-hidden"
-        // style={{
-        //   backgroundImage: "url(/bg2.jpg)",
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center",
-        //   backgroundRepeat: "no-repeat",
-        // }}
       >
         {/* Background video */}
         <video
@@ -44,11 +39,12 @@ const HomeMain = () => {
 
         {/* Content */}
         <div
-          className="relative z-10 h-full flex flex-col gap-8 justify-end
-            font-poppins font-light text-7xl text-foreground pt-40 p-20"
+          className="relative z-10 h-full flex flex-col gap-4 sm:gap-6 md:gap-8 justify-end
+            font-poppins font-light text-foreground 
+            p-8 pt-32 sm:p-12 sm:pt-40 md:p-20 md:pt-40"
         >
           <div>
-            <h1 className="text-7xl font-light mb-5">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl font-light mb-3 md:mb-5">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={words[index]}
@@ -63,8 +59,8 @@ const HomeMain = () => {
               </AnimatePresence>{' '}
               detected,
             </h1>
-            <h1>
-              <span className="text-8xl text-primary">Notification</span> sent!
+            <h1 className="text-4xl sm:text-5xl md:text-7xl">
+              <span className="text-5xl sm:text-7xl md:text-8xl text-primary">Notification</span> sent!
             </h1>
           </div>
         </div>

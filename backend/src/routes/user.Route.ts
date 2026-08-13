@@ -36,6 +36,7 @@ import { getTeamInfoController } from '../controllers/team/getTeamInfo.controlle
 import { checkLastId } from '../middlewares/checkLastId';
 import { isLoggedIn } from '../middlewares/isLoggedIn';
 import { isVerified } from '../middlewares/isVerified';
+import { exportLogsController } from '../controllers/project/exportLogs.controller';
 
 export const userRouter = Router();
 
@@ -92,3 +93,6 @@ userRouter.get('/getAllGroups', isLoggedIn, isVerified, getAllGroupsController);
 // AI Chat
 userRouter.post('/aiChat', isLoggedIn, isVerified, aiChatController);
 userRouter.get('/getChatHistory/:chatID', isLoggedIn, isVerified, getChatHistoryController);
+
+
+userRouter.post('/logs/export', isLoggedIn, isVerified, exportLogsController)

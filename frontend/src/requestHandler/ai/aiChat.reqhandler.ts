@@ -11,9 +11,7 @@ export const aiChatHandler = async (
     headers: {
       'Content-Type': 'application/json',
     },
-    // withCredentials equivalent in fetch is credentials: 'include'
     body: JSON.stringify({ prompt, chatID, conversationID }),
-    // Important for cross-origin cookies
     credentials: 'include',
   });
 

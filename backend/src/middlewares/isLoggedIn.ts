@@ -46,6 +46,7 @@ export const isLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     }
 
     req.userId = decoded.id;
+    if (decoded.projectName) req.projectName = decoded.projectName;
 
     // console.log("req.userId is: ");
     // console.log(req.userId);

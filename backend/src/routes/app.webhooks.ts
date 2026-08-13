@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { isLoggedIn } from '../middlewares/isLoggedIn';
-import { onClientIncidentWebhook } from '../webhooks/onClientIncident.webhook';
+import { onClientIncidentWebhook } from '../webhooks/onClientEvent.webhook';
 import { razorPayWebhook } from '../webhooks/razorpay.webhook';
 import { telegramBotWebhook } from '../webhooks/telegramBot.webhook';
 

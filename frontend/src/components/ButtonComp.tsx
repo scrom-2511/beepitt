@@ -18,7 +18,7 @@ const ButtonComp = ({
   }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.99 }}
       transition={{ type: 'spring', stiffness: 100 }}
       className="w-full"

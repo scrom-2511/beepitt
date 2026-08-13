@@ -10,7 +10,8 @@ import {
 } from '@/components/ui/select';
 import { exportLogsHandler } from '@/requestHandler/settings/moreSettings/exportLogsHandler.reqhandler';
 import type { ExportLogsType } from '@/types/dataTypes';
-import { useMutation } from '@tanstack/react-query';
+import { getBillingDetailsHandler } from '@/requestHandler/billing/getBillingDetails.reqhandler';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { z } from 'zod';
@@ -32,6 +33,13 @@ const ExportLogs = () => {
       toast.success('You will receive an email with the logs');
     },
   });
+
+  const { data: billingDetails } = useQuery({
+    queryKey: ['billingDetails'],
+    queryFn: getBillingDetailsHandler,
+  });
+
+  const isPro = billingDetails?.subscription_tier === 'pro';
 
   return (
     <section className="flex flex-col gap-4 text-foreground text-sm">
@@ -57,8 +65,13 @@ const ExportLogs = () => {
       </div>
 
       <div className="w-full flex justify-center">
-        <Button className='mt-10 w-full font-bold h-12' variant={isPending ? 'ghost' : 'default'} onClick={handleSave} disabled={isPending}>
-          Export Logs
+        <Button 
+          className='mt-10 w-full font-bold h-12' 
+          variant={isPending ? 'ghost' : 'default'} 
+          onClick={handleSave} 
+          disabled={isPending || !isPro}
+        >
+          {!isPro ? 'Upgrade to Pro to Export Logs' : (isPending ? 'Exporting...' : 'Export Logs')}
         </Button>
       </div>
     </section>

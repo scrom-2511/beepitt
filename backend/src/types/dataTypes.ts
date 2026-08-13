@@ -15,7 +15,6 @@ export const SignupType = z.object({
 
 export const ClientCallType = z.object({
   type: z.enum(EventType),
-  projectName: z.string(),
   name: z.string(),
   description: z.string(),
   filePath: z.string().nullable(),

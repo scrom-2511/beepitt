@@ -130,7 +130,7 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
         />
       </div>
 
-      {localStorage.getItem('userSubscriptionTier') === 'PRO' && (
+      {localStorage.getItem('userSubscriptionTier') === 'pro' && (
         <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey2 || '')}>
           <Label htmlFor="identifierKey2" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
             Identifier Key 2
@@ -144,6 +144,19 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
           />
         </div>
       )}
+
+      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.connectionString)}>
+        <Label htmlFor="identifierKey" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
+          Connection String
+        </Label>
+        <Input
+          id="connectionString"
+          type="text"
+          value={projectDetails.connectionString}
+          readOnly
+          className="h-10 sm:h-12 text-sm sm:text-base text-foreground mt-1.5 sm:mt-2 px-3 sm:px-4 cursor-pointer bg-muted/30 group-hover:border-accent/50 transition-all"
+        />
+      </div>
     </section>
   );
 };

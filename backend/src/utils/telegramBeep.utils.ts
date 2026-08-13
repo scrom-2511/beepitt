@@ -33,13 +33,8 @@ bot.on('message', async (msg) => {
 
   try {
     // Find project by identifier key
-    // const project = await prisma.project.findFirst({
-    //   where: { OR: [{ identifierKey }, { identifierKey2: identifierKey }] },
-    //   include: { contactDetails: true },
-    // });
-
     const project = await prisma.project.findFirst({
-      where: { identifierKey: identifierKey },
+      where: { OR: [{ identifierKey }, { identifierKey2: identifierKey }] },
       include: { contactDetails: true },
     });
 
@@ -148,5 +143,5 @@ export const telegramBeep = async (telegramChatIds: string[], type: EventType) =
         ),
       ),
     );
-  } catch {}
+  } catch { }
 };

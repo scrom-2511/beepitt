@@ -15,6 +15,7 @@ export interface ProjectDetails {
   projectDesc: string;
   identifierKey: string;
   identifierKey2: string;
+  connectionString: string;
   contactDetails: ContactDetails;
 }
 

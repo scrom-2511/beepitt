@@ -20,7 +20,7 @@ export const streamModel = async (
   chatID: string,
   conversationID: string
 ): Promise<string> => {
-  const model = "nvidia/nemotron-3-ultra-550b-a55b:free";
+  const model = process.env.MODEL;
 
   StreamModelSchema.parse({ prompt, userID, apikey, chatID, conversationID });
 

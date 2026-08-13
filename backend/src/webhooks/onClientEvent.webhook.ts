@@ -19,6 +19,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
     const validateData = ClientCallType.safeParse(req.body);
 
+    const projectName = req.projectName!;
+
     // Validate the req body
     if (!validateData.success) {
       errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
@@ -43,9 +45,6 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     if (!user) {
       return errorReturnCall(res, HttpStatus.UNAUTHORIZED, ErrorCode.UNAUTHORIZED);
     }
-
-    // Get project name from the req body
-    const projectName = validateData.data.projectName;
 
     console.log("i reached here 3")
 
@@ -94,7 +93,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     } else {
       // Generate hash key for the event
       const eventHashKey = generateHashKey(validateData.data);
-      // Create an incident in the db
+      // Create an event in the db
       event = await prisma.event.create({
         data: {
           ...validateData.data,
@@ -104,6 +103,7 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           throttlingWindow: user.configuration?.globalThrottleWindow ?? 0,
           occurrencesFromLastNotificationSent: 0,
           firstOccurenceAfterLastNotificationSent: new Date(),
+          projectName
         },
       });
     }
@@ -111,14 +111,14 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
     console.log("i reached here 5")
 
     // Check and get the notification channel's chat ids
-    const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(validateData.data.projectName, user, event.type);
+    const allChatIdsInfo = notificationChannelChatIdsCheckerAndGetter(projectName, user, event.type);
 
     // Get selected notification channels of user
     const channels = getSelectedNotificationChannelsOfUser(user);
 
     console.log(channels)
 
-    console.log("i am here 3")
+    console.log("i reached here 6")
     // Extract event id and type
     const eventIdAndType: EventIdAndType = { id: event.id, type: event.type };
 
@@ -127,6 +127,8 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
 
     // Increase events used of user by 1
     await prisma.configuration.update({ where: { userId: userId }, data: { eventsUsed: { increment: 1 } } });
+
+    console.log("i reached here 7")
 
     // Return to user
     returnCallOnClientCall(res, allChatIdsInfo);

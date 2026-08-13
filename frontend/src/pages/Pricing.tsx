@@ -157,7 +157,7 @@ const Pricing = () => {
                 p-6 sm:p-8 md:p-10
                 rounded-xl border border-border
                 transition-all duration-300
-                ${isStarter ? 'ring-2 ring-primary shadow-lg lg:scale-105' : 'hover:shadow-md'}
+                ${isStarter ? 'ring-2 ring-primary shadow-lg hover:scale-107 lg:scale-105' : 'hover:shadow-md hover:scale-102'}
               `}
               >
                 {/* Featured Badge */}

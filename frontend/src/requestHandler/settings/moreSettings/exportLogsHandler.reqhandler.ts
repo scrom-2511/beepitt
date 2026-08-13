@@ -5,7 +5,7 @@ import type z from 'zod';
 
 export const exportLogsHandler = async (payload: z.infer<typeof ExportLogsType>): Promise<void> => {
   try {
-    const res = await api.post('/logs/export', data);
+    const res = await api.post('/user/logs/export', payload);
 
     if (res.data.success) {
       return;

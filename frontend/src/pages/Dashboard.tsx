@@ -18,7 +18,7 @@ const Dashboard = () => {
   return (
     <SidebarProvider className="h-full p-5">
       <AppSidebar />
-      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background overflow-hidden">
+      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background">
         <TopBar selected={selected} />
         <div className="min-w-0">
           <Outlet />
@@ -53,5 +53,3 @@ export const TopBar = ({ selected }: { selected: string | undefined }) => {
     </div>
   );
 };
-
-// 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

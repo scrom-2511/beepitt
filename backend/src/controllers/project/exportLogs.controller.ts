@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { json2csv } from 'json-2-csv';
 import { prisma } from '../../database/prismaClient';
 import { errorReturnCall } from '../../helpers/returnCall/error.returnCall';
+import { successReturnCall } from '../../helpers/returnCall/success.returnCall';
 import { sendLogs } from '../../services/mailgun/sendLogs.mailgun';
 import { ExportLogsType } from '../../types/dataTypes';
 import { ErrorCode, HttpStatus } from '../../types/errorCodes';
@@ -29,12 +30,12 @@ export const exportLogsController = async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({ where: { id: userId }, include: { billing: true } });
 
-    if (user!.billing?.subscription_tier === 'free') {
+    const tier = user?.billing?.subscription_tier;
+
+    if (tier !== 'pro') {
       errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.OPERATION_NOT_ALLOWED);
       return;
     }
-
-    const tier = user?.billing?.subscription_tier;
 
     const incidentLogs = await prisma.event.findMany({
       where: { userId, type: 'incident' },
@@ -89,6 +90,8 @@ export const exportLogsController = async (req: Request, res: Response) => {
       const formattedIncidentLogsCSV = json2csv(formattedIncidentLogs);
       const formattedIssueLogsCSV = json2csv(formattedIssueLogs);
       await sendLogs(formattedIncidentLogsCSV, formattedIssueLogsCSV, user?.email!, validateData.data.exportType);
+      
+      successReturnCall(res, HttpStatus.OK, { message: 'Logs exported successfully' });
       return;
     }
 
@@ -98,5 +101,9 @@ export const exportLogsController = async (req: Request, res: Response) => {
       user?.email!,
       validateData.data.exportType,
     );
-  } catch (error) {}
+
+    successReturnCall(res, HttpStatus.OK, { message: 'Logs exported successfully' });
+  } catch (error) {
+    errorReturnCall(res, HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.INTERNAL_SERVER_ERROR);
+  }
 };

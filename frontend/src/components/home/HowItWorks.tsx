@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BellRing, CheckCircle2, Code2, Download } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const HowItWorks = () => {
@@ -13,7 +13,6 @@ const HowItWorks = () => {
       code: <div className="text-primary">npm install beepitt</div>,
       buttonText: 'View Documentation',
       visual: {
-        icon: Download,
         label: 'SDK Installation',
       },
       reverse: false,
@@ -33,7 +32,6 @@ const HowItWorks = () => {
       ),
       // buttonText: "See Code Examples",
       visual: {
-        icon: Code2,
         label: 'Code Integration',
       },
       reverse: true,
@@ -56,7 +54,6 @@ const HowItWorks = () => {
       ),
       // buttonText: "See Code Examples",
       visual: {
-        icon: Code2,
         label: 'Code Integration',
       },
       reverse: false,
@@ -65,14 +62,9 @@ const HowItWorks = () => {
       step: 4,
       title: 'Receive Notifications',
       description:
-        "As soon as an error is caught by Beepitt, you'll receive instant notifications through your preferred channels—email, Slack, Discord, webhook, or in-app alerts.",
+        "As soon as an error is caught by Beepitt, you'll receive instant notifications.",
       extras: (
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <div className="bg-card rounded-lg border border-border p-4">
-            <BellRing className="w-5 h-5 text-primary mb-2" />
-            <div className="text-foreground font-medium text-sm">Email Alerts (Soon)</div>
-            <div className="text-muted-foreground text-xs">Instant notifications</div>
-          </div>
           <div className="bg-card rounded-lg border border-border p-4">
             <CheckCircle2 className="w-5 h-5 text-primary mb-2" />
             <div className="text-foreground font-medium text-sm">Telegram & Discord</div>
@@ -82,7 +74,6 @@ const HowItWorks = () => {
       ),
       buttonText: 'Configure Channels',
       visual: {
-        icon: BellRing,
         label: 'Notification System',
       },
       reverse: true,
@@ -93,7 +84,7 @@ const HowItWorks = () => {
     <div className="bg-background w-full">
       <main className="w-full">
         {/* Hero */}
-        <section className="w-full px-4 sm:px-6 md:px-8 py-16 md:py-24 text-center">
+        <section className="w-full px-4 sm:px-6 md:px-8 py-16 md:py-20 text-center">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-6">Beep in 3 steps</h1>
             <p className="text-base sm:text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
@@ -102,47 +93,63 @@ const HowItWorks = () => {
           </div>
         </section>
 
-        {/* Steps */}
-        {steps.map(({ step, title, description, code, extras, buttonText, visual, reverse }) => {
-          const VisualIcon = visual.icon;
+        {/* Steps Bento Grid */}
+        <section className="w-full px-4 sm:px-6 md:px-8 py-12 md:py-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {steps.map(({ step, title, description, code, extras }, index) => {
+                const bentoClasses = [
+                  "md:col-span-1",
+                  "md:col-span-2",
+                  "md:col-span-2",
+                  "md:col-span-1",
+                ];
 
-          return (
-            <section key={step} className="w-full px-4 sm:px-6 md:px-8 py-16 border-b border-border">
-              <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12 items-center">
-                  {/* Visual */}
+                const isWide = index === 1 || index === 2;
+
+                return (
                   <div
-                    className={`bg-background rounded-lg p-6 md:p-8 flex items-center justify-center min-h-[200px] md:min-h-[320px] ${
-                      reverse ? 'md:order-2' : ''
-                    }`}
+                    key={step}
+                    className={`bg-card/40 backdrop-blur-sm border border-border rounded-3xl p-6 md:p-8 overflow-hidden relative group hover:border-primary/30 hover:scale-102 transition-all hover:bg-card/60 duration-500 flex flex-col cursor-pointer ${bentoClasses[index]
+                      }`}
                   >
-                    <div className="text-center">
-                      <VisualIcon className="w-16 h-16 md:w-24 md:h-24 text-primary mx-auto mb-4" />
-                      {/* {step} */}
+                    {/* Background faint icon */}
+                    <div className="absolute -top-8 -right-6 p-8 opacity-5 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none text-9xl text-red-50 font-bold">
+                      {step}
+                    </div>
+
+                    {/* Content wrapper */}
+                    <div className={`relative z-10 w-full h-full flex flex-col grow ${isWide ? 'md:flex-row md:items-center gap-8 md:gap-12' : ''}`}>
+                      <div className={isWide ? 'md:w-[45%] flex flex-col justify-center h-full w-full' : 'flex flex-col grow w-full'}>
+                        <div className="flex items-center gap-3 mb-6">
+                        </div>
+
+                        <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4">{title}</h2>
+                        <p className="text-muted-foreground text-sm md:text-base leading-relaxed mb-8 md:mb-0">
+                          {description}
+                        </p>
+                      </div>
+
+                      <div className={isWide ? 'md:w-[55%] mt-auto md:mt-0 w-full min-w-0' : 'mt-auto w-full min-w-0'}>
+                        {code && (
+                          <div className="bg-background rounded-2xl border border-border p-5 font-mono text-xs sm:text-sm text-muted-foreground overflow-x-auto shadow-sm">
+                            {code}
+                          </div>
+                        )}
+
+                        {extras && (
+                          <div className="flex flex-col gap-4 w-full">
+                            {extras.props.children}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-
-                  {/* Content */}
-                  <div className={`relative ${reverse ? 'md:order-1' : ''}`}>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">{title}</h2>
-
-                    <p className="text-muted-foreground text-base md:text-lg mb-6 leading-relaxed">{description}</p>
-
-                    {code && (
-                      <div className="bg-card rounded-lg border border-border p-4 font-mono text-xs sm:text-sm text-muted-foreground mb-6 overflow-x-auto">
-                        {code}
-                      </div>
-                    )}
-
-                    {extras && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">{extras.props.children}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </section>
-          );
-        })}
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
         {/* CTA */}
         <section className="w-full px-4 sm:px-6 md:px-8 py-16 md:py-24 text-center">
@@ -181,7 +188,7 @@ const HowItWorks = () => {
           </div>
         </footer>
       </main>
-    </div>
+    </div >
   );
 };
 
