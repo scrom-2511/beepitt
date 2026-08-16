@@ -11,8 +11,8 @@ const LoadMoreDiv = ({ hasNextPage, loadMoreRef, isFetchingNextPage }: LoadMoreD
   return (
     <div>
       {hasNextPage && (
-        <div ref={loadMoreRef} className="col-span-full text-center py-5">
-          {isFetchingNextPage ? <Loading title="Loading" /> : 'Scroll to load more'}
+        <div ref={loadMoreRef} className="col-span-full text-center py-5 text-white">
+          {isFetchingNextPage ? <Loading title="" /> : 'Scroll to load more'}
         </div>
       )}
     </div>

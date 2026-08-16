@@ -16,11 +16,11 @@ const Dashboard = () => {
   const selected = location.pathname.split('/').pop();
 
   return (
-    <SidebarProvider className="h-full p-5">
+    <SidebarProvider className="h-screen p-5 overflow-hidden">
       <AppSidebar />
-      <div className="w-full h-full grid grid-rows-[70px_auto] rounded-2xl pb-5 bg-background">
+      <div className="w-full h-full grid grid-rows-[70px_1fr] rounded-2xl pb-5 bg-background overflow-hidden">
         <TopBar selected={selected} />
-        <div className="min-w-0">
+        <div className="min-w-0 min-h-0 overflow-y-auto">
           <Outlet />
         </div>
       </div>

@@ -85,9 +85,9 @@ interface ProjectInfoProps {
 }
 
 const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
-  const copyToClipboard = async (text: string) => {
+  const copyToClipboard = async (text: string, label: string) => {
     await navigator.clipboard.writeText(text);
-    toast.success('Identifier key copied to clipboard');
+    toast.success(`${label} copied to clipboard`);
   };
   return (
     <section className="flex flex-col gap-4 sm:gap-6 text-muted-foreground text-xs sm:text-sm">
@@ -117,7 +117,7 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
         </div>
       </div>
 
-      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey)}>
+      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey, 'Identifier Key')}>
         <Label htmlFor="identifierKey" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
           Identifier Key
         </Label>
@@ -131,7 +131,7 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
       </div>
 
       {localStorage.getItem('userSubscriptionTier') === 'pro' && (
-        <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey2 || '')}>
+        <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.identifierKey2 || '', 'Identifier Key 2')}>
           <Label htmlFor="identifierKey2" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
             Identifier Key 2
           </Label>
@@ -145,7 +145,7 @@ const ProjectInfo = ({ projectDetails }: ProjectInfoProps) => {
         </div>
       )}
 
-      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.connectionString)}>
+      <div className="cursor-pointer group" onClick={() => copyToClipboard(projectDetails.connectionString, 'Connection String')}>
         <Label htmlFor="identifierKey" className="text-xs sm:text-sm cursor-pointer group-hover:text-foreground transition-colors">
           Connection String
         </Label>

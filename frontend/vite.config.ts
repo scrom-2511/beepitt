@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["shark-recommendations-arrivals-due.trycloudflare.com"],
+    allowedHosts: ["expansion-forward-carpet-libraries.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',

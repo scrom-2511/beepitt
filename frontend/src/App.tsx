@@ -57,7 +57,7 @@ function AppLayout() {
           <Route path="/" element={<Home />} />
           <Route path="/auth" element={<Authentication />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/getmyip" element={<Getip />} />
+          {/* <Route path="/getmyip" element={<Getip />} /> */}
           <Route path="/paymentconfirmation" element={<PaymentConfirmation />} />
 
           {/* Protected dashboard with nested routes */}

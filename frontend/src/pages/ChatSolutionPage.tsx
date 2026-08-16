@@ -157,13 +157,7 @@ ${issue.filePath ? `File Path: ${issue.filePath}${issue.lineNumber ? `:${issue.l
 
   return (
     <div className="flex flex-col h-full w-full mx-auto px-4 sm:px-6 ">
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard/open-issues')} className="rounded-full">
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-      </div>
-
-      <ScrollArea className="flex-1 p-4 sm:p-6">
+      <ScrollArea className="flex-1 p-4 sm:p-6 h-[calc(100%-15rem)]">
         <div className="space-y-6">
           <AnimatePresence initial={false}>
             {messages.map((msg, index) => (
@@ -233,7 +227,7 @@ ${issue.filePath ? `File Path: ${issue.filePath}${issue.lineNumber ? `:${issue.l
         </div>
       </ScrollArea>
 
-      <div className="p-4 bg-muted/20 border-t border-border/50">
+      <div className="px-4 py-2 bg-muted/20 border-t border-border/50">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -246,7 +240,7 @@ ${issue.filePath ? `File Path: ${issue.filePath}${issue.lineNumber ? `:${issue.l
             value={input}
             onChange={(e) => setInput(e.target.value)}
             disabled={isLoading}
-            className="bg-background border-none focus-visible:ring-1 focus-visible:ring-primary rounded-xl h-11"
+            className="bg-background border-none focus-visible:ring-1 focus-visible:ring-primary rounded-xl h-18 text-white"
           />
           <Button type="submit" disabled={isLoading || !input.trim()} size="icon" className="h-11 w-11 rounded-xl shrink-0">
             {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : <Send className="h-5 w-5" />}
