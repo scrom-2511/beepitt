@@ -18,9 +18,6 @@ export const getConfigurationsController = async (req: Request, res: Response) =
     const projectSettings = await prisma.configuration.findUnique({
       where: { userId },
       select: {
-        globalThrottleWindow: true,
-        eventTriggerCount: true,
-        eventTriggerWindow: true,
         maxRetries: true,
         retryOffset: true,
         notificationChannels: true,
@@ -30,9 +27,6 @@ export const getConfigurationsController = async (req: Request, res: Response) =
     // If not found → return default values (important edge case)
     if (!projectSettings) {
       successReturnCall(res, HttpStatus.OK, {
-        globalThrottleWindow: 0,
-        eventTriggerCount: 0,
-        eventTriggerWindow: 0,
         maxRetries: 0,
         retryOffset: 0,
         notificationChannels: [],
@@ -42,9 +36,6 @@ export const getConfigurationsController = async (req: Request, res: Response) =
 
     // Return response
     successReturnCall(res, HttpStatus.OK, {
-      globalThrottleWindow: projectSettings.globalThrottleWindow,
-      eventTriggerCount: projectSettings.eventTriggerCount,
-      eventTriggerWindow: projectSettings.eventTriggerWindow,
       maxRetries: projectSettings.maxRetries,
       retryOffset: projectSettings.retryOffset,
       notificationChannels: projectSettings.notificationChannels,

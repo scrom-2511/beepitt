@@ -10,9 +10,7 @@ import { signinController } from '../controllers/auth/Signin.Controller';
 import { signupController } from '../controllers/auth/Signup.Controller';
 import { getBillingDetailsController } from '../controllers/billing/getBillingDetails.controller';
 import { getConfigurationsController } from '../controllers/configuration/getConfigurations.controller';
-import { updateGlobalThrottleWindowController } from '../controllers/configuration/updateGlobalThrottleWindow.controller';
 import { updateNotificationChannelsController } from '../controllers/configuration/updateNotificationChannels.controller';
-import { updateProThrottleController } from '../controllers/configuration/updateProThrottle.controller';
 import { updateRetryConfigController } from '../controllers/configuration/updateRetryConfig.controller';
 import { getAllSeenIncidentsController } from '../controllers/incidents/getIncidents/getAllSeenIncidents.controller';
 import { getAllUnseenIncidentsController } from '../controllers/incidents/getIncidents/getAllUnseenIncidents.controller';
@@ -80,8 +78,6 @@ userRouter.post('/updateIncidentSeen', isLoggedIn, isVerified, updateIncidentSee
 // Configurations
 userRouter.get('/getConfigurations', isLoggedIn, isVerified, getConfigurationsController);
 userRouter.post('/updateNotificationChannels', isLoggedIn, isVerified, updateNotificationChannelsController);
-userRouter.post('/updateGlobalThrottleWindow', isLoggedIn, isVerified, updateGlobalThrottleWindowController);
-userRouter.post('/updateProThrottle', isLoggedIn, isVerified, updateProThrottleController);
 userRouter.post('/updateRetryConfig', isLoggedIn, isVerified, updateRetryConfigController);
 
 // Analytics (new)

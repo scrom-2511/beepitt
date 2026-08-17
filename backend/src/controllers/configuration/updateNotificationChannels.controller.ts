@@ -60,9 +60,6 @@ export const updateNotificationChannelsController = async (req: Request, res: Re
         data: {
           userId,
           eventsUsed: 0,
-          globalThrottleWindow: 0,
-          eventTriggerCount: 0,
-          eventTriggerWindow: 0,
           maxRetries: 0,
           retryOffset: 0,
           notificationChannels: channels,

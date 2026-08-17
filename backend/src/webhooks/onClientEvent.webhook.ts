@@ -100,7 +100,6 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
           lastNotificationSent: new Date(),
           userId,
           eventHashKey,
-          throttlingWindow: user.configuration?.globalThrottleWindow ?? 0,
           occurrencesFromLastNotificationSent: 0,
           firstOccurenceAfterLastNotificationSent: new Date(),
           projectName

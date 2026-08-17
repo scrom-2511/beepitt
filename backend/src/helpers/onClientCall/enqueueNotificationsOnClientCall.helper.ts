@@ -9,7 +9,6 @@ const enqueuerMap: Record<NotificationChannels, (args: NotificationJob) => Promi
   [NotificationChannels.discord]: enqueueDiscordNotifications,
   [NotificationChannels.telegram]: enqueueTelegramNotifications,
   [NotificationChannels.email]: enqueueEmailNotifications,
-  [NotificationChannels.slack]: async (args) => { },
 };
 
 export const enqueueNotificationsOnClientCall = async (

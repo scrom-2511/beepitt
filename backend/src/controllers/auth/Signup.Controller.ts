@@ -44,9 +44,6 @@ export const signupController = async (req: Request, res: Response) => {
         configuration: {
           create: {
             eventsUsed: 0,
-            eventTriggerCount: 0,
-            eventTriggerWindow: 0,
-            globalThrottleWindow: 0,
             maxRetries: 0,
             retryOffset: 0,
             notificationChannels: [],

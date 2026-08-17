@@ -59,9 +59,6 @@ model User {
 model Configuration {
   id                   Int                    @id @default(autoincrement())
   eventsUsed           Int
-  globalThrottleWindow Int
-  eventTriggerCount    Int
-  eventTriggerWindow   Int
   maxRetries           Int
   retryOffset          Int
   notificationChannels NotificationChannels[] @default([])
@@ -164,7 +161,6 @@ model Event {
   description String
   priority    IssuePriority? @default(unseen) //For issue
 
-  throttlingWindow Int
   environment      Environment @default(production)
 
   createdAt  DateTime  @default(now())
