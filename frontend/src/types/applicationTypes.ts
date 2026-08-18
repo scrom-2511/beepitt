@@ -1,4 +1,4 @@
-export type NotificationChannels = 'telegram' | 'discord' | 'slack' | 'email';
+export type NotificationChannels = 'telegram' | 'discord' | 'email';
 
 export enum CurrentStatus {
   'active',

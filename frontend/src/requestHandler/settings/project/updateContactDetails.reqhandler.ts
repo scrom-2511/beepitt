@@ -6,6 +6,9 @@ export interface UpdateContactDetailsPayload {
   emailIds?: string[];
   telegramChatIds?: string[];
   discordChatIds?: string[];
+  emailIds2?: string[];
+  telegramChatIds2?: string[];
+  discordChatIds2?: string[];
 }
 
 export const updateContactDetailsHandler = async (payload: UpdateContactDetailsPayload): Promise<void> => {

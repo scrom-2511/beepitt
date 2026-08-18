@@ -80,16 +80,6 @@ export const UpdateNotificationChannelsType = z.object({
   channels: z.array(z.enum(NotificationChannels)),
 });
 
-export const UpdateGlobalThrottleWindowType = z.object({
-  globalThrottleWindow: z.number(),
-});
-
-export const UpdateProThrottleType = z.object({
-  eventTriggerCount: z.number(),
-  eventTriggerWindow: z.number(),
-  globalThrottleWindow: z.number(),
-});
-
 export const UpdateRetryConfigType = z.object({
   maxRetries: z.number(),
   retryOffset: z.number(),

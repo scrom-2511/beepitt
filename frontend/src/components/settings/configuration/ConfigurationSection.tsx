@@ -5,7 +5,6 @@ import { getConfigurationsHandler } from '@/requestHandler/settings/configuratio
 import { useQuery } from '@tanstack/react-query';
 import NotificationChannelsSection from './NotificationChannelsSection';
 import RetryOffsetSection from './RetryOffsetSection';
-import ThrottlingSection from './ThrottlingSection';
 const ConfigurationSection = () => {
   const {
     data: configurations,
@@ -41,12 +40,6 @@ const ConfigurationSection = () => {
       content: <NotificationChannelsSection configurations={configurations} />,
       display: true,
     },
-    // {
-    //   title: 'Throttling',
-    //   description: 'Configure throttling. Throttling will take effect after at least one notification is sent',
-    //   content: <ThrottlingSection configurations={configurations} />,
-    //   display: userSubscriptionTier !== 'free',
-    // },
     {
       title: 'Retry Policy',
       description: 'Retry sending notifications exponentially after a base interval',

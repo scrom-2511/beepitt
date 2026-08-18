@@ -15,7 +15,7 @@ export const updateContactDetailsController = async (req: Request, res: Response
       return errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.INVALID_INPUT);
     }
 
-    const { projectId, emailIds, telegramChatIds, discordChatIds } = validateData.data;
+    const { projectId, emailIds, telegramChatIds, discordChatIds, emailIds2, telegramChatIds2, discordChatIds2 } = validateData.data;
 
     // Check if user owns the project and get their subscription tier
     const project = await prisma.project.findFirst({
@@ -46,6 +46,9 @@ export const updateContactDetailsController = async (req: Request, res: Response
     if (emailIds !== undefined && emailIds.length > maxEmails) {
       return errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.LIMIT_EXCEEDED);
     }
+    if (emailIds2 !== undefined && emailIds2.length > maxEmails) {
+      return errorReturnCall(res, HttpStatus.BAD_REQUEST, ErrorCode.LIMIT_EXCEEDED);
+    }
 
     const existingContactDetails = await prisma.contactDetails.findUnique({
       where: { projectId },
@@ -58,6 +61,9 @@ export const updateContactDetailsController = async (req: Request, res: Response
           ...(emailIds !== undefined && { emailIds }),
           ...(telegramChatIds !== undefined && { telegramChatIds }),
           ...(discordChatIds !== undefined && { discordChatIds }),
+          ...(emailIds2 !== undefined && { emailIds2 }),
+          ...(telegramChatIds2 !== undefined && { telegramChatIds2 }),
+          ...(discordChatIds2 !== undefined && { discordChatIds2 }),
         },
       });
     } else {
@@ -67,6 +73,9 @@ export const updateContactDetailsController = async (req: Request, res: Response
           emailIds: emailIds || [],
           telegramChatIds: telegramChatIds || [],
           discordChatIds: discordChatIds || [],
+          emailIds2: emailIds2 || [],
+          telegramChatIds2: telegramChatIds2 || [],
+          discordChatIds2: discordChatIds2 || [],
         },
       });
     }

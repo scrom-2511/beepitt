@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2023",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "outDir": "./dist",
     "rootDir": ".",
     "strict": true,
@@ -10,6 +10,12 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*", "generated/**/*"],
-  "exclude": ["node_modules", "src/services/kafka"]
+  "include": [
+    "src/**/*",
+    "generated/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/services/kafka"
+  ]
 }

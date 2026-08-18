@@ -21,7 +21,7 @@ const SigninCardComponent = () => {
   const { setStep } = useAuthState();
 
   return (
-    <Card className="w-full h-full px-4 sm:px-10 md:px-16 py-0 flex flex-col justify-center">
+    <Card className="w-full min-h-full px-4 sm:px-10 md:px-16 py-10 flex flex-col justify-center">
       <AuthHeader
         title="Log in"
         description="Don't have an account?"
@@ -95,7 +95,6 @@ const SigninCardForm = () => {
           {/* Email Field */}
           <div className="grid gap-2">
             <Input
-              defaultValue="use@use.com"
               autoFocus
               id="email"
               type="email"
@@ -119,7 +118,6 @@ const SigninCardForm = () => {
             </div>
 
             <Input
-              defaultValue="use1234"
               id="password"
               type="text"
               placeholder="Password"

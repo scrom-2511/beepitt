@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 
 const navItems = [
-  { title: 'Docs', url: '/docs' },
+  { title: 'Docs', url: 'http://localhost:3001/docs/intro' },
   { title: 'Pricing', url: '/pricing' },
   { title: 'Dashboard', url: '/dashboard/unseen-incidents' },
 ];

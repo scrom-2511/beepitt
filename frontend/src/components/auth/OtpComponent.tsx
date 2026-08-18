@@ -27,7 +27,7 @@ const OtpComponent = () => {
     },
   });
   return (
-    <Card className="h-full w-full flex flex-col justify-between px-16 py-24">
+    <Card className="min-h-full w-full flex flex-col justify-between px-16 py-24">
       <div className="flex flex-col">
         <AuthHeader title="Verify Code" description="We sent you a verification code to you mail address" />
         <CardContent className="mt-2 sm:mt-6 md:mt-8">

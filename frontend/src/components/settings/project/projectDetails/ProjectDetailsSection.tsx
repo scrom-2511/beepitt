@@ -171,11 +171,12 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
   const [telegramChatIds2, setTelegramChatIds2] = useState<string[]>(projectDetails.contactDetails.telegramChatIds2);
   const [discordChatIds2, setDiscordChatIds2] = useState<string[]>(projectDetails.contactDetails.discordChatIds2);
   const [newEmail, setNewEmail] = useState('');
+  const [newEmail2, setNewEmail2] = useState('');
 
   const userSubscriptionTier = localStorage.getItem('userSubscriptionTier');
 
   const { mutate: updateContactDetails } = useMutation({
-    mutationFn: (payload: { emailIds?: string[]; telegramChatIds?: string[]; discordChatIds?: string[] }) =>
+    mutationFn: (payload: { emailIds?: string[]; telegramChatIds?: string[]; discordChatIds?: string[]; emailIds2?: string[]; telegramChatIds2?: string[]; discordChatIds2?: string[] }) =>
       updateContactDetailsHandler({ projectId, ...payload }),
     onSuccess: () => {
       toast.success('Contact details updated successfully');
@@ -201,6 +202,7 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
     setEmailIds(updatedEmails);
     setNewEmail('');
   };
+
   const handleEmailChange = (index: number, value: string) => {
     const updatedEmails = [...emailIds];
     updatedEmails[index] = value;
@@ -223,6 +225,46 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
     const updatedDiscord = discordChatIds.filter((_, i) => i !== index);
     setDiscordChatIds(updatedDiscord);
     updateContactDetails({ discordChatIds: updatedDiscord });
+  };
+
+  const handleAddEmail2 = () => {
+    if (!newEmail2) return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail2)) {
+      toast.error('Invalid email format');
+      return;
+    }
+    if (emailIds2.includes(newEmail2)) {
+      toast.error('Email already exists');
+      return;
+    }
+    const updatedEmails = [...emailIds2, newEmail2];
+    updateContactDetails({ emailIds2: updatedEmails });
+    setEmailIds2(updatedEmails);
+    setNewEmail2('');
+  };
+
+  const handleEmailChange2 = (index: number, value: string) => {
+    const updatedEmails = [...emailIds2];
+    updatedEmails[index] = value;
+    setEmailIds2(updatedEmails);
+  };
+
+  const handleRemoveEmail2 = (index: number) => {
+    const updatedEmails = emailIds2.filter((_, i) => i !== index);
+    setEmailIds2(updatedEmails);
+    updateContactDetails({ emailIds2: updatedEmails });
+  };
+
+  const handleRemoveTelegram2 = (index: number) => {
+    const updatedTelegram = telegramChatIds2.filter((_, i) => i !== index);
+    setTelegramChatIds2(updatedTelegram);
+    updateContactDetails({ telegramChatIds2: updatedTelegram });
+  };
+
+  const handleRemoveDiscord2 = (index: number) => {
+    const updatedDiscord = discordChatIds2.filter((_, i) => i !== index);
+    setDiscordChatIds2(updatedDiscord);
+    updateContactDetails({ discordChatIds2: updatedDiscord });
   };
 
   if (userSubscriptionTier === 'pro') {
@@ -366,14 +408,14 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
                 {telegramChatIds2.map((chatId, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor={`telegramChatId-${i + 1}`}>Chat Id {i + 1}</Label>
+                      <Label htmlFor={`telegramChatId2-${i + 1}`}>Chat Id {i + 1}</Label>
                       <Trash2
                         className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                        onClick={() => handleRemoveTelegram(i)}
+                        onClick={() => handleRemoveTelegram2(i)}
                       />
                     </div>
                     <Input
-                      id={`telegramChatId-${i + 1}`}
+                      id={`telegramChatId2-${i + 1}`}
                       type="text"
                       value={chatId}
                       readOnly
@@ -397,14 +439,14 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
                 {discordChatIds2.map((chatId, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor={`discordChatId-${i + 1}`}>Chat Id {i + 1}</Label>
+                      <Label htmlFor={`discordChatId2-${i + 1}`}>Chat Id {i + 1}</Label>
                       <Trash2
                         className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                        onClick={() => handleRemoveDiscord(i)}
+                        onClick={() => handleRemoveDiscord2(i)}
                       />
                     </div>
                     <Input
-                      id={`discordChatId-${i + 1}`}
+                      id={`discordChatId2-${i + 1}`}
                       type="text"
                       value={chatId}
                       readOnly
@@ -428,43 +470,43 @@ const ContactDetails = ({ projectDetails }: ProjectInfoProps) => {
                 {emailIds2.map((emailId, i) => (
                   <div key={i} className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor={`emailId-${i + 1}`}>Email Id {i + 1}</Label>
+                      <Label htmlFor={`emailId2-${i + 1}`}>Email Id {i + 1}</Label>
                       <Trash2
                         className="w-4 h-4 text-red-500 cursor-pointer hover:text-red-700 transition-colors"
-                        onClick={() => handleRemoveEmail(i)}
+                        onClick={() => handleRemoveEmail2(i)}
                       />
                     </div>
                     <Input
-                      id={`emailId-${i + 1}`}
+                      id={`emailId2-${i + 1}`}
                       type="email"
                       value={emailId}
-                      onChange={(e) => handleEmailChange(i, e.target.value)}
+                      onChange={(e) => handleEmailChange2(i, e.target.value)}
                       className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm"
                     />
                   </div>
                 ))}
 
                 <div className="mt-4 flex flex-col gap-2">
-                  <Label htmlFor="new-email">Add New Email</Label>
+                  <Label htmlFor="new-email2">Add New Email</Label>
                   <div className="flex gap-2">
                     <Input
-                      id="new-email"
+                      id="new-email2"
                       type="email"
                       placeholder="Enter new email id"
-                      value={newEmail}
-                      onChange={(e) => setNewEmail(e.target.value)}
+                      value={newEmail2}
+                      onChange={(e) => setNewEmail2(e.target.value)}
                       className="py-4 sm:py-6 text-foreground placeholder:text-xs sm:placeholder:text-sm"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          handleAddEmail();
+                          handleAddEmail2();
                         }
                       }}
                     />
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={handleAddEmail}
+                      onClick={handleAddEmail2}
                       className="h-auto aspect-square border-dashed border-2 hover:bg-muted"
                     >
                       <Plus className="w-5 h-5" />

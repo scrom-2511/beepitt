@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const HowItWorks = () => {
   const navigate = useNavigate();
@@ -84,10 +84,10 @@ const HowItWorks = () => {
     <div className="bg-background w-full">
       <main className="w-full">
         {/* Hero */}
-        <section className="w-full px-4 sm:px-6 md:px-8 py-16 md:py-20 text-center">
+        <section className="w-full px-4 sm:px-6 md:px-8 pt-16 md:pt-20 text-center">
           <div className="max-w-7xl mx-auto">
             <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-6">Beep in 3 steps</h1>
-            <p className="text-base sm:text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               Three simple steps to integrate Beepitt into your application
             </p>
           </div>
@@ -175,7 +175,7 @@ const HowItWorks = () => {
                 variant="outline"
                 className="w-full sm:w-auto border-border text-foreground hover:bg-accent bg-transparent"
               >
-                View Docs
+                <Link to='http://localhost:3001/docs/intro'>View Docs</Link>
               </Button>
             </div>
           </div>

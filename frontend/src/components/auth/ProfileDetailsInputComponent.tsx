@@ -14,7 +14,7 @@ type ProfileDetailsFormValue = {
 
 const ProfileDetailsInputComponent = () => {
   return (
-    <Card className="w-full h-full py-0 justify-center">
+    <Card className="w-full min-h-full py-10 flex flex-col justify-center">
       <AuthHeader title="Your Profile" description="Enter your first name and last name" />
       <ProfileDetailsInputForm />
     </Card>

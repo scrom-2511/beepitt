@@ -3,9 +3,6 @@ import type { NotificationChannels } from '@/types/applicationTypes';
 import axios from 'axios';
 
 export interface ConfigurationsResponse {
-  globalThrottleWindow: number;
-  eventTriggerCount: number;
-  eventTriggerWindow: number;
   maxRetries: number;
   retryOffset: number;
   notificationChannels: NotificationChannels[];

@@ -10,13 +10,12 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
 type FormValues = {
-  slack: boolean;
   email: boolean;
   telegram: boolean;
   discord: boolean;
 };
 
-const allChannels: NotificationChannels[] = ['slack', 'email', 'telegram', 'discord'];
+const allChannels: NotificationChannels[] = ['email', 'telegram', 'discord'];
 
 const NotificationChannelsSection = ({ configurations }: { configurations: ConfigurationsResponse }) => {
   const {
@@ -43,7 +42,6 @@ const NotificationChannelsSection = ({ configurations }: { configurations: Confi
   useEffect(() => {
     if (configurations?.notificationChannels) {
       const initialValues: FormValues = {
-        slack: false,
         email: false,
         telegram: false,
         discord: false,
@@ -71,21 +69,19 @@ const NotificationChannelsSection = ({ configurations }: { configurations: Confi
       <section className="flex flex-col gap-6 text-muted-foreground text-sm">
         {allChannels.map(
           (channel) =>
-            channel !== 'slack' && (
-              <div key={channel} className="flex justify-between items-center">
-                <Label className="text-foreground text-lg capitalize">{channel}</Label>
+            <div key={channel} className="flex justify-between items-center">
+              <Label className="text-foreground text-lg capitalize">{channel}</Label>
 
-                <Checkbox
-                  className="size-8"
-                  checked={watch(channel)}
-                  onCheckedChange={(checked) => {
-                    setValue(channel, !!checked, {
-                      shouldDirty: true,
-                    });
-                  }}
-                />
-              </div>
-            ),
+              <Checkbox
+                className="size-8"
+                checked={watch(channel)}
+                onCheckedChange={(checked) => {
+                  setValue(channel, !!checked, {
+                    shouldDirty: true,
+                  });
+                }}
+              />
+            </div>
         )}
 
         {isDirty && (

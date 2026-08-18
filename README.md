@@ -6,7 +6,7 @@
 
 ## Features
 
-- **Multi-Channel Delivery:** Route critical alerts to **Telegram, Discord, Slack, and Email** seamlessly.
+- **Multi-Channel Delivery:** Route critical alerts to **Telegram, Discord, and Email** seamlessly.
 - **Smart Throttling:** Prevent "alert fatigue" with customizable throttling windows at both global and individual event levels.
 - **Environment Context:** Track events across Production, Staging, QA, Development, and Sandbox.
 - **Detailed Insights:** Automated tracking of file paths, line numbers, and occurrences to expedite debugging.
@@ -30,7 +30,7 @@
 - **Database:** PostgreSQL
 - **Background Jobs:** BullMQ + Redis + Kafka for resilient event processing
 - **Integrations:**
-  - **Messaging:** Telegram Bot API, Discord.js, Slack (via Axios), Mailgun (Email)
+  - **Messaging:** Telegram Bot API, Discord.js, Mailgun (Email)
   - **Payments:** Razorpay
   - **Auth:** OAuth (Google, Discord) + JWT
 

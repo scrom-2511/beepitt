@@ -21,7 +21,7 @@ const SignupCardComponent = () => {
   const { setStep } = useAuthState();
 
   return (
-    <Card className="w-full h-full px-4 sm:px-10 md:px-16 py-0 flex flex-col justify-center">
+    <Card className="w-full min-h-full px-4 sm:px-10 md:px-16 py-10 flex flex-col justify-center">
       <AuthHeader
         title="Create an account"
         description="Have an account?"

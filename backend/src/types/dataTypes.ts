@@ -95,4 +95,7 @@ export const UpdateContactDetailsType = z.object({
   emailIds: z.array(z.string().email()).optional(),
   telegramChatIds: z.array(z.string()).optional(),
   discordChatIds: z.array(z.string()).optional(),
+  emailIds2: z.array(z.string().email()).optional(),
+  telegramChatIds2: z.array(z.string()).optional(),
+  discordChatIds2: z.array(z.string()).optional(),
 });

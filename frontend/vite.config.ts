@@ -12,7 +12,7 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: ["expansion-forward-carpet-libraries.trycloudflare.com"],
+    allowedHosts: ["identical-bruce-sunshine-bottles.trycloudflare.com"],
     proxy: {
       '/api': {
         target: 'https://francisco-unscholarlike-punctually.ngrok-free.dev',
