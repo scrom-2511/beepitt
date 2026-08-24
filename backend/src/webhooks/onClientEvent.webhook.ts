@@ -17,7 +17,10 @@ import { Event } from '../types/prismaTypes';
 
 export const onClientIncidentWebhook = async (req: Request, res: Response) => {
   try {
+    console.log(req.body)
     const validateData = ClientCallType.safeParse(req.body);
+
+    console.log(validateData.data)
 
     const projectName = req.projectName!;
 
@@ -94,15 +97,18 @@ export const onClientIncidentWebhook = async (req: Request, res: Response) => {
       // Generate hash key for the event
       const eventHashKey = generateHashKey(validateData.data);
       // Create an event in the db
+      const { stack, additionalErrorInfo, ...eventData } = validateData.data;
       event = await prisma.event.create({
         data: {
-          ...validateData.data,
+          ...eventData,
           lastNotificationSent: new Date(),
           userId,
           eventHashKey,
           occurrencesFromLastNotificationSent: 0,
           firstOccurenceAfterLastNotificationSent: new Date(),
-          projectName
+          projectName,
+          errorStack: stack ? JSON.stringify(stack) : undefined,
+          additionalErrorInfo: additionalErrorInfo ? JSON.stringify(additionalErrorInfo) : undefined
         },
       });
     }

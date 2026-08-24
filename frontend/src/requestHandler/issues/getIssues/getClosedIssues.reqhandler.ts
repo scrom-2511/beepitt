@@ -17,6 +17,8 @@ export interface Issue {
   lineNumber: number | null;
   columnNumber: number | null;
   group: string | null;
+  errorStack?: string | null;
+  additionalErrorInfo?: string | null;
 }
 
 interface IssuesResponse {

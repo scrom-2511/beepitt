@@ -124,7 +124,7 @@ model Chat {
   chatUUID      String         @unique
   chatName      String?
   user          User           @relation(fields: [userID], references: [id])
-  userID         Int
+  userID        Int
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   deleted       Boolean        @default(false)
@@ -161,7 +161,7 @@ model Event {
   description String
   priority    IssuePriority? @default(unseen) //For issue
 
-  environment      Environment @default(production)
+  environment Environment @default(production)
 
   createdAt  DateTime  @default(now())
   resolvedAt DateTime? //For issue
@@ -173,6 +173,8 @@ model Event {
   firstOccurenceAfterLastNotificationSent DateTime?
   lineNumber                              Int?
   columnNumber                            Int?
+  errorStack                              String?
+  additionalErrorInfo                     String?
   lastNotificationSent                    DateTime
 
   eventHashKey String

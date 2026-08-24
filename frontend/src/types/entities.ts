@@ -15,4 +15,6 @@ export interface BaseEntity {
   priority?: IssuePriority | null;
   seenAt?: string | null;
   resolvedAt?: string | null;
+  errorStack?: string | null;
+  additionalErrorInfo?: string | null;
 }

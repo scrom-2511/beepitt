@@ -22,6 +22,8 @@ export const ClientCallType = z.object({
   columnNumber: z.number().nullable(),
   environment: z.enum(Environment),
   group: z.string().nullable(),
+  stack: z.any().nullable().optional(),
+  additionalErrorInfo: z.any().nullable().optional(),
 });
 
 export const ProfileUpdateType = z.object({
